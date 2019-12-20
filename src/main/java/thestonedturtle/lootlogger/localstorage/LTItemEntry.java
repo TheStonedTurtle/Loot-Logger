@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
  * Copyright (c) 2018, TheStonedTurtle <www.github.com/TheStonedTurtle>
  * All rights reserved.
  *

@@ -5,17 +5,23 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
@@ -32,6 +38,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.Text;
 import thestonedturtle.lootlogger.data.BossTab;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
@@ -48,6 +55,11 @@ public class LootLoggerPlugin extends Plugin
 	private static final String SIRE_FONT_TEXT = "you place the unsired into the font of consumption...";
 	private static final String SIRE_REWARD_TEXT = "the font consumes the unsired";
 	private static final int MAX_TEXT_CHECK = 10;
+
+	// Kill count handling
+	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed [0-9]+ ([a-z]+) Treasure Trails.");
+	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is:? ([0-9]*).");
+	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
 
 	@Inject
 	private Client client;
@@ -76,6 +88,8 @@ public class LootLoggerPlugin extends Plugin
 	private boolean prepared = false;
 	private boolean unsiredReclaiming = false;
 	private int unsiredCheckCount = 0;
+
+	private Map<String, Integer> killCountMap = new HashMap<>();
 
 	@Provides
 	LootLoggerConfig provideConfig(ConfigManager configManager)
@@ -273,5 +287,92 @@ public class LootLoggerPlugin extends Plugin
 			writer.writeLootTrackerFile(BossTab.ABYSSAL_SIRE.getName(), items);
 			recordAdded(r);
 		});
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage event)
+	{
+		if (event.getType() != ChatMessageType.GAMEMESSAGE && event.getType() != ChatMessageType.SPAM)
+		{
+			return;
+		}
+
+		final String chatMessage = Text.removeTags(event.getMessage());
+
+		// Check if message is for a clue scroll reward
+		final Matcher m = CLUE_SCROLL_PATTERN.matcher(chatMessage);
+		if (m.find())
+		{
+			final String eventType;
+			switch (m.group(1).toLowerCase())
+			{
+				case "beginner":
+					eventType = "Clue Scroll (Beginner)";
+					break;
+				case "easy":
+					eventType = "Clue Scroll (Easy)";
+					break;
+				case "medium":
+					eventType = "Clue Scroll (Medium)";
+					break;
+				case "hard":
+					eventType = "Clue Scroll (Hard)";
+					break;
+				case "elite":
+					eventType = "Clue Scroll (Elite)";
+					break;
+				case "master":
+					eventType = "Clue Scroll (Master)";
+					break;
+				default:
+					return;
+			}
+
+			final int killCount = Integer.valueOf(m.group(1));
+			killCountMap.put(eventType.toUpperCase(), killCount);
+			return;
+		}
+
+		// Barrows KC
+		if (chatMessage.startsWith("Your Barrows chest count is"))
+		{
+			Matcher n = NUMBER_PATTERN.matcher(chatMessage);
+			if (n.find())
+			{
+				killCountMap.put("BARROWS", Integer.valueOf(n.group()));
+				return;
+			}
+		}
+
+		// Raids KC
+		if (chatMessage.startsWith("Your completed Chambers of Xeric count is"))
+		{
+			Matcher n = NUMBER_PATTERN.matcher(chatMessage);
+			if (n.find())
+			{
+				killCountMap.put("CHAMBERS OF XERIC", Integer.valueOf(n.group()));
+				return;
+			}
+		}
+		
+		// Tob KC
+		if (chatMessage.startsWith("Your completed Theatre of Blood count is"))
+		{
+			Matcher n = NUMBER_PATTERN.matcher(chatMessage);
+			if (n.find())
+			{
+				killCountMap.put("THEATRE OF BLOOD", Integer.valueOf(n.group()));
+				return;
+			}
+		}
+
+		// Handle all other boss
+		final Matcher boss = BOSS_NAME_NUMBER_PATTERN.matcher(chatMessage);
+		if (boss.find())
+		{
+			final String bossName = boss.group(1);
+			final int killCount = Integer.valueOf(boss.group(2));
+			killCountMap.put(bossName.toUpperCase(), killCount);
+		}
 	}
 }

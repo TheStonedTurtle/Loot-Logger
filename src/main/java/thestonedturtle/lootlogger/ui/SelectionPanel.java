@@ -205,7 +205,7 @@ class SelectionPanel extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				parent.showLootView(name);
+				parent.requestLootLog(name);
 			}
 		});
 
@@ -259,7 +259,7 @@ class SelectionPanel extends JPanel
 
 			materialTab.setOnSelectEvent(() ->
 			{
-				parent.showLootView(tab.getName());
+				parent.requestLootLog(tab.getName());
 				return true;
 			});
 

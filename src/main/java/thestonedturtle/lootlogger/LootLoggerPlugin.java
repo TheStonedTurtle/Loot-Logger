@@ -43,6 +43,7 @@ import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.data.BossTab;
+import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
@@ -57,7 +58,7 @@ public class LootLoggerPlugin extends Plugin
 {
 	private static final String SIRE_FONT_TEXT = "you place the unsired into the font of consumption...";
 	private static final String SIRE_REWARD_TEXT = "the font consumes the unsired";
-	private static final int MAX_TEXT_CHECK = 10;
+	private static final int MAX_TEXT_CHECK = 25;
 
 	// Kill count handling
 	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed [0-9]+ ([a-z]+) Treasure Trails.");
@@ -116,7 +117,7 @@ public class LootLoggerPlugin extends Plugin
 
 		clientToolbar.addNavigation(navButton);
 
-		// Attach necessary info from item manager on load
+		// Attach necessary info from item manager on load, probably a better method
 		if (!prepared)
 		{
 			prepared = true;
@@ -130,8 +131,6 @@ public class LootLoggerPlugin extends Plugin
 				}
 
 				UniqueItem.prepareUniqueItems(itemManager);
-				writer.setPlayerUsername("StonedTurtle");
-				localPlayerNameChanged();
 				return true;
 			});
 		}
@@ -223,6 +222,20 @@ public class LootLoggerPlugin extends Plugin
 		}
 
 		return writer.loadLootTrackerRecords(name);
+	}
+
+	/**
+	 * Creates a loot log for this name and then attaches it to the UI when finished
+	 * @param name record name
+	 */
+	public void requestLootLog(final String name)
+	{
+		clientThread.invoke(() ->
+		{
+			final Collection<LTRecord> records = getDataByName(name);
+			final LootLog log = new LootLog(records, name);
+			SwingUtilities.invokeLater(() -> panel.useLog(log));
+		});
 	}
 
 	public boolean clearStoredDataByName(final String name)

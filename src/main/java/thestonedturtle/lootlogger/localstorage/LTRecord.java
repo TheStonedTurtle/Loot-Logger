@@ -24,7 +24,6 @@
  */
 package thestonedturtle.lootlogger.localstorage;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,15 +42,5 @@ public class LTRecord
 	public void addDropEntry(LTItemEntry itemEntry)
 	{
 		drops.add(itemEntry);
-	}
-
-	public static Collection<LTItemEntry> consolidateLTItemEntries(final Collection<LTRecord> records)
-	{
-		final Collection<LTItemEntry> recordEntries = new ArrayList<>();
-		for (final LTRecord r : records)
-		{
-			recordEntries.addAll(r.getDrops());
-		}
-		return recordEntries;
 	}
 }

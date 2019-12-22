@@ -25,16 +25,13 @@
 package thestonedturtle.lootlogger.ui;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.JPanel;
@@ -44,7 +41,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import thestonedturtle.lootlogger.ItemSortTypes;
+import thestonedturtle.lootlogger.LootLoggerConfig;
 import thestonedturtle.lootlogger.UniqueItemPlacement;
+import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
@@ -52,41 +51,30 @@ import thestonedturtle.lootlogger.localstorage.LTRecord;
 @Slf4j
 class LootPanel extends JPanel
 {
-	private final Collection<LTRecord> records;
-	private final Collection<UniqueItem> uniques;
-	private final UniqueItemPlacement uniquesPlacement;
-	private final ItemSortTypes sortType;
-	private final boolean itemBreakdown;
+	private final LootLog lootLog;
+	private final LootLoggerConfig config;
 	private final ItemManager itemManager;
-	// Consolidate LTItemEntries stored by ItemID
-	private final Map<Integer, LTItemEntry> consolidated = new HashMap<>();
 
 	private boolean playbackPlaying = false;
 	private boolean cancelPlayback = false;
 
 	LootPanel(
-		final Collection<LTRecord> records,
-		final Collection<UniqueItem> uniques,
-		final UniqueItemPlacement uniquesPlacement,
-		final ItemSortTypes sort,
-		final boolean itemBreakdown,
+		final LootLog log,
+		final LootLoggerConfig config,
 		final ItemManager itemManager)
 	{
-		this.records = records;
-		this.uniques = uniques;
-		this.uniquesPlacement = uniquesPlacement;
-		this.sortType = sort;
-		this.itemBreakdown = itemBreakdown;
+		this.lootLog = log;
+		this.config = config;
 		this.itemManager = itemManager;
 
 		setLayout(new GridBagLayout());
 		setBorder(new EmptyBorder(0, 10, 0, 10));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 
-		createPanel(this.records, true);
+		createPanel(log);
 	}
 
-	private void createPanel(final Collection<LTRecord> records, final boolean reconsolidate)
+	private void createPanel(final LootLog lootLog)
 	{
 		final GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -94,30 +82,21 @@ class LootPanel extends JPanel
 		c.gridx = 0;
 		c.gridy = 0;
 
-		if (reconsolidate)
-		{
-			this.consolidated.clear();
-			final Collection<LTItemEntry> consolidatedLTItemEntries = LTRecord.consolidateLTItemEntries(records);
-			final Map<Integer, LTItemEntry> itemMap = LTItemEntry.consolidateItemEntries(consolidatedLTItemEntries);
-			this.consolidated.putAll(itemMap);
-		}
-
 		// Create necessary helpers for the unique toggles
 		final Multimap<Integer, UniqueItem> positionMap = ArrayListMultimap.create();
 		final Set<Integer> uniqueIds = new HashSet<>();
 
 		// Loop over all UniqueItems and check how many the player has received as a drop for each
 		// Also add all Item IDs for uniques to a Set for easy hiding later on.
-		for (final UniqueItem item : this.uniques)
+		for (final UniqueItem item : lootLog.getUniques())
 		{
-
 			final int id = item.getItemID();
 			final int linkedId = item.getLinkedID();
 			uniqueIds.add(id);
 			uniqueIds.add(linkedId);
 
-			final LTItemEntry entry = this.consolidated.get(id);
-			final LTItemEntry notedEntry = this.consolidated.get(linkedId);
+			final LTItemEntry entry = lootLog.getConsolidated().get(id);
+			final LTItemEntry notedEntry = lootLog.getConsolidated().get(linkedId);
 			final int qty = (entry == null ? 0 : entry.getQuantity()) + (notedEntry == null ? 0 : notedEntry.getQuantity());
 			item.setQty(qty);
 			positionMap.put(item.getPosition(), item);
@@ -133,10 +112,10 @@ class LootPanel extends JPanel
 		}
 
 		// Attach Kill Count Panel(s)
-		if (records.size() > 0)
+		if (lootLog.getRecords().size() > 0)
 		{
-			final int amount = records.size();
-			final LTRecord entry = Iterators.get(records.iterator(), (amount - 1));
+			final int amount = lootLog.getRecords().size();
+			final LTRecord entry = lootLog.getRecords().get(amount - 1);
 			if (entry.getKillCount() != -1)
 			{
 				final TextPanel p = new TextPanel("Current Killcount:", entry.getKillCount());
@@ -148,21 +127,25 @@ class LootPanel extends JPanel
 			c.gridy++;
 		}
 
-		// Track total price of all tracked items for this panel
-		// Also ensure it is placed in correct location by preserving its gridy value
-		long totalValue = consolidated.values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
-		final int totalValueIndex = c.gridy;
-		c.gridy++;
+		// Only add the total value element if it has something useful to display
+		final long totalValue = lootLog.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
+		if (totalValue > 0)
+		{
+			final TextPanel totalPanel = new TextPanel("Total Value:", totalValue);
+			this.add(totalPanel, c);
+			c.gridy++;
+		}
 
-		final boolean hideUniques = uniquesPlacement.equals(UniqueItemPlacement.UNIQUES_PANEL);
-		final Collection<LTItemEntry> itemsToDisplay = consolidated.values().stream()
+		final boolean hideUniques = config.uniquesPlacement().equals(UniqueItemPlacement.UNIQUES_PANEL);
+		final Comparator<LTItemEntry> sorter = createLTItemEntryComparator(config.itemSortType());
+		final Collection<LTItemEntry> itemsToDisplay = lootLog.getConsolidated().values().stream()
 			.filter(e -> !(hideUniques && uniqueIds.contains(e.getId())))
-			.sorted(createLTItemEntryComparator(sortType))
+			.sorted(sorter)
 			.collect(Collectors.toList());
 
 		if (itemsToDisplay.size() > 0)
 		{
-			if (itemBreakdown)
+			if (config.itemBreakdown())
 			{
 				for (final LTItemEntry e : itemsToDisplay)
 				{
@@ -178,33 +161,15 @@ class LootPanel extends JPanel
 				c.gridy++;
 			}
 		}
-
-		// Only add the total value element if it has something useful to display
-		if (totalValue > 0)
-		{
-			c.gridy = totalValueIndex;
-			final TextPanel totalPanel = new TextPanel("Total Value:", totalValue);
-			this.add(totalPanel, c);
-		}
 	}
 
 	void addedRecord(final LTRecord record)
 	{
-		records.add(record);
-		for (final LTItemEntry entry : record.getDrops())
-		{
-			final LTItemEntry current = consolidated.get(entry.getId());
-			if (current != null)
-			{
-				entry.setQuantity(entry.getQuantity() + current.getQuantity());
-			}
-			consolidated.put(entry.getId(), entry);
+		lootLog.addRecord(record);
 
-		}
 		// TODO: Smarter update system so it only repaints necessary Item and Text Panels
 		this.removeAll();
-
-		this.createPanel(this.records, false);
+		this.createPanel(lootLog);
 
 		this.revalidate();
 		this.repaint();
@@ -220,24 +185,24 @@ class LootPanel extends JPanel
 
 		playbackPlaying = true;
 
-		if (this.records.size() > 0)
+		if (lootLog.getRecords().size() > 0)
 		{
 			final Collection<LTRecord> recs = new ArrayList<>();
-			for (final LTRecord r : this.records)
+			for (final LTRecord r : lootLog.getRecords())
 			{
 				recs.add(r);
 
-				SwingUtilities.invokeLater(() -> refreshPlayback(recs));
-
+				SwingUtilities.invokeLater(() -> refreshPlayback(new LootLog(recs, lootLog.getName())));
 				try
 				{
 					if (cancelPlayback)
 					{
 						playbackPlaying = false;
 						cancelPlayback = false;
-						SwingUtilities.invokeLater(() -> refreshPlayback(this.records));
+						SwingUtilities.invokeLater(() -> refreshPlayback(lootLog));
 						break;
 					}
+
 					// TODO: Allow this rate to be configurable?
 					Thread.sleep(250);
 				}
@@ -251,11 +216,11 @@ class LootPanel extends JPanel
 		playbackPlaying = false;
 	}
 
-	private void refreshPlayback(final Collection<LTRecord> recs)
+	private void refreshPlayback(final LootLog log)
 	{
 		this.removeAll();
 
-		this.createPanel(recs, true);
+		this.createPanel(log);
 
 		this.revalidate();
 		this.repaint();

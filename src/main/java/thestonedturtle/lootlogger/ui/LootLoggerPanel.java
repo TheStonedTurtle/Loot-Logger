@@ -30,13 +30,9 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,7 +48,7 @@ import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.PluginErrorPanel;
 import net.runelite.client.util.ImageUtil;
 import thestonedturtle.lootlogger.LootLoggerPlugin;
-import thestonedturtle.lootlogger.data.UniqueItem;
+import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
 
 @Slf4j
@@ -77,9 +73,8 @@ public class LootLoggerPanel extends PluginPanel
 	private final ItemManager itemManager;
 	private final LootLoggerPlugin plugin;
 
-	// NPC name for current view or null if on selection screen
-	private String currentView = null;
 	private LootPanel lootPanel;
+	private LootLog lootLog;
 
 	public LootLoggerPanel(final ItemManager itemManager, final LootLoggerPlugin plugin)
 	{
@@ -93,11 +88,22 @@ public class LootLoggerPanel extends PluginPanel
 		showSelectionView();
 	}
 
+	public void useLog(final LootLog log)
+	{
+		lootLog = log;
+		showLootView();
+	}
+
+	public void requestLootLog(final String name)
+	{
+		plugin.requestLootLog(name);
+	}
+
 	// Loot Selection view
 	public void showSelectionView()
 	{
 		this.removeAll();
-		currentView = null;
+		lootLog = null;
 		lootPanel = null;
 
 		final PluginErrorPanel errorPanel = new PluginErrorPanel();
@@ -114,24 +120,12 @@ public class LootLoggerPanel extends PluginPanel
 	}
 
 	// Loot breakdown view
-	public void showLootView(final String name)
+	public void showLootView()
 	{
 		this.removeAll();
-		currentView = name;
 
-		final Collection<LTRecord> data = plugin.getDataByName(name);
-
-		// Grab all Uniques for this NPC/Activity
-		Collection<UniqueItem> uniques = UniqueItem.getUniquesForBoss(name);
-		if (uniques == null)
-		{
-			uniques = new ArrayList<>();
-		}
-
-		uniques = uniques.stream().sorted(Comparator.comparingInt(UniqueItem::getPosition)).collect(Collectors.toList());
-
-		final JPanel title = createLootViewTitle(name);
-		lootPanel = new LootPanel(data, uniques, plugin.config.uniquesPlacement(), plugin.config.itemSortType(), plugin.config.itemBreakdown(), itemManager);
+		final JPanel title = createLootViewTitle();
+		lootPanel = new LootPanel(lootLog, plugin.config, itemManager);
 
 		this.add(title, BorderLayout.NORTH);
 		this.add(wrapContainer(lootPanel), BorderLayout.CENTER);
@@ -141,8 +135,9 @@ public class LootLoggerPanel extends PluginPanel
 	}
 
 	// Title element for Loot breakdown view
-	private JPanel createLootViewTitle(final String name)
+	private JPanel createLootViewTitle()
 	{
+		final String name = lootLog.getName();
 		final JPanel title = new JPanel();
 		title.setBorder(new CompoundBorder(
 				new EmptyBorder(10, 8, 8, 8),
@@ -182,7 +177,7 @@ public class LootLoggerPanel extends PluginPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				showLootView(name);
+				requestLootLog(name);
 			}
 		});
 		refresh.setToolTipText("Refresh panel");
@@ -282,11 +277,11 @@ public class LootLoggerPanel extends PluginPanel
 
 	public void addLog(final LTRecord r)
 	{
-		if (currentView == null)
+		if (lootLog == null)
 		{
-			showLootView(r.getName());
+			requestLootLog(r.getName());
 		}
-		else if (currentView.equalsIgnoreCase(r.getName()))
+		else if (lootLog.getName().equalsIgnoreCase(r.getName()))
 		{
 			lootPanel.addedRecord(r);
 		}
@@ -296,13 +291,13 @@ public class LootLoggerPanel extends PluginPanel
 	public void refreshUI()
 	{
 		log.debug("Refreshing UI");
-		if (currentView == null)
+		if (lootLog == null)
 		{
 			showSelectionView();
 		}
 		else
 		{
-			showLootView(currentView);
+			showLootView();
 		}
 	}
 
@@ -315,7 +310,7 @@ public class LootLoggerPanel extends PluginPanel
 
 		// Create a new thread for this so it doesn't cause swing freezes
 		final ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
-		if (currentView != null)
+		if (lootLog != null)
 		{
 			ex.schedule(lootPanel::playback, 0, TimeUnit.SECONDS);
 		}

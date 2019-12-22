@@ -75,6 +75,7 @@ public class LootLoggerPanel extends PluginPanel
 
 	private LootPanel lootPanel;
 	private LootLog lootLog;
+	private SelectionPanel selectionPanel;
 
 	public LootLoggerPanel(final ItemManager itemManager, final LootLoggerPlugin plugin)
 	{
@@ -96,6 +97,13 @@ public class LootLoggerPanel extends PluginPanel
 
 	public void requestLootLog(final String name)
 	{
+		// For some reason removing all the components when there's a lot of names in the selectionPanel causes lag.
+		// Removing them here seems to mitigate the lag
+		if (selectionPanel != null)
+		{
+			selectionPanel.getNamePanel().removeAll();
+		}
+
 		plugin.requestLootLog(name);
 	}
 
@@ -110,10 +118,10 @@ public class LootLoggerPanel extends PluginPanel
 		errorPanel.setBorder(new EmptyBorder(10, 25, 10, 25));
 		errorPanel.setContent("Loot Logger", "Select the Activity, Player, or NPC you wish to view loot for");
 
-		final SelectionPanel selection = new SelectionPanel(plugin.config.bossButtons(), plugin.getLootNames(), this, itemManager);
+		selectionPanel = new SelectionPanel(plugin.config.bossButtons(), plugin.getLootNames(), this, itemManager);
 
 		this.add(errorPanel, BorderLayout.NORTH);
-		this.add(wrapContainer(selection), BorderLayout.CENTER);
+		this.add(wrapContainer(selectionPanel), BorderLayout.CENTER);
 
 		this.revalidate();
 		this.repaint();
@@ -123,6 +131,7 @@ public class LootLoggerPanel extends PluginPanel
 	public void showLootView()
 	{
 		this.removeAll();
+		selectionPanel = null;
 
 		final JPanel title = createLootViewTitle();
 		lootPanel = new LootPanel(lootLog, plugin.config, itemManager);

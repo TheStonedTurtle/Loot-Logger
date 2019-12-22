@@ -45,6 +45,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import lombok.Getter;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
@@ -67,6 +68,7 @@ class SelectionPanel extends JPanel
 	private final ItemManager itemManager;
 
 	private final IconTextField searchBar = new IconTextField();
+	@Getter
 	private final JPanel namePanel = new JPanel();
 
 	private boolean configToggle;
@@ -241,7 +243,6 @@ class SelectionPanel extends JPanel
 			final MaterialTab materialTab = new MaterialTab("", thisTabGroup, null);
 			materialTab.setName(tab.getName());
 			materialTab.setToolTipText(tab.getName());
-			//materialTab.setSelectedBorder(new EmptyBorder(0, 0, 0, 0));
 			materialTab.addMouseListener(new MouseAdapter()
 			{
 				@Override

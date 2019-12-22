@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.Getter;
@@ -19,7 +20,6 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.NpcID;
 import net.runelite.api.Player;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
@@ -33,12 +33,15 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.Text;
+import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.data.BossTab;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
@@ -184,11 +187,31 @@ public class LootLoggerPlugin extends Plugin
 		SwingUtilities.invokeLater(() -> panel.showSelectionView());
 	}
 
-	// TODO: Figure out how to trigger this when the Loot Tracker processes loot
-	private void recordAdded(LTRecord record)
+	private Collection<LTItemEntry> convertToLTItemEntries(Collection<ItemStack> stacks)
 	{
+		return stacks.stream().map(i ->
+		{
+			final ItemComposition c = itemManager.getItemComposition(i.getId());
+			final int id = c.getNote() == -1 ? c.getId() : c.getLinkedNoteId();
+			final int price = itemManager.getItemPrice(id);
+			return new LTItemEntry(c.getName(), i.getId(), i.getQuantity(), price);
+		}).collect(Collectors.toList());
+	}
+
+	private void addRecord(final LTRecord record)
+	{
+		writer.addLootTrackerRecord(record);
 		lootNames.add(record.getName());
 		SwingUtilities.invokeLater(() -> panel.addLog(record));
+	}
+
+	@Subscribe
+	public void onLootReceived(final LootReceived event)
+	{
+		final Collection<LTItemEntry> drops = convertToLTItemEntries(event.getItems());
+		final int kc = killCountMap.getOrDefault(event.getName().toUpperCase(), -1);
+		final LTRecord record = new LTRecord(event.getName(), event.getCombatLevel(), kc, event.getType(), drops);
+		addRecord(record);
 	}
 
 	public Collection<LTRecord> getDataByName(String name)
@@ -274,18 +297,18 @@ public class LootLoggerPlugin extends Plugin
 			if (data == null)
 			{
 				log.debug("No previous Abyssal sire loot, creating new loot record");
-				LTRecord r = new LTRecord(NpcID.ABYSSAL_SIRE, BossTab.ABYSSAL_SIRE.getName(), 350, -1, Collections.singletonList(itemEntry));
-				writer.addLootTrackerRecord(r);
+				LTRecord r = new LTRecord(BossTab.ABYSSAL_SIRE.getName(), 350, -1, LootRecordType.NPC, Collections.singletonList(itemEntry));
+				addRecord(r);
 				return;
 			}
 
 			log.debug("Adding drop to last abyssal sire loot record");
 			// Add data to last kill count
-			List<LTRecord> items = new ArrayList<>(data);
-			LTRecord r = items.get(items.size() - 1);
+			final List<LTRecord> items = new ArrayList<>(data);
+			final LTRecord r = items.get(items.size() - 1);
 			r.addDropEntry(itemEntry);
 			writer.writeLootTrackerFile(BossTab.ABYSSAL_SIRE.getName(), items);
-			recordAdded(r);
+			SwingUtilities.invokeLater(() -> panel.refreshUI());
 		});
 	}
 

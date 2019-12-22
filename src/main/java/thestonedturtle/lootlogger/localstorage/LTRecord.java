@@ -28,15 +28,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.runelite.http.api.loottracker.LootRecordType;
 
 @Data
 @AllArgsConstructor
 public class LTRecord
 {
-	private final int id;
 	private final String name;
 	private final int level;
 	private final int killCount;
+	private LootRecordType type;
 	final Collection<LTItemEntry> drops;
 
 	public void addDropEntry(LTItemEntry itemEntry)

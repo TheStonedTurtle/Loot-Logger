@@ -98,7 +98,7 @@ class LootPanel extends JPanel
 		{
 			this.consolidated.clear();
 			final Collection<LTItemEntry> consolidatedLTItemEntries = LTRecord.consolidateLTItemEntries(records);
-			final Map<Integer, LTItemEntry> itemMap = LTItemEntry.consolidateItemEntires(consolidatedLTItemEntries);
+			final Map<Integer, LTItemEntry> itemMap = LTItemEntry.consolidateItemEntries(consolidatedLTItemEntries);
 			this.consolidated.putAll(itemMap);
 		}
 

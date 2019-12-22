@@ -44,7 +44,7 @@ public class LTItemEntry
 		return this.quantity * this.price;
 	}
 
-	public static Map<Integer, LTItemEntry> consolidateItemEntires(final Collection<LTItemEntry> drops)
+	public static Map<Integer, LTItemEntry> consolidateItemEntries(final Collection<LTItemEntry> drops)
 	{
 		// Store LootTrackerItemEntry by ItemID
 		final Map<Integer, LTItemEntry> itemMap = new HashMap<>();

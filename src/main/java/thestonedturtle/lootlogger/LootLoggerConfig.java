@@ -8,6 +8,16 @@ import net.runelite.client.config.ConfigItem;
 public interface LootLoggerConfig extends Config
 {
 	@ConfigItem(
+		keyName = "enableUI",
+		name = "Enable Side-Panel",
+		description = "Controls whether the side panel should be displayed, data will be logged either way"
+	)
+	default boolean enableUI()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		position = 0,
 		keyName = "uniquesPlacement",
 		name = "Uniques Placement",

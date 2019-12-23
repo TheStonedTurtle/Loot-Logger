@@ -115,7 +115,10 @@ public class LootLoggerPlugin extends Plugin
 			.panel(panel)
 			.build();
 
-		clientToolbar.addNavigation(navButton);
+		if (config.enableUI())
+		{
+			clientToolbar.addNavigation(navButton);
+		}
 
 		// Attach necessary info from item manager on load, probably a better method
 		if (!prepared)
@@ -139,7 +142,10 @@ public class LootLoggerPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		clientToolbar.removeNavigation(navButton);
+		if (config.enableUI())
+		{
+			clientToolbar.removeNavigation(navButton);
+		}
 	}
 
 	@Subscribe
@@ -147,7 +153,22 @@ public class LootLoggerPlugin extends Plugin
 	{
 		if (event.getGroup().equals("lootlogger"))
 		{
-			panel.refreshUI();
+			if (event.getKey().equals("enableUI"))
+			{
+				if (config.enableUI())
+				{
+					clientToolbar.addNavigation(navButton);
+				}
+				else
+				{
+					clientToolbar.removeNavigation(navButton);
+				}
+			}
+
+			if (config.enableUI())
+			{
+				SwingUtilities.invokeLater(panel::refreshUI);
+			}
 		}
 	}
 
@@ -183,7 +204,10 @@ public class LootLoggerPlugin extends Plugin
 	{
 		lootNames.clear();
 		lootNames.addAll(writer.getKnownFileNames());
-		SwingUtilities.invokeLater(() -> panel.showSelectionView());
+		if (config.enableUI())
+		{
+			SwingUtilities.invokeLater(panel::showSelectionView);
+		}
 	}
 
 	private Collection<LTItemEntry> convertToLTItemEntries(Collection<ItemStack> stacks)
@@ -201,7 +225,10 @@ public class LootLoggerPlugin extends Plugin
 	{
 		writer.addLootTrackerRecord(record);
 		lootNames.add(record.getName());
-		SwingUtilities.invokeLater(() -> panel.addLog(record));
+		if (config.enableUI())
+		{
+			SwingUtilities.invokeLater(() -> panel.addLog(record));
+		}
 	}
 
 	@Subscribe
@@ -321,7 +348,10 @@ public class LootLoggerPlugin extends Plugin
 			final LTRecord r = items.get(items.size() - 1);
 			r.addDropEntry(itemEntry);
 			writer.writeLootTrackerFile(BossTab.ABYSSAL_SIRE.getName(), items);
-			SwingUtilities.invokeLater(() -> panel.refreshUI());
+			if (config.enableUI())
+			{
+				SwingUtilities.invokeLater(panel::refreshUI);
+			}
 		});
 	}
 

@@ -86,29 +86,32 @@ class LootPanel extends JPanel
 		final Multimap<Integer, UniqueItem> positionMap = ArrayListMultimap.create();
 		final Set<Integer> uniqueIds = new HashSet<>();
 
-		// Loop over all UniqueItems and check how many the player has received as a drop for each
-		// Also add all Item IDs for uniques to a Set for easy hiding later on.
-		for (final UniqueItem item : lootLog.getUniques())
+		if (!config.uniquesPlacement().equals(UniqueItemPlacement.ITEM_BREAKDOWN))
 		{
-			final int id = item.getItemID();
-			final int linkedId = item.getLinkedID();
-			uniqueIds.add(id);
-			uniqueIds.add(linkedId);
+			// Loop over all UniqueItems and check how many the player has received as a drop for each
+			// Also add all Item IDs for uniques to a Set for easy hiding later on.
+			for (final UniqueItem item : lootLog.getUniques())
+			{
+				final int id = item.getItemID();
+				final int linkedId = item.getLinkedID();
+				uniqueIds.add(id);
+				uniqueIds.add(linkedId);
 
-			final LTItemEntry entry = lootLog.getConsolidated().get(id);
-			final LTItemEntry notedEntry = lootLog.getConsolidated().get(linkedId);
-			final int qty = (entry == null ? 0 : entry.getQuantity()) + (notedEntry == null ? 0 : notedEntry.getQuantity());
-			item.setQty(qty);
-			positionMap.put(item.getPosition(), item);
-		}
+				final LTItemEntry entry = lootLog.getConsolidated().get(id);
+				final LTItemEntry notedEntry = lootLog.getConsolidated().get(linkedId);
+				final int qty = (entry == null ? 0 : entry.getQuantity()) + (notedEntry == null ? 0 : notedEntry.getQuantity());
+				item.setQty(qty);
+				positionMap.put(item.getPosition(), item);
+			}
 
-		for (final int position : positionMap.keySet())
-		{
-			final Collection<UniqueItem> uniques = positionMap.get(position);
+			for (final int position : positionMap.keySet())
+			{
+				final Collection<UniqueItem> uniques = positionMap.get(position);
 
-			final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager);
-			this.add(p, c);
-			c.gridy++;
+				final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager);
+				this.add(p, c);
+				c.gridy++;
+			}
 		}
 
 		// Attach Kill Count Panel(s)

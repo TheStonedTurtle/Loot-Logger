@@ -61,7 +61,7 @@ public class LootLoggerPlugin extends Plugin
 	private static final int MAX_TEXT_CHECK = 25;
 
 	// Kill count handling
-	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed [0-9]+ ([a-z]+) Treasure Trails.");
+	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed ([0-9]+) ([a-z]+) Treasure Trails.");
 	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is:? ([0-9]*).");
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
 
@@ -370,7 +370,7 @@ public class LootLoggerPlugin extends Plugin
 		if (m.find())
 		{
 			final String eventType;
-			switch (m.group(1).toLowerCase())
+			switch (m.group(2).toLowerCase())
 			{
 				case "beginner":
 					eventType = "Clue Scroll (Beginner)";

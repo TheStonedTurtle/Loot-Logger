@@ -91,6 +91,7 @@ public class LootLoggerPlugin extends Plugin
 
 	private boolean prepared = false;
 	private boolean unsiredReclaiming = false;
+	private boolean fetchingUsername = false;
 	private int unsiredCheckCount = 0;
 
 	private Map<String, Integer> killCountMap = new HashMap<>();
@@ -137,6 +138,11 @@ public class LootLoggerPlugin extends Plugin
 				return true;
 			});
 		}
+
+		if (client.getGameState().equals(GameState.LOGGED_IN) || client.getGameState().equals(GameState.LOADING))
+		{
+			updateWriterUsername();
+		}
 	}
 
 	@Override
@@ -177,27 +183,40 @@ public class LootLoggerPlugin extends Plugin
 	{
 		if (event.getGameState() == GameState.LOGGING_IN)
 		{
-			clientThread.invokeLater(() ->
-			{
-				switch (client.getGameState())
-				{
-					case LOGGED_IN:
-						final Player local = client.getLocalPlayer();
-						if (local != null && local.getName() != null)
-						{
-							writer.setPlayerUsername(local.getName());
-							localPlayerNameChanged();
-							return true;
-						}
-					case LOGGING_IN:
-					case LOADING:
-						return false;
-					default:
-						// Quit running if any other state
-						return true;
-				}
-			});
+			updateWriterUsername();
 		}
+	}
+
+	private void updateWriterUsername()
+	{
+		if (fetchingUsername)
+		{
+			return;
+		}
+
+		fetchingUsername = true;
+		clientThread.invokeLater(() ->
+		{
+			switch (client.getGameState())
+			{
+				case LOGGED_IN:
+					final Player local = client.getLocalPlayer();
+					if (local != null && local.getName() != null)
+					{
+						writer.setPlayerUsername(local.getName());
+						localPlayerNameChanged();
+						fetchingUsername = false;
+						return true;
+					}
+				case LOGGING_IN:
+				case LOADING:
+					return false;
+				default:
+					// Quit running if any other state
+					fetchingUsername = false;
+					return true;
+			}
+		});
 	}
 
 	private void localPlayerNameChanged()

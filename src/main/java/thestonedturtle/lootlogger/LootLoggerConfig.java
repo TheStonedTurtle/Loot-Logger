@@ -60,4 +60,15 @@ public interface LootLoggerConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		position = 4,
+		keyName = "ignoreNmz",
+		name = "Ignore nightmare zone",
+		description = "Whether to ignore loot received while inside Nightmare Zone"
+	)
+	default boolean ignoreNmz()
+	{
+		return true;
+	}
 }

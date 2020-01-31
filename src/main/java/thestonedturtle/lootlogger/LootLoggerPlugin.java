@@ -42,6 +42,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
+import org.apache.commons.lang3.ArrayUtils;
 import thestonedturtle.lootlogger.data.BossTab;
 import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.data.UniqueItem;
@@ -64,6 +65,8 @@ public class LootLoggerPlugin extends Plugin
 	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed ([0-9]+) ([a-z]+) Treasure Trails.");
 	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is:? ([0-9]*).");
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
+
+	private static final int NMZ_MAP_REGION = 9033;
 
 	@Inject
 	private Client client;
@@ -253,6 +256,11 @@ public class LootLoggerPlugin extends Plugin
 	@Subscribe
 	public void onLootReceived(final LootReceived event)
 	{
+		if (isInNightmareZone() && config.ignoreNmz())
+		{
+			return;
+		}
+
 		final Collection<LTItemEntry> drops = convertToLTItemEntries(event.getItems());
 		final int kc = killCountMap.getOrDefault(event.getName().toUpperCase(), -1);
 		final LTRecord record = new LTRecord(event.getName(), event.getCombatLevel(), kc, event.getType(), drops);
@@ -459,5 +467,13 @@ public class LootLoggerPlugin extends Plugin
 			final int killCount = Integer.valueOf(boss.group(2));
 			killCountMap.put(bossName.toUpperCase(), killCount);
 		}
+	}
+
+	/**
+	 * Is the player inside the NMZ arena?
+	 */
+	private boolean isInNightmareZone()
+	{
+		return ArrayUtils.contains(client.getMapRegions(), NMZ_MAP_REGION);
 	}
 }

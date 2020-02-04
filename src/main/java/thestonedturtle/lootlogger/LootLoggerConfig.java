@@ -3,6 +3,7 @@ package thestonedturtle.lootlogger;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
 @ConfigGroup("lootlogger")
 public interface LootLoggerConfig extends Config
@@ -41,6 +42,17 @@ public interface LootLoggerConfig extends Config
 
 	@ConfigItem(
 		position = 2,
+		keyName = "itemMissingAlpha",
+		name = "Missing item opacity",
+		description = "Opacity for image of an unacquired item (0 being transparent and 100 being opaque, default 35)"
+	)
+	@Range(
+		max = 100
+	)
+	default int itemMissingAlpha() { return 35; }
+
+	@ConfigItem(
+		position = 3,
 		keyName = "itemBreakdown",
 		name = "Breakdown individual items",
 		description = "Shows more information for each item received instead of displaying the items in a compact grid"
@@ -51,7 +63,7 @@ public interface LootLoggerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 3,
+		position = 4,
 		keyName = "bossButtons",
 		name = "Show boss icons",
 		description = "Toggles whether the selection screen will use the boss icons"
@@ -62,7 +74,7 @@ public interface LootLoggerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
+		position = 5,
 		keyName = "ignoreNmz",
 		name = "Ignore nightmare zone",
 		description = "Whether to ignore loot received while inside Nightmare Zone"

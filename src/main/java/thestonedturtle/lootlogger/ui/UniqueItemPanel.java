@@ -39,6 +39,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import lombok.Getter;
 import net.runelite.client.game.ItemManager;
+import thestonedturtle.lootlogger.LootLoggerConfig;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.AsyncBufferedImage;
@@ -48,15 +49,16 @@ import net.runelite.client.util.QuantityFormatter;
 @Getter
 class UniqueItemPanel extends JPanel
 {
-	private final float alphaMissing = 0.35f;
+	private float alphaMissing;
 	private final float alphaHas = 1.0f;
 
 	private static final Dimension panelSize = new Dimension(215, 50);
 	private static final Border panelBorder = new EmptyBorder(3, 0, 3, 0);
 	private static final Color panelBackgroundColor = ColorScheme.DARK_GRAY_COLOR;
 
-	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager)
+	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager, final LootLoggerConfig config)
 	{
+		alphaMissing = config.itemMissingAlpha() / 100f;
 		final JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);

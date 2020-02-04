@@ -108,7 +108,7 @@ class LootPanel extends JPanel
 			{
 				final Collection<UniqueItem> uniques = positionMap.get(position);
 
-				final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager);
+				final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager, this.config);
 				this.add(p, c);
 				c.gridy++;
 			}
@@ -231,6 +231,7 @@ class LootPanel extends JPanel
 
 	/**
 	 * Sorts the collection of LTItemEntry based on the selected {@link ItemSortTypes}
+	 *
 	 * @param sortType The {@link ItemSortTypes} describing how these entries should be sorted
 	 * @return returns the sorted list
 	 */

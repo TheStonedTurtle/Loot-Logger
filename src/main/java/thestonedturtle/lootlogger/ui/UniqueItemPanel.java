@@ -39,7 +39,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import lombok.Getter;
 import net.runelite.client.game.ItemManager;
-import thestonedturtle.lootlogger.LootLoggerConfig;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.AsyncBufferedImage;
@@ -49,16 +48,36 @@ import net.runelite.client.util.QuantityFormatter;
 @Getter
 class UniqueItemPanel extends JPanel
 {
-	private float alphaMissing;
 	private final float alphaHas = 1.0f;
 
 	private static final Dimension panelSize = new Dimension(215, 50);
 	private static final Border panelBorder = new EmptyBorder(3, 0, 3, 0);
 	private static final Color panelBackgroundColor = ColorScheme.DARK_GRAY_COLOR;
 
-	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager, final LootLoggerConfig config)
+	private static String buildToolTip(final UniqueItem item, final int qty)
 	{
-		alphaMissing = config.itemMissingAlpha() / 100f;
+		String s = "<html>" + item.getName();
+		if (qty > 0)
+		{
+			s += " x " + QuantityFormatter.formatNumber(qty);
+		}
+		if (item.getPrice() > 0)
+		{
+			s += "<br/>Price: " + QuantityFormatter.quantityToStackSize(item.getPrice());
+			// Check for qty here as well as we should only show Total if the item has a value as well
+			if (qty > 0)
+			{
+				s += "<br/>Total: " + QuantityFormatter.quantityToStackSize(qty * item.getPrice()) + "</html";
+			}
+		}
+		s += "</html>";
+
+		return s;
+	}
+
+	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager, final int itemMissingAlpha)
+	{
+		float alphaMissing = itemMissingAlpha / 100f;
 		final JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
@@ -103,26 +122,5 @@ class UniqueItemPanel extends JPanel
 		}
 
 		this.add(panel, BorderLayout.NORTH);
-	}
-
-	private static String buildToolTip(final UniqueItem item, final int qty)
-	{
-		String s = "<html>" + item.getName();
-		if (qty > 0)
-		{
-			s += " x " + QuantityFormatter.formatNumber(qty);
-		}
-		if (item.getPrice() > 0)
-		{
-			s += "<br/>Price: " + QuantityFormatter.quantityToStackSize(item.getPrice());
-			// Check for qty here as well as we should only show Total if the item has a value as well
-			if (qty > 0)
-			{
-				s += "<br/>Total: " + QuantityFormatter.quantityToStackSize(qty * item.getPrice()) + "</html";
-			}
-		}
-		s += "</html>";
-
-		return s;
 	}
 }

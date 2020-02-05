@@ -82,5 +82,3 @@ public interface LootLoggerConfig extends Config
 	@Range(max = 100)
 	default int itemMissingAlpha() { return 35; }
 }
-
-

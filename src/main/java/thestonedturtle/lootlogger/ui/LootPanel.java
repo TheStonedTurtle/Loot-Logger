@@ -231,7 +231,6 @@ class LootPanel extends JPanel
 
 	/**
 	 * Sorts the collection of LTItemEntry based on the selected {@link ItemSortTypes}
-	 *
 	 * @param sortType The {@link ItemSortTypes} describing how these entries should be sorted
 	 * @return returns the sorted list
 	 */

@@ -54,27 +54,6 @@ class UniqueItemPanel extends JPanel
 	private static final Border panelBorder = new EmptyBorder(3, 0, 3, 0);
 	private static final Color panelBackgroundColor = ColorScheme.DARK_GRAY_COLOR;
 
-	private static String buildToolTip(final UniqueItem item, final int qty)
-	{
-		String s = "<html>" + item.getName();
-		if (qty > 0)
-		{
-			s += " x " + QuantityFormatter.formatNumber(qty);
-		}
-		if (item.getPrice() > 0)
-		{
-			s += "<br/>Price: " + QuantityFormatter.quantityToStackSize(item.getPrice());
-			// Check for qty here as well as we should only show Total if the item has a value as well
-			if (qty > 0)
-			{
-				s += "<br/>Total: " + QuantityFormatter.quantityToStackSize(qty * item.getPrice()) + "</html";
-			}
-		}
-		s += "</html>";
-
-		return s;
-	}
-
 	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager, final int itemMissingAlpha)
 	{
 		float alphaMissing = itemMissingAlpha / 100f;
@@ -122,5 +101,26 @@ class UniqueItemPanel extends JPanel
 		}
 
 		this.add(panel, BorderLayout.NORTH);
+	}
+
+	private static String buildToolTip(final UniqueItem item, final int qty)
+	{
+		String s = "<html>" + item.getName();
+		if (qty > 0)
+		{
+			s += " x " + QuantityFormatter.formatNumber(qty);
+		}
+		if (item.getPrice() > 0)
+		{
+			s += "<br/>Price: " + QuantityFormatter.quantityToStackSize(item.getPrice());
+			// Check for qty here as well as we should only show Total if the item has a value as well
+			if (qty > 0)
+			{
+				s += "<br/>Total: " + QuantityFormatter.quantityToStackSize(qty * item.getPrice()) + "</html";
+			}
+		}
+		s += "</html>";
+
+		return s;
 	}
 }

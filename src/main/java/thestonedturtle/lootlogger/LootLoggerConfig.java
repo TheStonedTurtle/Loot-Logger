@@ -3,6 +3,7 @@ package thestonedturtle.lootlogger;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
 @ConfigGroup("lootlogger")
 public interface LootLoggerConfig extends Config
@@ -71,4 +72,13 @@ public interface LootLoggerConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		position = 5,
+		keyName = "itemMissingAlpha",
+		name = "Missing item opacity",
+		description = "Controls the image opacity for unacquired unique items inside the uniques panel.<br/>0 is transparent and 100 is fully opaque. default value is 35"
+	)
+	@Range(max = 100)
+	default int itemMissingAlpha() { return 35; }
 }

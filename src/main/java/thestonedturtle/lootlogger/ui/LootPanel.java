@@ -108,7 +108,7 @@ class LootPanel extends JPanel
 			{
 				final Collection<UniqueItem> uniques = positionMap.get(position);
 
-				final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager);
+				final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager, this.config.itemMissingAlpha());
 				this.add(p, c);
 				c.gridy++;
 			}

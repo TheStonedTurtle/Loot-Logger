@@ -48,15 +48,15 @@ import net.runelite.client.util.QuantityFormatter;
 @Getter
 class UniqueItemPanel extends JPanel
 {
-	private final float alphaMissing = 0.35f;
 	private final float alphaHas = 1.0f;
 
 	private static final Dimension panelSize = new Dimension(215, 50);
 	private static final Border panelBorder = new EmptyBorder(3, 0, 3, 0);
 	private static final Color panelBackgroundColor = ColorScheme.DARK_GRAY_COLOR;
 
-	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager)
+	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager, final int itemMissingAlpha)
 	{
+		float alphaMissing = itemMissingAlpha / 100f;
 		final JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);

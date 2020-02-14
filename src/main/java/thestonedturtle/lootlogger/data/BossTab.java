@@ -81,6 +81,7 @@ public enum BossTab
 	CORPOREAL_BEAST("Corporeal Beast", ItemID.PET_CORPOREAL_CRITTER, "Other"),
 	THE_GAUNTLET("The Gauntlet", ItemID.YOUNGLLEF, "Other"),
 	ZALCANO("Zalcano", ItemID.SMOLCANO, "Other"),
+	NIGHTMARE("Nightmare", ItemID.LITTLE_NIGHTMARE, "Other"),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.PET_DAGANNOTH_REX, "Dagannoth Kings"),

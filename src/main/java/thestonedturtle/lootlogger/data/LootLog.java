@@ -30,8 +30,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import net.runelite.api.ItemID;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
@@ -39,6 +42,7 @@ import thestonedturtle.lootlogger.localstorage.LTRecord;
 @Getter
 public class LootLog
 {
+	private static final Pattern CLUE_ITEM_TYPE_PATTERN = Pattern.compile("\\((\\w*)\\)");
 	private final String name;
 	private final LootRecordType type;
 	// Store all records in case rewrite needs to happen
@@ -88,8 +92,54 @@ public class LootLog
 		}
 	}
 
-	private void addItemEntryToMap(final LTItemEntry item)
+	private enum ClueType
 	{
+		SCROLL,
+		CASKET
+	}
+
+	private void addItemEntryToMap(LTItemEntry item)
+	{
+		final String itemNameLowercased = item.getName().toLowerCase();
+
+		ClueType type = null;
+		if (itemNameLowercased.startsWith("clue scroll"))
+		{
+			type = ClueType.SCROLL;
+		}
+		else if(itemNameLowercased.startsWith("casket "))
+		{
+			type = ClueType.CASKET;
+		}
+
+		if (type != null)
+		{
+			Matcher m = CLUE_ITEM_TYPE_PATTERN.matcher(item.getName());
+			if (m.find())
+			{
+				final String result = m.group(1);
+				int id = item.getId();
+				switch (result.toLowerCase())
+				{
+					// Beginner and Master clues only have 1 ID
+					case "easy":
+						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_EASY : ItemID.CASKET_EASY;
+						break;
+					case "medium":
+						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_MEDIUM : ItemID.CASKET_MEDIUM;
+						break;
+					case "hard":
+						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_HARD : ItemID.CASKET_HARD;
+						break;
+					case "elite":
+						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_ELITE : ItemID.CASKET_ELITE;
+						break;
+				}
+
+				item = new LTItemEntry(item.getName(), id, item.getQuantity(), item.getPrice());
+			}
+		}
+
 		final LTItemEntry oldEntry = consolidated.get(item.getId());
 		if (oldEntry != null)
 		{

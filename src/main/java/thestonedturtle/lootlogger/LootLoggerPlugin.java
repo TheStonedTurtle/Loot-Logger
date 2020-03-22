@@ -474,6 +474,11 @@ public class LootLoggerPlugin extends Plugin
 	 */
 	private boolean isInNightmareZone()
 	{
-		return ArrayUtils.contains(client.getMapRegions(), NMZ_MAP_REGION);
+		if (client.getLocalPlayer() == null) {
+			return false;
+		}
+
+		// It seems that KBD shares the map region with NMZ but NMZ is never in plane 0.
+		return ArrayUtils.contains(client.getMapRegions(), NMZ_MAP_REGION) && client.getLocalPlayer().getWorldLocation().getPlane() > 0;
 	}
 }

@@ -192,6 +192,20 @@ public class LootLoggerPlugin extends Plugin
 
 	private void updateWriterUsername()
 	{
+		// TODO: Remove this check once the deprecated migrateData call has been remove
+		if (false)
+		{
+			writer.setPlayerUsername(client.getUsername());
+			localPlayerNameChanged();
+		}
+
+		migrateData();
+	}
+
+	// TODO: Remove in a future release
+	@Deprecated
+	private void migrateData()
+	{
 		if (fetchingUsername)
 		{
 			return;
@@ -206,7 +220,8 @@ public class LootLoggerPlugin extends Plugin
 					final Player local = client.getLocalPlayer();
 					if (local != null && local.getName() != null)
 					{
-						writer.setPlayerUsername(local.getName());
+						writer.migrateDataFromDisplayNameToUsername(local.getName(), client.getUsername());
+						writer.setPlayerUsername(client.getUsername());
 						localPlayerNameChanged();
 						fetchingUsername = false;
 						return true;

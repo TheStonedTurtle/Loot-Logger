@@ -52,7 +52,7 @@ public class LootRecordWriter
 	private static final String FILE_EXTENSION = ".log";
 	private static final File LOOT_RECORD_DIR = new File(RUNELITE_DIR, "loots");
 
-	// Data is stored in a folder with the players in-game username
+	// Data is stored in a folder with the players username (login name)
 	private File playerFolder = LOOT_RECORD_DIR;
 	private String name;
 
@@ -197,5 +197,22 @@ public class LootRecordWriter
 			log.warn("Error rewriting loot data to file {}: {}", fileName, ioe.getMessage());
 			return false;
 		}
+	}
+
+	public boolean migrateDataFromDisplayNameToUsername(final String displayName, final String username)
+	{
+		final File currentDirectory = new File(LOOT_RECORD_DIR, displayName);
+		if (!currentDirectory.exists())
+		{
+			// Most likely was already converted
+			return false;
+		}
+
+		if (displayName.equalsIgnoreCase(username))
+		{
+			return false;
+		}
+
+		return currentDirectory.renameTo(new File(LOOT_RECORD_DIR, username));
 	}
 }

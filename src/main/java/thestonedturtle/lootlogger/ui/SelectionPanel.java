@@ -25,6 +25,9 @@
 package thestonedturtle.lootlogger.ui;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -36,8 +39,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.TreeSet;
+import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -48,11 +55,14 @@ import javax.swing.event.DocumentListener;
 import lombok.Getter;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 import net.runelite.client.util.AsyncBufferedImage;
+import net.runelite.client.util.Text;
+import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import thestonedturtle.lootlogger.data.BossTab;
 
@@ -63,7 +73,7 @@ class SelectionPanel extends JPanel
 	private final static Color BUTTON_HOVER_COLOR = ColorScheme.DARKER_GRAY_HOVER_COLOR;
 	private static final JaroWinklerDistance DISTANCE = new JaroWinklerDistance();
 
-	private final TreeSet<String> names;
+	private final SetMultimap<LootRecordType, String> names;
 	private final LootLoggerPanel parent;
 	private final ItemManager itemManager;
 
@@ -75,11 +85,11 @@ class SelectionPanel extends JPanel
 
 	SelectionPanel(
 		final boolean configToggle,
-		final TreeSet<String> names,
+		final SetMultimap<LootRecordType, String> names,
 		final LootLoggerPanel parent,
 		final ItemManager itemManager)
 	{
-		this.names = names == null ? new TreeSet<>() : names;
+		this.names = names == null ? HashMultimap.create() : names;
 		this.parent = parent;
 		this.itemManager = itemManager;
 		this.configToggle = configToggle;
@@ -161,7 +171,7 @@ class SelectionPanel extends JPanel
 		return container;
 	}
 
-	private void addNamesToPanel(final Collection<String> names)
+	private void addNamesToPanel(final SetMultimap<LootRecordType, String> names)
 	{
 		namePanel.removeAll();
 
@@ -172,12 +182,17 @@ class SelectionPanel extends JPanel
 		c.gridy = 0;
 		c.insets = new Insets(0, 0, 4, 0);
 
-		for (final String name : names)
+		for (final LootRecordType type : LootRecordType.values())
 		{
-			// Ignore boss tabs based on config
-			if (!configToggle || BossTab.getByName(name) == null)
+			if (!names.containsKey(type))
 			{
-				namePanel.add(createNamePanel(name), c);
+				continue;
+			}
+
+			final JPanel section = createCollapseableSection(type, names.get(type));
+			if (section != null)
+			{
+				namePanel.add(section, c);
 				c.gridy++;
 			}
 		}
@@ -185,7 +200,81 @@ class SelectionPanel extends JPanel
 		namePanel.revalidate();
 	}
 
-	private JPanel createNamePanel(final String name)
+	@Nullable
+	private JPanel createCollapseableSection(final LootRecordType type, Set<String> names)
+	{
+		// Filter out boss tabs if the config toggle is enabled
+		names = names.stream().filter((n) -> (!configToggle || BossTab.getByName(n) == null)).collect(Collectors.toSet());
+		if (names.size() == 0)
+		{
+			return null;
+		}
+
+		final JPanel container = new JPanel(new DynamicGridLayout(0, 1));
+		final JPanel panel = new JPanel(new GridBagLayout());
+		panel.setBorder(new EmptyBorder(0, 8, 0, 8));
+
+		final JLabel headerLabel = new JLabel(Text.titleCase(type));
+		headerLabel.setToolTipText("Click to toggle this section");
+		headerLabel.setHorizontalAlignment(JLabel.CENTER);
+		headerLabel.setBackground(BACKGROUND_COLOR);
+		headerLabel.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createEmptyBorder(4, 0, 2, 0),
+			BorderFactory.createMatteBorder(0, 0, 2, 0, BUTTON_HOVER_COLOR)
+		));
+		headerLabel.setOpaque(true);
+		headerLabel.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseEntered(MouseEvent e)
+			{
+				headerLabel.setBackground(BUTTON_HOVER_COLOR);
+				panel.setBackground(BUTTON_HOVER_COLOR);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e)
+			{
+				headerLabel.setBackground(BACKGROUND_COLOR);
+				panel.setBackground(BACKGROUND_COLOR);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				panel.setVisible(!panel.isVisible());
+				if (panel.isVisible())
+				{
+					container.add(panel);
+				}
+				else
+				{
+					container.remove(panel);
+				}
+				container.revalidate();
+				container.repaint();
+			}
+		});
+		container.add(headerLabel);
+
+		final GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.insets = new Insets(2, 0, 2, 0);
+
+		for (final String name : new TreeSet<>(names))
+		{
+			panel.add(createNamePanel(type, name), c);
+			c.gridy++;
+		}
+		container.add(panel);
+		
+		return container;
+	}
+
+	private JPanel createNamePanel(final LootRecordType type, final String name)
 	{
 		final JPanel p = new JPanel();
 		p.add(new JLabel(name));
@@ -207,7 +296,7 @@ class SelectionPanel extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				parent.requestLootLog(name);
+				parent.requestLootLog(type, name);
 			}
 		});
 
@@ -260,7 +349,7 @@ class SelectionPanel extends JPanel
 
 			materialTab.setOnSelectEvent(() ->
 			{
-				parent.requestLootLog(tab.getName());
+				parent.requestLootLog(tab.getType(), tab.getName());
 				return true;
 			});
 
@@ -301,10 +390,17 @@ class SelectionPanel extends JPanel
 		}
 	}
 
-	private Collection<String> filterNames(final Collection<String> names, final String searchText)
+	private SetMultimap<LootRecordType, String> filterNames(final SetMultimap<LootRecordType, String> nameMap, final String searchText)
 	{
 		final String[] searchTerms = searchText.toLowerCase().split(" ");
-		return names.stream().filter(name -> matchesSearchTerm(name, searchTerms)).collect(Collectors.toList());
+		return nameMap.entries().stream()
+			.filter(entry -> matchesSearchTerm(entry.getValue(), searchTerms))
+			.collect(Multimaps.toMultimap(
+				Map.Entry::getKey,
+				Map.Entry::getValue,
+				HashMultimap::create
+				)
+			);
 	}
 
 	private static boolean matchesSearchTerm(final String name, final String[] terms)

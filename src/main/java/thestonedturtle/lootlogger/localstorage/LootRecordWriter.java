@@ -25,8 +25,10 @@
 package thestonedturtle.lootlogger.localstorage;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
@@ -99,25 +100,28 @@ public class LootRecordWriter
 		return npcName.toLowerCase().trim() + FILE_EXTENSION;
 	}
 
-	public Set<String> getKnownFileNames()
+	public SetMultimap<LootRecordType, String> getKnownFileNames()
 	{
-		final Set<String> fileNames = new HashSet<>();
+		final SetMultimap<LootRecordType, String> fileNames = HashMultimap.create();
 
-		final File[] files = playerFolder.listFiles((dir, name) -> name.endsWith(FILE_EXTENSION));
-		if (files != null)
+		for (final Map.Entry<LootRecordType, File> entry : eventFolders.entrySet())
 		{
-			for (final File f : files)
+			final File[] files = entry.getValue().listFiles((dir, name) -> name.endsWith(FILE_EXTENSION));
+			if (files != null)
 			{
-				fileNames.add(f.getName().replace(FILE_EXTENSION, ""));
+				for (final File f : files)
+				{
+					fileNames.put(entry.getKey(), f.getName().replace(FILE_EXTENSION, ""));
+				}
 			}
 		}
 
 		return fileNames;
 	}
 
-	public synchronized Collection<LTRecord> loadLootTrackerRecords(String npcName)
+	public synchronized Collection<LTRecord> loadLootTrackerRecords(LootRecordType recordType, String npcName)
 	{
-		return loadLootTrackerRecords(npcName, playerFolder);
+		return loadLootTrackerRecords(npcName, eventFolders.get(recordType));
 	}
 
 	// TODO: Remove folder parameter in future release when data migration is no longer needed
@@ -158,7 +162,7 @@ public class LootRecordWriter
 	{
 		// Grab file
 		final String fileName = npcNameToFileName(rec.getName());
-		final File lootFile = new File(playerFolder, fileName);
+		final File lootFile = new File(eventFolders.get(rec.getType()), fileName);
 
 		// Convert entry to JSON
 		final String dataAsString = RuneLiteAPI.GSON.toJson(rec);
@@ -179,10 +183,10 @@ public class LootRecordWriter
 		}
 	}
 
-	public synchronized boolean deleteLootTrackerRecords(String npcName)
+	public synchronized boolean deleteLootTrackerRecords(final LootRecordType type, String npcName)
 	{
 		final String fileName = npcNameToFileName(npcName);
-		final File lootFile = new File(playerFolder, fileName);
+		final File lootFile = new File(eventFolders.get(type), fileName);
 
 		if (lootFile.delete())
 		{

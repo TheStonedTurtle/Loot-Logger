@@ -193,14 +193,18 @@ public class LootLoggerPlugin extends Plugin
 
 	private void updateWriterUsername()
 	{
+		final String username = client.getUsername();
+		final boolean alreadyMigrated = Text.fromCSV(config.getMigratedUsers()).stream().anyMatch(username::equalsIgnoreCase);
 		// TODO: Remove this check once the deprecated migrateData call has been remove
-		if (false)
+		if (alreadyMigrated)
 		{
 			writer.setPlayerUsername(client.getUsername());
 			localPlayerNameChanged();
 		}
-
-		migrateData();
+		else
+		{
+			migrateData();
+		}
 	}
 
 	// TODO: Remove in a future release
@@ -221,7 +225,13 @@ public class LootLoggerPlugin extends Plugin
 					final Player local = client.getLocalPlayer();
 					if (local != null && local.getName() != null)
 					{
-						writer.migrateDataFromDisplayNameToUsername(local.getName(), client.getUsername());
+						final boolean migrated = writer.migrateDataFromDisplayNameToUsername(local.getName(), client.getUsername());
+						if (migrated)
+						{
+							final List<String> users = Text.fromCSV(config.getMigratedUsers());
+							users.add(client.getUsername());
+							config.setMigratedUsers(String.join(",", users));
+						}
 						writer.setPlayerUsername(client.getUsername());
 						localPlayerNameChanged();
 						fetchingUsername = false;

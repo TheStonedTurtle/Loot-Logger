@@ -47,6 +47,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.PluginErrorPanel;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.LootLoggerPlugin;
 import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
@@ -95,7 +96,7 @@ public class LootLoggerPanel extends PluginPanel
 		showLootView();
 	}
 
-	public void requestLootLog(final String name)
+	public void requestLootLog(final LootRecordType type, final String name)
 	{
 		// For some reason removing all the components when there's a lot of names in the selectionPanel causes lag.
 		// Removing them here seems to mitigate the lag
@@ -104,7 +105,7 @@ public class LootLoggerPanel extends PluginPanel
 			selectionPanel.getNamePanel().removeAll();
 		}
 
-		plugin.requestLootLog(name);
+		plugin.requestLootLog(type, name);
 	}
 
 	// Loot Selection view
@@ -186,7 +187,7 @@ public class LootLoggerPanel extends PluginPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				requestLootLog(name);
+				requestLootLog(lootLog.getType(), name);
 			}
 		});
 		refresh.setToolTipText("Refresh panel");
@@ -198,7 +199,7 @@ public class LootLoggerPanel extends PluginPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				clearData(name);
+				clearData(lootLog.getType(), name);
 			}
 		});
 		clear.setToolTipText("Clear stored data");
@@ -266,13 +267,13 @@ public class LootLoggerPanel extends PluginPanel
 	}
 
 	// Clear stored data and return to selection screen
-	private void clearData(final String name)
+	private void clearData(final LootRecordType type, final String name)
 	{
 		// Confirm delete action
 		final int delete = JOptionPane.showConfirmDialog(this.getRootPane(), "<html>Are you sure you want to clear all data for this tab?<br/>There is no way to undo this action.</html>", "Warning", JOptionPane.YES_NO_OPTION);
 		if (delete == JOptionPane.YES_OPTION)
 		{
-			boolean deleted = plugin.clearStoredDataByName(name);
+			boolean deleted = plugin.clearStoredDataByName(type, name);
 			if (!deleted)
 			{
 				JOptionPane.showMessageDialog(this.getRootPane(), "Unable to clear stored data, please try again.");
@@ -288,7 +289,7 @@ public class LootLoggerPanel extends PluginPanel
 	{
 		if (lootLog == null)
 		{
-			requestLootLog(r.getName());
+			requestLootLog(r.getType(), r.getName());
 		}
 		else if (lootLog.getName().equalsIgnoreCase(r.getName()))
 		{

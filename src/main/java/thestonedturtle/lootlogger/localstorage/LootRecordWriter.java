@@ -24,6 +24,11 @@
  */
 package thestonedturtle.lootlogger.localstorage;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,13 +38,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 import net.runelite.http.api.RuneLiteAPI;
+import net.runelite.http.api.loottracker.LootRecordType;
 
 /**
  * Reads & Writes LootRecord data from `*name*.log` files located in `.runelite/loots/`.
@@ -52,8 +59,10 @@ public class LootRecordWriter
 	private static final String FILE_EXTENSION = ".log";
 	private static final File LOOT_RECORD_DIR = new File(RUNELITE_DIR, "loots");
 
-	// Data is stored in a folder with the players in-game username
+	// Data is stored in a folder with the players username (login name)
 	private File playerFolder = LOOT_RECORD_DIR;
+	// Data is separated into sub-folders by event type to prevent issues.
+	private final Map<LootRecordType, File> eventFolders = new HashMap<>();
 	private String name;
 
 	@Inject
@@ -72,6 +81,18 @@ public class LootRecordWriter
 		playerFolder = new File(LOOT_RECORD_DIR, username);
 		playerFolder.mkdir();
 		name = username;
+		createSubFolders();
+	}
+
+	private void createSubFolders()
+	{
+		eventFolders.clear();
+		for (final LootRecordType type : LootRecordType.values())
+		{
+			final File folder = new File(playerFolder, type.name().toLowerCase());
+			folder.mkdir();
+			eventFolders.put(type, folder);
+		}
 	}
 
 	private static String npcNameToFileName(final String npcName)
@@ -79,26 +100,36 @@ public class LootRecordWriter
 		return npcName.toLowerCase().trim() + FILE_EXTENSION;
 	}
 
-	public Set<String> getKnownFileNames()
+	public SetMultimap<LootRecordType, String> getKnownFileNames()
 	{
-		final Set<String> fileNames = new HashSet<>();
+		final SetMultimap<LootRecordType, String> fileNames = HashMultimap.create();
 
-		final File[] files = playerFolder.listFiles((dir, name) -> name.endsWith(FILE_EXTENSION));
-		if (files != null)
+		for (final Map.Entry<LootRecordType, File> entry : eventFolders.entrySet())
 		{
-			for (final File f : files)
+			final File[] files = entry.getValue().listFiles((dir, name) -> name.endsWith(FILE_EXTENSION));
+			if (files != null)
 			{
-				fileNames.add(f.getName().replace(FILE_EXTENSION, ""));
+				for (final File f : files)
+				{
+					fileNames.put(entry.getKey(), f.getName().replace(FILE_EXTENSION, ""));
+				}
 			}
 		}
 
 		return fileNames;
 	}
 
-	public synchronized Collection<LTRecord> loadLootTrackerRecords(String npcName)
+	public synchronized Collection<LTRecord> loadLootTrackerRecords(LootRecordType recordType, String npcName)
+	{
+		return loadLootTrackerRecords(npcName, eventFolders.get(recordType));
+	}
+
+	// TODO: Remove folder parameter in future release when data migration is no longer needed
+	@Deprecated
+	public synchronized Collection<LTRecord> loadLootTrackerRecords(String npcName, File folder)
 	{
 		final String fileName = npcNameToFileName(npcName);
-		final File file = new File(playerFolder, fileName);
+		final File file = new File(folder, fileName);
 		final Collection<LTRecord> data = new ArrayList<>();
 
 		try (final BufferedReader br = new BufferedReader(new FileReader(file)))
@@ -131,7 +162,7 @@ public class LootRecordWriter
 	{
 		// Grab file
 		final String fileName = npcNameToFileName(rec.getName());
-		final File lootFile = new File(playerFolder, fileName);
+		final File lootFile = new File(eventFolders.get(rec.getType()), fileName);
 
 		// Convert entry to JSON
 		final String dataAsString = RuneLiteAPI.GSON.toJson(rec);
@@ -152,10 +183,10 @@ public class LootRecordWriter
 		}
 	}
 
-	public synchronized boolean deleteLootTrackerRecords(String npcName)
+	public synchronized boolean deleteLootTrackerRecords(final LootRecordType type, String npcName)
 	{
 		final String fileName = npcNameToFileName(npcName);
-		final File lootFile = new File(playerFolder, fileName);
+		final File lootFile = new File(eventFolders.get(type), fileName);
 
 		if (lootFile.delete())
 		{
@@ -197,5 +228,100 @@ public class LootRecordWriter
 			log.warn("Error rewriting loot data to file {}: {}", fileName, ioe.getMessage());
 			return false;
 		}
+	}
+
+	// TODO: Remove this in a future release
+	@Deprecated
+	public boolean migrateDataFromDisplayNameToUsername(final String displayName, final String username)
+	{
+		final File currentDirectory = new File(LOOT_RECORD_DIR, displayName);
+		if (!currentDirectory.exists())
+		{
+			// Most likely was already converted
+			return false;
+		}
+
+		if (displayName.equalsIgnoreCase(username))
+		{
+			return migrateDataLayout(currentDirectory);
+		}
+
+		final File newDirectory = new File(LOOT_RECORD_DIR, username);
+		final boolean renamed = currentDirectory.renameTo(newDirectory);
+		if (!renamed)
+		{
+			return false;
+		}
+
+		return migrateDataLayout(newDirectory);
+	}
+
+	// TODO: Remove this in a future release
+	@Deprecated
+	public boolean migrateDataLayout(final File folder)
+	{
+		final File[] files = folder.listFiles((dir, name) -> name.endsWith(FILE_EXTENSION));
+		if (files == null)
+		{
+			return false;
+		}
+
+		if (files.length == 0)
+		{
+			// Assume data is already migrated to the new format if there are no loot files inside the directory
+			return true;
+		}
+
+		for (final File f : files)
+		{
+			final String filename = f.getName().replace(FILE_EXTENSION, "");
+
+			// Load current data and sort by LootRecordType to fix any existing name conflicts
+			final Collection<LTRecord> records = loadLootTrackerRecords(filename, folder);
+			final Multimap<LootRecordType, LTRecord> filtered = records.stream()
+				.collect(Multimaps.toMultimap(
+					LTRecord::getType,
+					(rec) -> rec,
+					ArrayListMultimap::create)
+				);
+
+			final Set<LootRecordType> keys = filtered.keySet();
+			for (final LootRecordType key : keys)
+			{
+				final File outputDir = new File(folder, key.name().toLowerCase());
+				outputDir.mkdir();
+
+				final File outputFile = new File(outputDir, f.getName());
+				// If there's only 1 key we can just move the existing file instead unmarshalling the data again
+				if (keys.size() == 1)
+				{
+					f.renameTo(outputFile);
+				}
+				else
+				{
+					final Collection<LTRecord> recs = filtered.get(key);
+					try
+					{
+						final BufferedWriter file = new BufferedWriter(new FileWriter(String.valueOf(outputFile), false));
+						for (final LTRecord rec : recs)
+						{
+							// Convert entry to JSON
+							final String dataAsString = RuneLiteAPI.GSON.toJson(rec);
+							file.append(dataAsString);
+							file.newLine();
+						}
+						file.close();
+					}
+					catch (IOException ioe)
+					{
+						log.warn("Error migrating loot data from file `{}` to `{}`", f.getPath(), outputFile.getPath());
+						continue;
+					}
+					f.delete();
+				}
+			}
+		}
+
+		return true;
 	}
 }

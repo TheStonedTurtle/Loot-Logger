@@ -34,71 +34,73 @@ import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.ItemID;
+import net.runelite.http.api.loottracker.LootRecordType;
 
 @Getter
 @AllArgsConstructor
 public enum BossTab
 {
 	// Chest Rewards
-	BARROWS("Barrows", ItemID.BARROWS_TELEPORT, "Other"),
-	CHAMBERS_OF_XERIC("Chambers of Xeric", ItemID.OLMLET, "Other"),
-	THEATRE_OF_BLOOD("Theatre of Blood", ItemID.LIL_ZIK, "Other"),
+	BARROWS("Barrows", ItemID.BARROWS_TELEPORT, "Other", LootRecordType.EVENT),
+	CHAMBERS_OF_XERIC("Chambers of Xeric", ItemID.OLMLET, "Other", LootRecordType.EVENT),
+	THEATRE_OF_BLOOD("Theatre of Blood", ItemID.LIL_ZIK, "Other", LootRecordType.EVENT),
 
 	// Loot received on NPC death
-	ZULRAH("Zulrah", ItemID.PET_SNAKELING, "Other"),
-	VORKATH("Vorkath", ItemID.VORKI, "Other"),
+	ZULRAH("Zulrah", ItemID.PET_SNAKELING, "Other", LootRecordType.NPC),
+	VORKATH("Vorkath", ItemID.VORKI, "Other", LootRecordType.NPC),
 
 	// God wars dungeon
-	KREEARRA("Kree'arra", ItemID.PET_KREEARRA , "God Wars Dungeon"),
-	GENERAL_GRAARDOR("General Graardor", ItemID.PET_GENERAL_GRAARDOR , "God Wars Dungeon"),
-	COMMANDER_ZILYANA("Commander Zilyana", ItemID.PET_ZILYANA , "God Wars Dungeon"),
-	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.PET_KRIL_TSUTSAROTH , "God Wars Dungeon"),
+	KREEARRA("Kree'arra", ItemID.PET_KREEARRA , "God Wars Dungeon", LootRecordType.NPC),
+	GENERAL_GRAARDOR("General Graardor", ItemID.PET_GENERAL_GRAARDOR , "God Wars Dungeon", LootRecordType.NPC),
+	COMMANDER_ZILYANA("Commander Zilyana", ItemID.PET_ZILYANA , "God Wars Dungeon", LootRecordType.NPC),
+	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.PET_KRIL_TSUTSAROTH , "God Wars Dungeon", LootRecordType.NPC),
 
 	// Wildy Bosses
-	VETION("Vet'ion Reborn", ItemID.VETION_JR , "Wilderness"),
-	VENENATIS("Venenatis", ItemID.VENENATIS_SPIDERLING , "Wilderness"),
-	CALLISTO("Callisto", ItemID.CALLISTO_CUB , "Wilderness"),
-	CHAOS_ELEMENTAL("Chaos Elemental", ItemID.PET_CHAOS_ELEMENTAL , "Wilderness"),
+	VETION("Vet'ion Reborn", ItemID.VETION_JR , "Wilderness", LootRecordType.NPC),
+	VENENATIS("Venenatis", ItemID.VENENATIS_SPIDERLING , "Wilderness", LootRecordType.NPC),
+	CALLISTO("Callisto", ItemID.CALLISTO_CUB , "Wilderness", LootRecordType.NPC),
+	CHAOS_ELEMENTAL("Chaos Elemental", ItemID.PET_CHAOS_ELEMENTAL , "Wilderness", LootRecordType.NPC),
 	// Wildy Demi-Bosses
-	SCORPIA("Scorpia", ItemID.SCORPIAS_OFFSPRING, "Wilderness"),
-	CHAOS_FANATIC("Chaos Fanatic", ItemID.ANCIENT_STAFF , "Wilderness"),
-	CRAZY_ARCHAEOLOGIST("Crazy Archaeologist", ItemID.FEDORA , "Wilderness"),
+	SCORPIA("Scorpia", ItemID.SCORPIAS_OFFSPRING, "Wilderness", LootRecordType.NPC),
+	CHAOS_FANATIC("Chaos Fanatic", ItemID.ANCIENT_STAFF , "Wilderness", LootRecordType.NPC),
+	CRAZY_ARCHAEOLOGIST("Crazy Archaeologist", ItemID.FEDORA , "Wilderness", LootRecordType.NPC),
 	// Wildy Other
-	KING_BLACK_DRAGON("King Black Dragon", ItemID.PRINCE_BLACK_DRAGON , "Wilderness"),
+	KING_BLACK_DRAGON("King Black Dragon", ItemID.PRINCE_BLACK_DRAGON , "Wilderness", LootRecordType.NPC),
 
 	// Slayer Bosses
-	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS, "Other"),
-	SKOTIZO("Skotizo", ItemID.SKOTOS, "Slayer"),
-	GROTESQUE_GUARDIANS("Dusk", ItemID.NOON, "Slayer"),
-	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSAL_ORPHAN, "Slayer"),
-	KRAKEN("Kraken", ItemID.PET_KRAKEN, "Slayer"),
-	CERBERUS("Cerberus", ItemID.HELLPUPPY, "Slayer"),
-	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.PET_SMOKE_DEVIL, "Slayer"),
-	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.IKKLE_HYDRA, "Slayer"),
+	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS, "Other", LootRecordType.NPC),
+	SKOTIZO("Skotizo", ItemID.SKOTOS, "Slayer", LootRecordType.NPC),
+	GROTESQUE_GUARDIANS("Dusk", ItemID.NOON, "Slayer", LootRecordType.NPC),
+	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSAL_ORPHAN, "Slayer", LootRecordType.NPC),
+	KRAKEN("Kraken", ItemID.PET_KRAKEN, "Slayer", LootRecordType.NPC),
+	CERBERUS("Cerberus", ItemID.HELLPUPPY, "Slayer", LootRecordType.NPC),
+	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.PET_SMOKE_DEVIL, "Slayer", LootRecordType.NPC),
+	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.IKKLE_HYDRA, "Slayer", LootRecordType.NPC),
 
 	// Other Bosses
-	GIANT_MOLE("Giant Mole", ItemID.BABY_MOLE, "Other"),
-	CORPOREAL_BEAST("Corporeal Beast", ItemID.PET_CORPOREAL_CRITTER, "Other"),
-	THE_GAUNTLET("The Gauntlet", ItemID.YOUNGLLEF, "Other"),
-	ZALCANO("Zalcano", ItemID.SMOLCANO, "Other"),
-	NIGHTMARE("The Nightmare", ItemID.LITTLE_NIGHTMARE, "Other"),
+	GIANT_MOLE("Giant Mole", ItemID.BABY_MOLE, "Other", LootRecordType.NPC),
+	CORPOREAL_BEAST("Corporeal Beast", ItemID.PET_CORPOREAL_CRITTER, "Other", LootRecordType.NPC),
+	THE_GAUNTLET("The Gauntlet", ItemID.YOUNGLLEF, "Other", LootRecordType.EVENT),
+	ZALCANO("Zalcano", ItemID.SMOLCANO, "Other", LootRecordType.NPC),
+	NIGHTMARE("The Nightmare", ItemID.LITTLE_NIGHTMARE, "Other", LootRecordType.NPC),
 
 	// Dagannoth Kings
-	DAGANNOTH_REX("Dagannoth Rex", ItemID.PET_DAGANNOTH_REX, "Dagannoth Kings"),
-	DAGANNOTH_PRIME("Dagannoth Prime", ItemID.PET_DAGANNOTH_PRIME, "Dagannoth Kings"),
-	DAGANNOTH_SUPREME("Dagannoth Supreme", ItemID.PET_DAGANNOTH_SUPREME, "Dagannoth Kings"),
+	DAGANNOTH_REX("Dagannoth Rex", ItemID.PET_DAGANNOTH_REX, "Dagannoth Kings", LootRecordType.NPC),
+	DAGANNOTH_PRIME("Dagannoth Prime", ItemID.PET_DAGANNOTH_PRIME, "Dagannoth Kings", LootRecordType.NPC),
+	DAGANNOTH_SUPREME("Dagannoth Supreme", ItemID.PET_DAGANNOTH_SUPREME, "Dagannoth Kings", LootRecordType.NPC),
 
 	// Clue scrolls
-	CLUE_SCROLL_BEGINNER("Clue Scroll (Beginner)", ItemID.CLUE_SCROLL_BEGINNER, "Clue Scrolls"),
-	CLUE_SCROLL_EASY("Clue Scroll (Easy)", ItemID.CLUE_SCROLL_EASY, "Clue Scrolls"),
-	CLUE_SCROLL_MEDIUM("Clue Scroll (Medium)", ItemID.CLUE_SCROLL_MEDIUM, "Clue Scrolls"),
-	CLUE_SCROLL_HARD("Clue Scroll (Hard)", ItemID.CLUE_SCROLL_HARD, "Clue Scrolls"),
-	CLUE_SCROLL_ELITE("Clue Scroll (Elite)", ItemID.CLUE_SCROLL_ELITE, "Clue Scrolls"),
-	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.CLUE_SCROLL_MASTER, "Clue Scrolls");
+	CLUE_SCROLL_BEGINNER("Clue Scroll (Beginner)", ItemID.CLUE_SCROLL_BEGINNER, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_EASY("Clue Scroll (Easy)", ItemID.CLUE_SCROLL_EASY, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_MEDIUM("Clue Scroll (Medium)", ItemID.CLUE_SCROLL_MEDIUM, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_HARD("Clue Scroll (Hard)", ItemID.CLUE_SCROLL_HARD, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_ELITE("Clue Scroll (Elite)", ItemID.CLUE_SCROLL_ELITE, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.CLUE_SCROLL_MASTER, "Clue Scrolls", LootRecordType.EVENT);
 
 	private final String name;
 	private final int itemID;
 	private final String category;
+	private final LootRecordType type;
 
 	private static final Map<String, BossTab> NAME_MAP;
 	private static final Multimap<String, BossTab> CATEGORY_MAP;

@@ -85,7 +85,8 @@ public interface LootLoggerConfig extends Config
 	@ConfigItem(
 		keyName = "migratedUsers",
 		name = "Migrated users",
-		description = "CSV of usernames (login name) that have been migrated"
+		description = "CSV of usernames (login name) that have been migrated",
+		hidden = true
 	)
 	default String getMigratedUsers()
 	{

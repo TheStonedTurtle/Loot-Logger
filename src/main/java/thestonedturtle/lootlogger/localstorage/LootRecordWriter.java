@@ -286,8 +286,14 @@ public class LootRecordWriter
 				);
 
 			final Set<LootRecordType> keys = filtered.keySet();
-			for (final LootRecordType key : keys)
+			for (LootRecordType key : keys)
 			{
+				Collection<LTRecord> recs = filtered.get(key);
+				if (key == null)
+				{
+					key = LootRecordType.UNKNOWN;
+					recs.forEach(m -> m.setType(LootRecordType.UNKNOWN));
+				}
 				final File outputDir = new File(folder, key.name().toLowerCase());
 				outputDir.mkdir();
 
@@ -299,7 +305,6 @@ public class LootRecordWriter
 				}
 				else
 				{
-					final Collection<LTRecord> recs = filtered.get(key);
 					try
 					{
 						final BufferedWriter file = new BufferedWriter(new FileWriter(String.valueOf(outputFile), false));

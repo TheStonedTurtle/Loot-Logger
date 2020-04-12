@@ -238,7 +238,7 @@ public class LootRecordWriter
 		if (!currentDirectory.exists())
 		{
 			// Most likely was already converted
-			return false;
+			return true;
 		}
 
 		if (displayName.equalsIgnoreCase(username))

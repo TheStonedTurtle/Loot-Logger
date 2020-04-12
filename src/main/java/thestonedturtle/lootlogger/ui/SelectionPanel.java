@@ -204,7 +204,16 @@ class SelectionPanel extends JPanel
 	private JPanel createCollapseableSection(final LootRecordType type, Set<String> names)
 	{
 		// Filter out boss tabs if the config toggle is enabled
-		names = names.stream().filter((n) -> (!configToggle || BossTab.getByName(n) == null)).collect(Collectors.toSet());
+		names = names.stream().filter((n) ->
+		{
+			if (!configToggle)
+			{
+				return true;
+			}
+
+			BossTab b = BossTab.getByName(n);
+			return b == null || !b.getType().equals(type);
+		}).collect(Collectors.toSet());
 		if (names.size() == 0)
 		{
 			return null;

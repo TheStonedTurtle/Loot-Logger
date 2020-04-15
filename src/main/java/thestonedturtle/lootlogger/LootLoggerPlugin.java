@@ -367,6 +367,11 @@ public class LootLoggerPlugin extends Plugin
 		if (text.getText().toLowerCase().contains(SIRE_REWARD_TEXT))
 		{
 			final Widget sprite = client.getWidget(WidgetInfo.DIALOG_SPRITE);
+			if (sprite.getItemId() == -1)
+			{
+				return false;
+			}
+
 			log.debug("Unsired was exchanged for item ID: {}", sprite.getItemId());
 			receivedUnsiredLoot(sprite.getItemId());
 			return true;

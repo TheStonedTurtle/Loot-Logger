@@ -93,9 +93,16 @@ class LootPanel extends JPanel
 			for (final UniqueItem item : lootLog.getUniques())
 			{
 				final int id = item.getItemID();
+				if (id != -1)
+				{
+					uniqueIds.add(id);
+				}
+
 				final int linkedId = item.getLinkedID();
-				uniqueIds.add(id);
-				uniqueIds.add(linkedId);
+				if (linkedId != -1)
+				{
+					uniqueIds.add(linkedId);
+				}
 
 				final LTItemEntry entry = lootLog.getConsolidated().get(id);
 				final LTItemEntry notedEntry = lootLog.getConsolidated().get(linkedId);

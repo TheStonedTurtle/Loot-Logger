@@ -5,7 +5,7 @@
 Logs Loot Tracker data locally and adds new side-panel UI for viewing it.
 
 ## Data Storage
-Data is stored at `~/.runelite/loots/USERNAME` where `USERNAME` is your accounts in-game username.
+Data is stored at `~/.runelite/loots/USERNAME` where `USERNAME` is your account's login name (or email address).
 
 Records are split into individual files by using the records name (`*name*.log`).
 

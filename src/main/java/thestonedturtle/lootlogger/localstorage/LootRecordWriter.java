@@ -24,10 +24,7 @@
  */
 package thestonedturtle.lootlogger.localstorage;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -228,105 +224,5 @@ public class LootRecordWriter
 			log.warn("Error rewriting loot data to file {}: {}", fileName, ioe.getMessage());
 			return false;
 		}
-	}
-
-	// TODO: Remove this in a future release
-	@Deprecated
-	public boolean migrateDataFromDisplayNameToUsername(final String displayName, final String username)
-	{
-		final File currentDirectory = new File(LOOT_RECORD_DIR, displayName);
-		if (!currentDirectory.exists())
-		{
-			// Most likely was already converted
-			return true;
-		}
-
-		if (displayName.equalsIgnoreCase(username))
-		{
-			return migrateDataLayout(currentDirectory);
-		}
-
-		final File newDirectory = new File(LOOT_RECORD_DIR, username);
-		final boolean renamed = currentDirectory.renameTo(newDirectory);
-		if (!renamed)
-		{
-			return false;
-		}
-
-		return migrateDataLayout(newDirectory);
-	}
-
-	// TODO: Remove this in a future release
-	@Deprecated
-	public boolean migrateDataLayout(final File folder)
-	{
-		final File[] files = folder.listFiles((dir, name) -> name.endsWith(FILE_EXTENSION));
-		if (files == null)
-		{
-			return false;
-		}
-
-		if (files.length == 0)
-		{
-			// Assume data is already migrated to the new format if there are no loot files inside the directory
-			return true;
-		}
-
-		for (final File f : files)
-		{
-			final String filename = f.getName().replace(FILE_EXTENSION, "");
-
-			// Load current data and sort by LootRecordType to fix any existing name conflicts
-			final Collection<LTRecord> records = loadLootTrackerRecords(filename, folder);
-			final Multimap<LootRecordType, LTRecord> filtered = records.stream()
-				.collect(Multimaps.toMultimap(
-					LTRecord::getType,
-					(rec) -> rec,
-					ArrayListMultimap::create)
-				);
-
-			final Set<LootRecordType> keys = filtered.keySet();
-			for (LootRecordType key : keys)
-			{
-				Collection<LTRecord> recs = filtered.get(key);
-				if (key == null)
-				{
-					key = LootRecordType.UNKNOWN;
-					recs.forEach(m -> m.setType(LootRecordType.UNKNOWN));
-				}
-				final File outputDir = new File(folder, key.name().toLowerCase());
-				outputDir.mkdir();
-
-				final File outputFile = new File(outputDir, f.getName());
-				// If there's only 1 key we can just move the existing file instead unmarshalling the data again
-				if (keys.size() == 1)
-				{
-					f.renameTo(outputFile);
-				}
-				else
-				{
-					try
-					{
-						final BufferedWriter file = new BufferedWriter(new FileWriter(String.valueOf(outputFile), false));
-						for (final LTRecord rec : recs)
-						{
-							// Convert entry to JSON
-							final String dataAsString = RuneLiteAPI.GSON.toJson(rec);
-							file.append(dataAsString);
-							file.newLine();
-						}
-						file.close();
-					}
-					catch (IOException ioe)
-					{
-						log.warn("Error migrating loot data from file `{}` to `{}`", f.getPath(), outputFile.getPath());
-						continue;
-					}
-					f.delete();
-				}
-			}
-		}
-
-		return true;
 	}
 }

@@ -22,7 +22,6 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.Player;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -206,60 +205,8 @@ public class LootLoggerPlugin extends Plugin
 
 	private void updateWriterUsername()
 	{
-		final String username = client.getUsername();
-		final boolean alreadyMigrated = Text.fromCSV(config.getMigratedUsers()).stream().anyMatch(username::equalsIgnoreCase);
-		// TODO: Remove this check once the deprecated migrateData call has been remove
-		if (alreadyMigrated)
-		{
-			writer.setPlayerUsername(client.getUsername());
-			localPlayerNameChanged();
-		}
-		else
-		{
-			migrateData();
-		}
-	}
-
-	// TODO: Remove in a future release
-	@Deprecated
-	private void migrateData()
-	{
-		if (fetchingUsername)
-		{
-			return;
-		}
-
-		fetchingUsername = true;
-		clientThread.invokeLater(() ->
-		{
-			switch (client.getGameState())
-			{
-				case LOGGED_IN:
-					final Player local = client.getLocalPlayer();
-					if (local != null && local.getName() != null)
-					{
-						final boolean migrated = writer.migrateDataFromDisplayNameToUsername(local.getName(), client.getUsername());
-						if (migrated)
-						{
-							// Must wrap in new List since Text.fromCSV is an unmodifiableCollection
-							final List<String> users = new ArrayList<>(Text.fromCSV(config.getMigratedUsers()));
-							users.add(client.getUsername());
-							config.setMigratedUsers(String.join(",", users));
-						}
-						writer.setPlayerUsername(client.getUsername());
-						localPlayerNameChanged();
-						fetchingUsername = false;
-						return true;
-					}
-				case LOGGING_IN:
-				case LOADING:
-					return false;
-				default:
-					// Quit running if any other state
-					fetchingUsername = false;
-					return true;
-			}
-		});
+		writer.setPlayerUsername(client.getUsername());
+		localPlayerNameChanged();
 	}
 
 	private void localPlayerNameChanged()

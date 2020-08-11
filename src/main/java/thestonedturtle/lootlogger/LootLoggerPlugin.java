@@ -1,6 +1,7 @@
 package thestonedturtle.lootlogger;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -46,6 +47,7 @@ import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.ArrayUtils;
 import thestonedturtle.lootlogger.data.BossTab;
 import thestonedturtle.lootlogger.data.LootLog;
+import thestonedturtle.lootlogger.data.Pet;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
@@ -61,11 +63,16 @@ public class LootLoggerPlugin extends Plugin
 	private static final String SIRE_FONT_TEXT = "you place the unsired into the font of consumption...";
 	private static final String SIRE_REWARD_TEXT = "the font consumes the unsired";
 	private static final int MAX_TEXT_CHECK = 25;
+	private static final int MAX_PET_TICKS = 5;
 
 	// Kill count handling
 	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed ([0-9]+) ([a-z]+) Treasure Trails.");
 	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is:? ([0-9]*).");
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
+
+	private static final ImmutableSet<String> PET_MESSAGES = ImmutableSet.of("You have a funny feeling like you're being followed",
+		"You feel something weird sneaking into your backpack",
+		"You have a funny feeling like you would have been followed");
 
 	private static final int NMZ_MAP_REGION = 9033;
 
@@ -97,6 +104,9 @@ public class LootLoggerPlugin extends Plugin
 	private boolean unsiredReclaiming = false;
 	private boolean fetchingUsername = false;
 	private int unsiredCheckCount = 0;
+	// Some pets aren't handled (skilling pets) so reset gotPet after a few ticks
+	private int petTicks = 0;
+	private boolean gotPet = false;
 
 	private Map<String, Integer> killCountMap = new HashMap<>();
 
@@ -156,6 +166,9 @@ public class LootLoggerPlugin extends Plugin
 		{
 			clientToolbar.removeNavigation(navButton);
 		}
+
+		gotPet = false;
+		petTicks = 0;
 	}
 
 	@Subscribe
@@ -260,13 +273,15 @@ public class LootLoggerPlugin extends Plugin
 
 	private Collection<LTItemEntry> convertToLTItemEntries(Collection<ItemStack> stacks)
 	{
-		return stacks.stream().map(i ->
-		{
-			final ItemComposition c = itemManager.getItemComposition(i.getId());
-			final int id = c.getNote() == -1 ? c.getId() : c.getLinkedNoteId();
-			final int price = itemManager.getItemPrice(id);
-			return new LTItemEntry(c.getName(), i.getId(), i.getQuantity(), price);
-		}).collect(Collectors.toList());
+		return stacks.stream().map(i -> createLTItemEntry(i.getId(), i.getQuantity())).collect(Collectors.toList());
+	}
+
+	private LTItemEntry createLTItemEntry(final int id, final int qty)
+	{
+		final ItemComposition c = itemManager.getItemComposition(id);
+		final int realId = c.getNote() == -1 ? c.getId() : c.getLinkedNoteId();
+		final int price = itemManager.getItemPrice(realId);
+		return new LTItemEntry(c.getName(), id, qty, price);
 	}
 
 	private void addRecord(final LTRecord record)
@@ -288,6 +303,18 @@ public class LootLoggerPlugin extends Plugin
 		}
 
 		final Collection<LTItemEntry> drops = convertToLTItemEntries(event.getItems());
+
+		if (gotPet)
+		{
+			final Pet p = Pet.getByBossName(event.getName());
+			if (p != null)
+			{
+				gotPet = false;
+				petTicks = 0;
+				drops.add(createLTItemEntry(p.getPetID(), 1));
+			}
+		}
+
 		final int kc = killCountMap.getOrDefault(event.getName().toUpperCase(), -1);
 		final LTRecord record = new LTRecord(event.getName(), event.getCombatLevel(), kc, event.getType(), drops);
 		addRecord(record);
@@ -343,6 +370,19 @@ public class LootLoggerPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick t)
 	{
+		if (gotPet)
+		{
+			if (petTicks > MAX_PET_TICKS)
+			{
+				gotPet = false;
+				petTicks = 0;
+			}
+			else
+			{
+				petTicks++;
+			}
+		}
+
 		if (unsiredReclaiming)
 		{
 			if (hasUnsiredWidgetUpdated())
@@ -422,6 +462,11 @@ public class LootLoggerPlugin extends Plugin
 		}
 
 		final String chatMessage = Text.removeTags(event.getMessage());
+
+		if (PET_MESSAGES.contains(chatMessage))
+		{
+			gotPet = true;
+		}
 
 		// Check if message is for a clue scroll reward
 		final Matcher m = CLUE_SCROLL_PATTERN.matcher(chatMessage);

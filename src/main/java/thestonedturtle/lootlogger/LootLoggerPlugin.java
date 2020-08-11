@@ -234,7 +234,7 @@ public class LootLoggerPlugin extends Plugin
 	private void addRecord(final LTRecord record)
 	{
 		writer.addLootTrackerRecord(record);
-		lootNames.put(record.getType(), record.getName());
+		lootNames.put(record.getType(), record.getName().toLowerCase());
 		if (config.enableUI())
 		{
 			SwingUtilities.invokeLater(() -> panel.addLog(record));

@@ -69,9 +69,9 @@ public class LootLoggerPlugin extends Plugin
 	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is:? ([0-9]*).");
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
 
-	private static final ImmutableSet<String> PET_MESSAGES = ImmutableSet.of("You have a funny feeling like you're being followed",
-		"You feel something weird sneaking into your backpack",
-		"You have a funny feeling like you would have been followed");
+	private static final ImmutableSet<String> PET_MESSAGES = ImmutableSet.of("You have a funny feeling like you're being followed.",
+		"You feel something weird sneaking into your backpack.",
+		"You have a funny feeling like you would have been followed...");
 
 	private static final int NMZ_MAP_REGION = 9033;
 

@@ -1,4 +1,4 @@
-# Loot Logger
+# Loot Logger [![Plugin Installs](http://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/installs/plugin/loot-logger)](https://runelite.net/plugin-hub/TheStonedTurtle) [![Plugin Rank](http://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/rank/plugin/loot-logger)](https://runelite.net/plugin-hub)
 
 ### Requires the `Loot Tracker` plugin to be enabled
 

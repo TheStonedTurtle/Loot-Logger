@@ -351,7 +351,7 @@ public class LootLoggerPlugin extends Plugin
 	{
 		final Widget text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
 		// Reclaimed an item?
-		if (text.getText().toLowerCase().contains(SIRE_REWARD_TEXT))
+		if (text != null && text.getText().toLowerCase().contains(SIRE_REWARD_TEXT))
 		{
 			final Widget sprite = client.getWidget(WidgetInfo.DIALOG_SPRITE);
 			if (sprite.getItemId() == -1)

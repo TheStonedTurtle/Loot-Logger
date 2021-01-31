@@ -117,15 +117,8 @@ public class LootRecordWriter
 
 	public synchronized Collection<LTRecord> loadLootTrackerRecords(LootRecordType recordType, String npcName)
 	{
-		return loadLootTrackerRecords(npcName, eventFolders.get(recordType));
-	}
-
-	// TODO: Remove folder parameter in future release when data migration is no longer needed
-	@Deprecated
-	public synchronized Collection<LTRecord> loadLootTrackerRecords(String npcName, File folder)
-	{
 		final String fileName = npcNameToFileName(npcName);
-		final File file = new File(folder, fileName);
+		final File file = new File(eventFolders.get(recordType), fileName);
 		final Collection<LTRecord> data = new ArrayList<>();
 
 		try (final BufferedReader br = new BufferedReader(new FileReader(file)))

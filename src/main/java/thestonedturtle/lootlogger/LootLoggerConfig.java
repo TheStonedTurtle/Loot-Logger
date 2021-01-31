@@ -81,22 +81,4 @@ public interface LootLoggerConfig extends Config
 	)
 	@Range(max = 100)
 	default int itemMissingAlpha() { return 35; }
-
-	@ConfigItem(
-		keyName = "migratedUsers",
-		name = "Migrated users",
-		description = "CSV of usernames (login name) that have been migrated",
-		hidden = true
-	)
-	default String getMigratedUsers()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "migratedUsers",
-		name = "",
-		description = ""
-	)
-	void setMigratedUsers(String key);
 }

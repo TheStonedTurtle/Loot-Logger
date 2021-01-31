@@ -101,13 +101,12 @@ public class LootLoggerPlugin extends Plugin
 
 	private boolean prepared = false;
 	private boolean unsiredReclaiming = false;
-	private boolean fetchingUsername = false;
 	private int unsiredCheckCount = 0;
 	// Some pets aren't handled (skilling pets) so reset gotPet after a few ticks
 	private int petTicks = 0;
 	private boolean gotPet = false;
 
-	private Map<String, Integer> killCountMap = new HashMap<>();
+	private final Map<String, Integer> killCountMap = new HashMap<>();
 
 	@Provides
 	LootLoggerConfig provideConfig(ConfigManager configManager)
@@ -307,7 +306,7 @@ public class LootLoggerPlugin extends Plugin
 		}
 
 		Widget text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
-		if (SIRE_FONT_TEXT.equals(text.getText().toLowerCase()))
+		if (text != null && SIRE_FONT_TEXT.contains(text.getText().toLowerCase()))
 		{
 			unsiredCheckCount = 0;
 			unsiredReclaiming = true;
@@ -354,7 +353,7 @@ public class LootLoggerPlugin extends Plugin
 		if (text != null && text.getText().toLowerCase().contains(SIRE_REWARD_TEXT))
 		{
 			final Widget sprite = client.getWidget(WidgetInfo.DIALOG_SPRITE);
-			if (sprite.getItemId() == -1)
+			if (sprite == null || sprite.getItemId() == -1)
 			{
 				return false;
 			}

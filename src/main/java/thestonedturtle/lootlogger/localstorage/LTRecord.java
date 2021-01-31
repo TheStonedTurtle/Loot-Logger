@@ -33,11 +33,11 @@ import net.runelite.http.api.loottracker.LootRecordType;
 @AllArgsConstructor
 public class LTRecord
 {
-	private final String name;
-	private final int level;
-	private final int killCount;
-	private LootRecordType type;
-	final Collection<LTItemEntry> drops;
+	public final String name;
+	public final int level;
+	public final int killCount;
+	public LootRecordType type;
+	public final Collection<LTItemEntry> drops;
 
 	public void addDropEntry(LTItemEntry itemEntry)
 	{

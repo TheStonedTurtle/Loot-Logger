@@ -31,10 +31,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class LTItemEntry
 {
-	private final String name;
-	private final int id;
-	private int quantity;
-	private long price;
+	public final String name;
+	public final int id;
+	public int quantity;
+	public long price;
 
 	public long getTotal()
 	{

@@ -306,7 +306,7 @@ public class LootLoggerPlugin extends Plugin
 		}
 
 		Widget text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
-		if (text != null && SIRE_FONT_TEXT.contains(text.getText().toLowerCase()))
+		if (text != null && text.getText().toLowerCase().contains(SIRE_FONT_TEXT))
 		{
 			unsiredCheckCount = 0;
 			unsiredReclaiming = true;

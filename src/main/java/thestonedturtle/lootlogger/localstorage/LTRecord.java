@@ -25,6 +25,7 @@
 package thestonedturtle.lootlogger.localstorage;
 
 import java.util.Collection;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -38,6 +39,7 @@ public class LTRecord
 	public final int killCount;
 	public LootRecordType type;
 	public final Collection<LTItemEntry> drops;
+	public Date date;
 
 	public void addDropEntry(LTItemEntry itemEntry)
 	{

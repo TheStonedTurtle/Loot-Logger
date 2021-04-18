@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -262,7 +263,7 @@ public class LootLoggerPlugin extends Plugin
 		}
 
 		final int kc = killCountMap.getOrDefault(event.getName().toUpperCase(), -1);
-		final LTRecord record = new LTRecord(event.getName(), event.getCombatLevel(), kc, event.getType(), drops);
+		final LTRecord record = new LTRecord(event.getName(), event.getCombatLevel(), kc, event.getType(), drops, new Date());
 		addRecord(record);
 	}
 
@@ -381,7 +382,7 @@ public class LootLoggerPlugin extends Plugin
 			if (data == null)
 			{
 				log.debug("No previous Abyssal sire loot, creating new loot record");
-				LTRecord r = new LTRecord(BossTab.ABYSSAL_SIRE.getName(), 350, -1, LootRecordType.NPC, Collections.singletonList(itemEntry));
+				LTRecord r = new LTRecord(BossTab.ABYSSAL_SIRE.getName(), 350, -1, LootRecordType.NPC, Collections.singletonList(itemEntry), new Date());
 				addRecord(r);
 				return;
 			}

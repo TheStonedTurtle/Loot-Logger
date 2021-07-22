@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -40,6 +41,7 @@ import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.ItemSortTypes;
 import thestonedturtle.lootlogger.LootLoggerConfig;
 import thestonedturtle.lootlogger.UniqueItemPlacement;
@@ -58,14 +60,18 @@ class LootPanel extends JPanel
 	private boolean playbackPlaying = false;
 	private boolean cancelPlayback = false;
 
+	private final BiConsumer<LootRecordType, String> clearData;
+
 	LootPanel(
 		final LootLog log,
 		final LootLoggerConfig config,
-		final ItemManager itemManager)
+		final ItemManager itemManager,
+		final BiConsumer<LootRecordType, String> clearData)
 	{
 		this.lootLog = log;
 		this.config = config;
 		this.itemManager = itemManager;
+		this.clearData = clearData;
 
 		setLayout(new GridBagLayout());
 		setBorder(new EmptyBorder(0, 10, 0, 10));
@@ -197,7 +203,7 @@ class LootPanel extends JPanel
 				final LootGrid grid = new LootGrid(logItemsToDisplay, itemManager);
 
 				final long logValue = log.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
-				this.add(new LootGridName(log.getName(), log.getRecords().size(), logValue, grid), c);
+				this.add(new LootGridName(log.getName(), log.getRecords().size(), logValue, grid, log.getType(), clearData), c);
 				c.gridy++;
 
 				grid.setBorder(new EmptyBorder(0, 0, 5, 0));

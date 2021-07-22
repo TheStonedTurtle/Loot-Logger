@@ -84,6 +84,7 @@ public enum BossTab
 	THE_GAUNTLET("The Gauntlet", ItemID.YOUNGLLEF, "Other", LootRecordType.EVENT),
 	ZALCANO("Zalcano", ItemID.SMOLCANO, "Other", LootRecordType.NPC),
 	NIGHTMARE("The Nightmare", ItemID.LITTLE_NIGHTMARE, "Other", LootRecordType.NPC),
+	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.LITTLE_PARASITE, "Other", LootRecordType.NPC),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.PET_DAGANNOTH_REX, "Dagannoth Kings", LootRecordType.NPC),
@@ -96,7 +97,12 @@ public enum BossTab
 	CLUE_SCROLL_MEDIUM("Clue Scroll (Medium)", ItemID.CLUE_SCROLL_MEDIUM, "Clue Scrolls", LootRecordType.EVENT),
 	CLUE_SCROLL_HARD("Clue Scroll (Hard)", ItemID.CLUE_SCROLL_HARD, "Clue Scrolls", LootRecordType.EVENT),
 	CLUE_SCROLL_ELITE("Clue Scroll (Elite)", ItemID.CLUE_SCROLL_ELITE, "Clue Scrolls", LootRecordType.EVENT),
-	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.CLUE_SCROLL_MASTER, "Clue Scrolls", LootRecordType.EVENT);
+	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.CLUE_SCROLL_MASTER, "Clue Scrolls", LootRecordType.EVENT),
+
+	// Skilling
+	WINTERTODT("Wintertodt", ItemID.PHOENIX, "Skilling", LootRecordType.EVENT),
+	TEMPOROSS("Tempoross", ItemID.TINY_TEMPOR, "Skilling", LootRecordType.EVENT),
+	;
 
 	private final String name;
 	private final int itemID;

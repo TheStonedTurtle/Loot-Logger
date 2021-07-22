@@ -67,11 +67,12 @@ public enum Pet
 	YOUNGLLEF(ItemID.YOUNGLLEF, BossTab.THE_GAUNTLET.getName()),
 	SRARACHA(ItemID.SRARACHA, BossTab.SARACHNIS.getName()),
 	SMOLCANO(ItemID.SMOLCANO, BossTab.ZALCANO.getName()),
-	LITTLE_NIGHTMARE(ItemID.LITTLE_NIGHTMARE, BossTab.NIGHTMARE.getName()),
+	LITTLE_NIGHTMARE(ItemID.LITTLE_NIGHTMARE, BossTab.NIGHTMARE.getName(), BossTab.PHOSANIS_NIGHTMARE.getName()),
 	HERBI(ItemID.HERBI, "Herbiboar"),
 	// Pretty sure
-	PHOENIX(ItemID.PHOENIX, "Wintertodt"),
+	PHOENIX(ItemID.PHOENIX, BossTab.WINTERTODT.getName()),
 	PET_PENANCE_QUEEN(ItemID.PET_PENANCE_QUEEN, "Barbarian Assault"),
+	TINY_TEMPOR(ItemID.TINY_TEMPOR, BossTab.TEMPOROSS.getName())
 	;
 
 	private static final ImmutableMap<String, Pet> BOSS_MAP;

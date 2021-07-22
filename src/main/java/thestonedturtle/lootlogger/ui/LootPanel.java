@@ -86,6 +86,12 @@ class LootPanel extends JPanel
 		final Multimap<Integer, UniqueItem> positionMap = ArrayListMultimap.create();
 		final Set<Integer> uniqueIds = new HashSet<>();
 
+		final Collection<LootLog> allLogs = new ArrayList<>();
+		allLogs.add(lootLog);
+		if (config.includeMinions()) {
+			allLogs.addAll(lootLog.getMinionLogs());
+		}
+
 		if (!config.uniquesPlacement().equals(UniqueItemPlacement.ITEM_BREAKDOWN))
 		{
 			// Loop over all UniqueItems and check how many the player has received as a drop for each
@@ -104,9 +110,14 @@ class LootPanel extends JPanel
 					uniqueIds.add(linkedId);
 				}
 
-				final LTItemEntry entry = lootLog.getConsolidated().get(id);
-				final LTItemEntry notedEntry = lootLog.getConsolidated().get(linkedId);
-				final int qty = (entry == null ? 0 : entry.getQuantity()) + (notedEntry == null ? 0 : notedEntry.getQuantity());
+				int qty = 0;
+				for (final LootLog log : allLogs)
+				{
+					final LTItemEntry entry = log.getConsolidated().get(id);
+					final LTItemEntry notedEntry = log.getConsolidated().get(linkedId);
+					qty += (entry == null ? 0 : entry.getQuantity()) + (notedEntry == null ? 0 : notedEntry.getQuantity());
+				}
+
 				item.setQty(qty);
 				positionMap.put(item.getPosition(), item);
 			}
@@ -138,13 +149,9 @@ class LootPanel extends JPanel
 		}
 
 		// Only add the total value element if it has something useful to display
-		final long totalValue = lootLog.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
-		if (totalValue > 0)
-		{
-			final TextPanel totalPanel = new TextPanel("Total Value:", totalValue);
-			this.add(totalPanel, c);
-			c.gridy++;
-		}
+		long totalValue = lootLog.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
+		final int totalGridY = c.gridy;
+		c.gridy++;
 
 		final boolean hideUniques = config.uniquesPlacement().equals(UniqueItemPlacement.UNIQUES_PANEL);
 		final Comparator<LTItemEntry> sorter = createLTItemEntryComparator(config.itemSortType());
@@ -170,6 +177,46 @@ class LootPanel extends JPanel
 				this.add(grid, c);
 				c.gridy++;
 			}
+		}
+
+		// Add all minions
+		if (config.includeMinions() && lootLog.getMinionLogs().size() > 0)
+		{
+			for (final LootLog log : lootLog.getMinionLogs())
+			{
+				if (log.getRecords().size() == 0)
+				{
+					continue;
+				}
+
+				final LTItemEntry[] logItemsToDisplay = log.getConsolidated().values().stream()
+					.filter(e -> !(hideUniques && uniqueIds.contains(e.getId())))
+					.sorted(sorter)
+					.toArray(LTItemEntry[]::new);
+
+				final LootGrid grid = new LootGrid(logItemsToDisplay, itemManager);
+
+				final long logValue = log.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
+				this.add(new LootGridName(log.getName(), log.getRecords().size(), logValue, grid), c);
+				c.gridy++;
+
+				grid.setBorder(new EmptyBorder(0, 0, 5, 0));
+				this.add(grid, c);
+				c.gridy++;
+
+				totalValue += logValue;
+			}
+		}
+
+		if (totalValue > 0)
+		{
+			int tempGridY = c.gridy;
+			c.gridy = totalGridY;
+
+			final TextPanel totalPanel = new TextPanel("Total Value:", totalValue);
+			this.add(totalPanel, c);
+
+			c.gridy = tempGridY;
 		}
 	}
 
@@ -202,7 +249,17 @@ class LootPanel extends JPanel
 			{
 				recs.add(r);
 
-				SwingUtilities.invokeLater(() -> refreshPlayback(new LootLog(recs, lootLog.getName())));
+				final LootLog log;
+				if (recs.size() != lootLog.getRecords().size())
+				{
+					log = new LootLog(recs, lootLog.getName());
+				}
+				else
+				{
+					log = lootLog;
+				}
+
+				SwingUtilities.invokeLater(() -> refreshPlayback(log));
 				try
 				{
 					if (cancelPlayback)

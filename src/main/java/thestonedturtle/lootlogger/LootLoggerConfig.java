@@ -81,4 +81,15 @@ public interface LootLoggerConfig extends Config
 	)
 	@Range(max = 100)
 	default int itemMissingAlpha() { return 35; }
+
+	@ConfigItem(
+		position = 6,
+		keyName = "includeMinions",
+		name = "Include Minions",
+		description = "Toggles whether loot from minions will be included when looking at specific loot tabs, such as the GWD bosses"
+	)
+	default boolean includeMinions()
+	{
+		return true;
+	}
 }

@@ -293,6 +293,11 @@ public class LootLoggerPlugin extends Plugin
 		{
 			final Collection<LTRecord> records = getDataByName(type, name);
 			final LootLog log = new LootLog(records, name);
+			if (log.getType().equals(LootRecordType.UNKNOWN))
+			{
+				log.setType(type);
+			}
+
 			SwingUtilities.invokeLater(() -> panel.useLog(log));
 		});
 	}

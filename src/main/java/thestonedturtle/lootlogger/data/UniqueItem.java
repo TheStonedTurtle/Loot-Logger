@@ -258,7 +258,7 @@ public enum UniqueItem
 	CRYSTAL_SHARD(ItemID.CRYSTAL_SHARD, BossTab.THE_GAUNTLET, 0),
 	CRYSTAL_WEAPON_SEED(ItemID.CRYSTAL_WEAPON_SEED, BossTab.THE_GAUNTLET, 0),
 	CRYSTAL_ARMOUR_SEED(ItemID.CRYSTAL_ARMOUR_SEED, BossTab.THE_GAUNTLET, 0),
-	BLADE_OF_SAELDOR(ItemID.BLADE_OF_SAELDOR_INACTIVE, BossTab.THE_GAUNTLET, 0),
+	ENHANCED_CRYSTAL_WEAPON_SEED(ItemID.ENHANCED_CRYSTAL_WEAPON_SEED, BossTab.THE_GAUNTLET, 0, ItemID.BLADE_OF_SAELDOR_INACTIVE),
 	YOUNGLLEF(ItemID.YOUNGLLEF, BossTab.THE_GAUNTLET, 0),
 	// Dagannoth Rex
 	RING_OF_LIFE(ItemID.RING_OF_LIFE, BossTab.DAGANNOTH_REX, -1),
@@ -898,6 +898,7 @@ public enum UniqueItem
 	private final int itemID;
 	private final BossTab[] bosses;
 	private final int position;
+	private final int[] alternativeIds;
 	private String name;
 	private int price;
 	private int linkedID;
@@ -927,6 +928,16 @@ public enum UniqueItem
 		this.itemID = id;
 		this.bosses = new BossTab[]{boss};
 		this.position = position;
+		this.alternativeIds = new int[0];
+	}
+
+	// Non-Shared Unique Items
+	UniqueItem(int id, BossTab boss, int position, int... alternativeIds)
+	{
+		this.itemID = id;
+		this.bosses = new BossTab[]{boss};
+		this.position = position;
+		this.alternativeIds = alternativeIds;
 	}
 
 	// Shared Unique Items
@@ -935,6 +946,7 @@ public enum UniqueItem
 		this.itemID = id;
 		this.bosses = bosses;
 		this.position = -1;
+		this.alternativeIds = new int[0];
 	}
 
 	public static void prepareUniqueItems(final ItemManager itemManager)

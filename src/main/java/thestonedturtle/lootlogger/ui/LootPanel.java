@@ -29,9 +29,11 @@ import com.google.common.collect.Multimap;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -104,24 +106,20 @@ class LootPanel extends JPanel
 			// Also add all Item IDs for uniques to a Set for easy hiding later on.
 			for (final UniqueItem item : lootLog.getUniques())
 			{
-				final int id = item.getItemID();
-				if (id != -1)
-				{
-					uniqueIds.add(id);
-				}
-
-				final int linkedId = item.getLinkedID();
-				if (linkedId != -1)
-				{
-					uniqueIds.add(linkedId);
-				}
+				final List<Integer> ids = Arrays.stream(item.getAlternativeIds()).boxed().collect(Collectors.toList());
+				ids.add(item.getItemID());
+				ids.add(item.getLinkedID());
 
 				int qty = 0;
-				for (final LootLog log : allLogs)
+				for (final int id : ids)
 				{
-					final LTItemEntry entry = log.getConsolidated().get(id);
-					final LTItemEntry notedEntry = log.getConsolidated().get(linkedId);
-					qty += (entry == null ? 0 : entry.getQuantity()) + (notedEntry == null ? 0 : notedEntry.getQuantity());
+					uniqueIds.add(id);
+
+					for (final LootLog log : allLogs)
+					{
+						final LTItemEntry entry = log.getConsolidated().get(id);
+						qty += (entry == null ? 0 : entry.getQuantity());
+					}
 				}
 
 				item.setQty(qty);

@@ -27,17 +27,18 @@ package thestonedturtle.lootlogger.data;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.ItemID;
 import net.runelite.http.api.loottracker.LootRecordType;
 
 @Getter
-@AllArgsConstructor
 public enum BossTab
 {
 	// Chest Rewards
@@ -100,14 +101,26 @@ public enum BossTab
 	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.CLUE_SCROLL_MASTER, "Clue Scrolls", LootRecordType.EVENT),
 
 	// Skilling
-	WINTERTODT("Wintertodt", ItemID.PHOENIX, "Skilling", LootRecordType.EVENT),
-	TEMPOROSS("Tempoross", ItemID.TINY_TEMPOR, "Skilling", LootRecordType.EVENT),
+	WINTERTODT("Wintertodt", ItemID.PHOENIX, "Skilling", LootRecordType.EVENT, "Supply crate (Wintertodt)"),
+	TEMPOROSS("Tempoross", ItemID.TINY_TEMPOR, "Skilling", LootRecordType.EVENT, "Reward pool (Tempoross)", "Casket (Tempoross)"),
 	;
 
 	private final String name;
 	private final int itemID;
 	private final String category;
 	private final LootRecordType type;
+	private final Set<String> aliases = new HashSet<>();
+
+	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final String... aliases)
+	{
+		this.name = name;
+		this.itemID = itemID;
+		this.category = category;
+		this.type = type;
+
+		this.aliases.add(name);
+		this.aliases.addAll(Arrays.asList(aliases));
+	}
 
 	private static final Map<String, BossTab> NAME_MAP;
 	private static final Multimap<String, BossTab> CATEGORY_MAP;
@@ -118,7 +131,9 @@ public enum BossTab
 
 		for (BossTab tab : values())
 		{
-			byName.put(tab.getName().toUpperCase(), tab);
+			for (final String name : tab.getAliases()) {
+				byName.put(name.toUpperCase(), tab);
+			}
 			categoryMap.put(tab.getCategory(), tab);
 		}
 

@@ -270,12 +270,17 @@ public class LootLoggerPlugin extends Plugin
 	public Collection<LTRecord> getDataByName(LootRecordType type, String name)
 	{
 		final BossTab tab = BossTab.getByName(name);
-		if (tab != null)
+		if (tab == null)
 		{
-			name = tab.getName();
+			return writer.loadLootTrackerRecords(type, name);
 		}
 
-		return writer.loadLootTrackerRecords(type, name);
+		final Collection<LTRecord> records = new ArrayList<>();
+		for (final String alias : tab.getAliases()) {
+			records.addAll(writer.loadLootTrackerRecords(type, alias));
+		}
+
+		return records;
 	}
 
 	/**

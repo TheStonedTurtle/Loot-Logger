@@ -26,6 +26,7 @@ package thestonedturtle.lootlogger.data;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,10 +52,14 @@ public enum BossTab
 	VORKATH("Vorkath", ItemID.VORKI, "Other", LootRecordType.NPC),
 
 	// God wars dungeon
-	KREEARRA("Kree'arra", ItemID.PET_KREEARRA , "God Wars Dungeon", LootRecordType.NPC),
-	GENERAL_GRAARDOR("General Graardor", ItemID.PET_GENERAL_GRAARDOR , "God Wars Dungeon", LootRecordType.NPC),
-	COMMANDER_ZILYANA("Commander Zilyana", ItemID.PET_ZILYANA , "God Wars Dungeon", LootRecordType.NPC),
-	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.PET_KRIL_TSUTSAROTH , "God Wars Dungeon", LootRecordType.NPC),
+	KREEARRA("Kree'arra", ItemID.PET_KREEARRA , "God Wars Dungeon", LootRecordType.NPC,
+		ImmutableSet.of("Wingman Skree", "Flockleader Geerin", "Flight Kilisa")),
+	GENERAL_GRAARDOR("General Graardor", ItemID.PET_GENERAL_GRAARDOR , "God Wars Dungeon", LootRecordType.NPC,
+		ImmutableSet.of("Sergeant Strongstack", "Sergeant Steelwill", "Sergeant Grimspike")),
+	COMMANDER_ZILYANA("Commander Zilyana", ItemID.PET_ZILYANA , "God Wars Dungeon", LootRecordType.NPC,
+		ImmutableSet.of("Growler", "Bree", "Starlight")),
+	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.PET_KRIL_TSUTSAROTH , "God Wars Dungeon", LootRecordType.NPC,
+		ImmutableSet.of("Balfrug Kreeyath", "Tstanon Karlak", "Zakl'n Gritch")),
 
 	// Wildy Bosses
 	VETION("Vet'ion Reborn", ItemID.VETION_JR , "Wilderness", LootRecordType.NPC),
@@ -102,7 +107,8 @@ public enum BossTab
 
 	// Skilling
 	WINTERTODT("Wintertodt", ItemID.PHOENIX, "Skilling", LootRecordType.EVENT, "Supply crate (Wintertodt)"),
-	TEMPOROSS("Tempoross", ItemID.TINY_TEMPOR, "Skilling", LootRecordType.EVENT, "Reward pool (Tempoross)", "Casket (Tempoross)"),
+	TEMPOROSS("Tempoross", ItemID.TINY_TEMPOR, "Skilling", LootRecordType.EVENT,
+		ImmutableSet.of("Casket (Tempoross)"), "Reward pool (Tempoross)"),
 	;
 
 	private final String name;
@@ -110,6 +116,7 @@ public enum BossTab
 	private final String category;
 	private final LootRecordType type;
 	private final Set<String> aliases = new HashSet<>();
+	private final Set<String> minions = new HashSet<>();
 
 	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final String... aliases)
 	{
@@ -120,6 +127,12 @@ public enum BossTab
 
 		this.aliases.add(name);
 		this.aliases.addAll(Arrays.asList(aliases));
+	}
+
+	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final Collection<String> minions, final String... aliases)
+	{
+		this(name, itemID, category, type, aliases);
+		this.minions.addAll(minions);
 	}
 
 	private static final Map<String, BossTab> NAME_MAP;

@@ -52,6 +52,9 @@ public class LootLog
 	private final Map<Integer, LTItemEntry> consolidated = new HashMap<>();
 	private final Collection<UniqueItem> uniques;
 
+	// Store a LootLog for all minions
+	private final List<LootLog> minionLogs = new ArrayList<>();
+
 	public LootLog(final Collection<LTRecord> records, final String name)
 	{
 		this.records.addAll(records);

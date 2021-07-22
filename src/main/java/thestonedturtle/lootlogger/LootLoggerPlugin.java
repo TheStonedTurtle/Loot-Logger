@@ -298,6 +298,18 @@ public class LootLoggerPlugin extends Plugin
 				log.setType(type);
 			}
 
+			final BossTab tab = BossTab.getByName(name);
+			if (tab != null && tab.getMinions().size() > 0)
+			{
+				for (final String minion : tab.getMinions())
+				{
+					final Collection<LTRecord> minionRecords = getDataByName(type, minion);
+					final LootLog minionLog = new LootLog(minionRecords, minion);
+
+					log.getMinionLogs().add(minionLog);
+				}
+			}
+
 			SwingUtilities.invokeLater(() -> panel.useLog(log));
 		});
 	}

@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.Setter;
 import net.runelite.api.ItemID;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
@@ -44,7 +45,8 @@ public class LootLog
 {
 	private static final Pattern CLUE_ITEM_TYPE_PATTERN = Pattern.compile("\\((\\w*)\\)");
 	private final String name;
-	private final LootRecordType type;
+	@Setter
+	private LootRecordType type;
 	// Store all records in case rewrite needs to happen
 	private final List<LTRecord> records = new ArrayList<>();
 	private final Map<Integer, LTItemEntry> consolidated = new HashMap<>();

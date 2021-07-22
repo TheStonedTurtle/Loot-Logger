@@ -49,6 +49,7 @@ import net.runelite.client.ui.components.PluginErrorPanel;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.LootLoggerPlugin;
+import thestonedturtle.lootlogger.data.BossTab;
 import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
 
@@ -135,7 +136,12 @@ public class LootLoggerPanel extends PluginPanel
 		selectionPanel = null;
 
 		final JPanel title = createLootViewTitle();
-		lootPanel = new LootPanel(lootLog, plugin.config, itemManager);
+		lootPanel = new LootPanel(lootLog, plugin.config, itemManager, (lootRecordType, name) -> {
+			if (clearData(lootRecordType, name))
+			{
+				requestLootLog(lootRecordType, lootLog.getName());
+			}
+		});
 
 		this.add(title, BorderLayout.NORTH);
 		this.add(wrapContainer(lootPanel), BorderLayout.CENTER);
@@ -199,7 +205,10 @@ public class LootLoggerPanel extends PluginPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				clearData(lootLog.getType(), name);
+				if (clearData(lootLog.getType(), name))
+				{
+					showSelectionView();
+				}
 			}
 		});
 		clear.setToolTipText("Clear stored data");
@@ -267,22 +276,33 @@ public class LootLoggerPanel extends PluginPanel
 	}
 
 	// Clear stored data and return to selection screen
-	private void clearData(final LootRecordType type, final String name)
+	private boolean clearData(final LootRecordType type, final String name)
 	{
 		// Confirm delete action
 		final int delete = JOptionPane.showConfirmDialog(this.getRootPane(), "<html>Are you sure you want to clear all data for this tab?<br/>There is no way to undo this action.</html>", "Warning", JOptionPane.YES_NO_OPTION);
 		if (delete == JOptionPane.YES_OPTION)
 		{
-			boolean deleted = plugin.clearStoredDataByName(type, name);
-			if (!deleted)
+			boolean deletedAtleastOne = plugin.clearStoredDataByName(type, name);
+
+			final BossTab tab = BossTab.getByName(name);
+			if (tab != null)
 			{
-				JOptionPane.showMessageDialog(this.getRootPane(), "Unable to clear stored data, please try again.");
-				return;
+				for (final String alias : tab.getAliases())
+				{
+					deletedAtleastOne |= plugin.clearStoredDataByName(type, alias);
+				}
 			}
 
-			// Return to selection screen
-			showSelectionView();
+			if (!deletedAtleastOne)
+			{
+				JOptionPane.showMessageDialog(this.getRootPane(), "Unable to clear stored data, please try again.");
+				return false;
+			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	public void addLog(final LTRecord r)

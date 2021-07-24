@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.ItemID;
@@ -157,5 +158,19 @@ public class LootLog
 			// Create a new instance for consolidated records
 			consolidated.put(item.getId(), new LTItemEntry(item.getName(), item.getId(), item.getQuantity(), item.getPrice()));
 		}
+	}
+
+	@Nullable
+	public LootLog getMinionLog(final String name)
+	{
+		for (final LootLog log : minionLogs)
+		{
+			if (log.getName().equalsIgnoreCase(name))
+			{
+				return log;
+			}
+		}
+
+		return null;
 	}
 }

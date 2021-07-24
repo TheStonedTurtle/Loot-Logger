@@ -2,6 +2,7 @@ package thestonedturtle.lootlogger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -76,6 +77,8 @@ public class LootLoggerPlugin extends Plugin
 
 	private static final int NMZ_MAP_REGION = 9033;
 
+	public static final String SESSION_NAME = "Current Session Data";
+
 	@Inject
 	private Client client;
 
@@ -108,6 +111,7 @@ public class LootLoggerPlugin extends Plugin
 	private boolean gotPet = false;
 
 	private final Map<String, Integer> killCountMap = new HashMap<>();
+	private final Multimap<String, LTRecord> sessionData = HashMultimap.create();
 
 	@Provides
 	LootLoggerConfig provideConfig(ConfigManager configManager)
@@ -235,6 +239,7 @@ public class LootLoggerPlugin extends Plugin
 	{
 		writer.addLootTrackerRecord(record);
 		lootNames.put(record.getType(), record.getName().toLowerCase());
+		sessionData.put(record.getName().toLowerCase(), record);
 		if (config.enableUI())
 		{
 			SwingUtilities.invokeLater(() -> panel.addLog(record));
@@ -291,6 +296,18 @@ public class LootLoggerPlugin extends Plugin
 	{
 		clientThread.invoke(() ->
 		{
+			if (name.equalsIgnoreCase(SESSION_NAME))
+			{
+				final LootLog log = new LootLog(Collections.emptyList(), name);
+				for (final String key : sessionData.keySet())
+				{
+					log.getMinionLogs().add(new LootLog(sessionData.get(key), key));
+				}
+
+				SwingUtilities.invokeLater(() -> panel.useLog(log));
+				return;
+			}
+			
 			final Collection<LTRecord> records = getDataByName(type, name);
 			final LootLog log = new LootLog(records, name);
 			if (log.getType().equals(LootRecordType.UNKNOWN))
@@ -316,6 +333,18 @@ public class LootLoggerPlugin extends Plugin
 
 	public boolean clearStoredDataByName(final LootRecordType type, final String name)
 	{
+		if (name.equalsIgnoreCase(SESSION_NAME))
+		{
+			sessionData.clear();
+			return true;
+		}
+
+		if (panel.getLootLog().getName().equalsIgnoreCase(SESSION_NAME))
+		{
+			sessionData.removeAll(name.toLowerCase());
+			return true;
+		}
+
 		lootNames.remove(type, name);
 		return writer.deleteLootTrackerRecords(type, name);
 	}

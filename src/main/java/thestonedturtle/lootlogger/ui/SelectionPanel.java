@@ -64,6 +64,7 @@ import net.runelite.client.util.AsyncBufferedImage;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
+import thestonedturtle.lootlogger.LootLoggerPlugin;
 import thestonedturtle.lootlogger.data.BossTab;
 
 class SelectionPanel extends JPanel
@@ -135,6 +136,10 @@ class SelectionPanel extends JPanel
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(5, 0, 0, 0);
+
+		// Add Session Data
+		this.add(createNamePanel(LootRecordType.UNKNOWN, LootLoggerPlugin.SESSION_NAME), c);
+		c.gridy++;
 
 		// Add the bosses tabs, by category, to tabGroup
 		if (configToggle)

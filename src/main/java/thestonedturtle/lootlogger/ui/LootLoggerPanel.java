@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
@@ -76,6 +77,7 @@ public class LootLoggerPanel extends PluginPanel
 	private final LootLoggerPlugin plugin;
 
 	private LootPanel lootPanel;
+	@Getter
 	private LootLog lootLog;
 	private SelectionPanel selectionPanel;
 
@@ -314,6 +316,11 @@ public class LootLoggerPanel extends PluginPanel
 		else if (lootLog.getName().equalsIgnoreCase(r.getName()))
 		{
 			lootPanel.addedRecord(r);
+		}
+		else if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME)
+			|| lootLog.getMinionLog(r.getName()) != null)
+		{
+			lootPanel.addMinionRecord(r);
 		}
 	}
 

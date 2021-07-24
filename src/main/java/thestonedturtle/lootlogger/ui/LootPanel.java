@@ -25,6 +25,7 @@
 package thestonedturtle.lootlogger.ui;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -46,6 +47,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.ItemSortTypes;
 import thestonedturtle.lootlogger.LootLoggerConfig;
+import thestonedturtle.lootlogger.LootLoggerPlugin;
 import thestonedturtle.lootlogger.UniqueItemPlacement;
 import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.data.UniqueItem;
@@ -152,6 +154,12 @@ class LootPanel extends JPanel
 			c.gridy++;
 		}
 
+		final int killsLoggedGridY = c.gridy;
+		if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
+		{
+			c.gridy++;
+		}
+
 		// Only add the total value element if it has something useful to display
 		long totalValue = lootLog.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
 		final int totalGridY = c.gridy;
@@ -184,6 +192,7 @@ class LootPanel extends JPanel
 		}
 
 		// Add all minions
+		int killsLogged = 0;
 		if (config.includeMinions() && lootLog.getMinionLogs().size() > 0)
 		{
 			for (final LootLog log : lootLog.getMinionLogs())
@@ -192,6 +201,7 @@ class LootPanel extends JPanel
 				{
 					continue;
 				}
+				killsLogged += log.getRecords().size();
 
 				final LTItemEntry[] logItemsToDisplay = log.getConsolidated().values().stream()
 					.filter(e -> !(hideUniques && uniqueIds.contains(e.getId())))
@@ -222,12 +232,46 @@ class LootPanel extends JPanel
 
 			c.gridy = tempGridY;
 		}
+
+		// Combine all kills for session data
+		if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
+		{
+			int tempGridY = c.gridy;
+			c.gridy = killsLoggedGridY;
+
+			final TextPanel totalKills = new TextPanel("Total Kills:", killsLogged);
+			this.add(totalKills, c);
+
+			c.gridy = tempGridY;
+		}
 	}
 
 	void addedRecord(final LTRecord record)
 	{
 		lootLog.addRecord(record);
+		refreshPanel();
+	}
 
+	void addMinionRecord(final LTRecord record)
+	{
+		final LootLog minionLog = lootLog.getMinionLog(record.getName());
+		if (minionLog == null)
+		{
+			// Add minion only if viewing session data
+			if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
+			{
+				lootLog.getMinionLogs().add(new LootLog(ImmutableList.of(record), record.getName()));
+				refreshPanel();
+			}
+			return;
+		}
+
+		minionLog.addRecord(record);
+		refreshPanel();
+	}
+
+	public void refreshPanel()
+	{
 		// TODO: Smarter update system so it only repaints necessary Item and Text Panels
 		this.removeAll();
 		this.createPanel(lootLog);

@@ -67,10 +67,10 @@ public class LootLoggerPanel extends PluginPanel
 
 	static
 	{
-		ICON_DELETE = ImageUtil.getResourceStreamFromClass(LootLoggerPlugin.class, "delete-white.png");
-		ICON_REFRESH = ImageUtil.getResourceStreamFromClass(LootLoggerPlugin.class, "refresh-white.png");
-		ICON_BACK = ImageUtil.getResourceStreamFromClass(LootLoggerPlugin.class, "back-arrow-white.png");
-		ICON_REPLAY = ImageUtil.getResourceStreamFromClass(LootLoggerPlugin.class, "replay-white.png");
+		ICON_DELETE = ImageUtil.loadImageResource(LootLoggerPlugin.class, "delete-white.png");
+		ICON_REFRESH = ImageUtil.loadImageResource(LootLoggerPlugin.class, "refresh-white.png");
+		ICON_BACK = ImageUtil.loadImageResource(LootLoggerPlugin.class, "back-arrow-white.png");
+		ICON_REPLAY = ImageUtil.loadImageResource(LootLoggerPlugin.class, "replay-white.png");
 	}
 
 	private final ItemManager itemManager;

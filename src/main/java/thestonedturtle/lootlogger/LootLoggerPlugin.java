@@ -124,7 +124,7 @@ public class LootLoggerPlugin extends Plugin
 	{
 		panel = new LootLoggerPanel(itemManager, this);
 
-		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel-icon.png");
+		final BufferedImage icon = ImageUtil.loadImageResource(getClass(), "panel-icon.png");
 
 		navButton = NavigationButton.builder()
 			.tooltip("Loot Logger")

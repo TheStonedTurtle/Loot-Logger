@@ -24,8 +24,6 @@
  */
 package thestonedturtle.lootlogger.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -35,37 +33,29 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import lombok.Getter;
 import net.runelite.client.game.ItemManager;
-import thestonedturtle.lootlogger.data.UniqueItem;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.AsyncBufferedImage;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.QuantityFormatter;
+import thestonedturtle.lootlogger.data.UniqueItem;
 
 @Getter
 class UniqueItemPanel extends JPanel
 {
-	private final float alphaHas = 1.0f;
-
-	private static final Dimension panelSize = new Dimension(215, 50);
-	private static final Border panelBorder = new EmptyBorder(3, 0, 3, 0);
-	private static final Color panelBackgroundColor = ColorScheme.DARK_GRAY_COLOR;
-
 	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager, final int itemMissingAlpha)
 	{
-		float alphaMissing = itemMissingAlpha / 100f;
-		final JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
-		panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		panel.setBorder(new EmptyBorder(3, 0, 3, 0));
+		this.setLayout(new GridBagLayout());
+		this.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		this.setBorder(new CompoundBorder(new MatteBorder(3, 0, 3, 0, ColorScheme.DARK_GRAY_COLOR), new EmptyBorder(3, 0, 3, 0)));
+		this.setMinimumSize(new Dimension(PluginPanel.PANEL_WIDTH - 10, 0));
 
-		this.setLayout(new BorderLayout());
-		this.setBorder(panelBorder);
-		this.setBackground(panelBackgroundColor);
-		this.setPreferredSize(panelSize);
+		float alphaMissing = itemMissingAlpha / 100f;
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
@@ -78,8 +68,9 @@ class UniqueItemPanel extends JPanel
 		for (final UniqueItem l : items)
 		{
 			final int quantity = l.getQty();
-			final float alpha = (quantity > 0 ? alphaHas : alphaMissing);
 			final AsyncBufferedImage image = itemManager.getImage(l.getItemID(), quantity, quantity > 1);
+
+			final float alpha = (quantity > 0 ? 1.0f : alphaMissing);
 			final BufferedImage opaque = ImageUtil.alphaOffset(image, alpha);
 
 			final JLabel icon = new JLabel();
@@ -87,7 +78,7 @@ class UniqueItemPanel extends JPanel
 			icon.setIcon(new ImageIcon(opaque));
 			icon.setVerticalAlignment(SwingConstants.CENTER);
 			icon.setHorizontalAlignment(SwingConstants.CENTER);
-			panel.add(icon, c);
+			this.add(icon, c);
 			c.gridx++;
 
 			// in case the image is blank we will refresh it upon load
@@ -99,8 +90,6 @@ class UniqueItemPanel extends JPanel
 				icon.repaint();
 			});
 		}
-
-		this.add(panel, BorderLayout.NORTH);
 	}
 
 	private static String buildToolTip(final UniqueItem item, final int qty)

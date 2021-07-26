@@ -174,21 +174,9 @@ class LootPanel extends JPanel
 
 		if (itemsToDisplay.size() > 0)
 		{
-			if (config.itemBreakdown())
-			{
-				for (final LTItemEntry e : itemsToDisplay)
-				{
-					final ItemPanel p = new ItemPanel(e, itemManager);
-					this.add(p, c);
-					c.gridy++;
-				}
-			}
-			else
-			{
 				final LootGrid grid = new LootGrid(itemsToDisplay.toArray(new LTItemEntry[0]), itemManager);
 				this.add(grid, c);
 				c.gridy++;
-			}
 		}
 
 		// Add all minions

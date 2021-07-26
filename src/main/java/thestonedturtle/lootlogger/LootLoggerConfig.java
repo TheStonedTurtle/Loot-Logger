@@ -41,17 +41,6 @@ public interface LootLoggerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 2,
-		keyName = "itemBreakdown",
-		name = "Breakdown individual items",
-		description = "Shows more information for each item received instead of displaying the items in a compact grid"
-	)
-	default boolean itemBreakdown()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		position = 3,
 		keyName = "bossButtons",
 		name = "Show boss icons",

@@ -38,7 +38,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.ItemSortTypes;
 import thestonedturtle.lootlogger.LootLoggerConfig;
@@ -86,7 +85,7 @@ class LootPanel extends JPanel
 		this.itemManager = itemManager;
 		this.clearData = clearData;
 
-		setLayout(new DynamicGridLayout(0, 1, 0, 4));
+		setLayout(new VisibleDynamicGridLayout(0, 1, 0, 4));
 		setBorder(new EmptyBorder(0, 10, 0, 10));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 

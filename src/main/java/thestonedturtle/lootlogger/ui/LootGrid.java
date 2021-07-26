@@ -48,7 +48,6 @@ class LootGrid extends JPanel
 
 	LootGrid(final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)
 	{
-		this();
 		updateGrid(itemsToDisplay, itemManager);
 	}
 

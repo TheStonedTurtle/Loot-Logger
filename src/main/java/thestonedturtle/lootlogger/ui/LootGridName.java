@@ -26,16 +26,10 @@ package thestonedturtle.lootlogger.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.function.BiConsumer;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -43,7 +37,6 @@ import javax.swing.border.MatteBorder;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.util.QuantityFormatter;
-import net.runelite.http.api.loottracker.LootRecordType;
 
 /**
  * Name above the loot grid that roughly matches the RuneLite Loot Tracker LootTrackerBox `logTitle` element
@@ -51,22 +44,17 @@ import net.runelite.http.api.loottracker.LootRecordType;
 public class LootGridName extends JPanel
 {
 	private static final int TITLE_PADDING = 5;
-	private static final Border VISIBLE_BORDER = new EmptyBorder(7, 7, 7, 7);
-	private static final Border COLLAPSED_BORDER = new CompoundBorder(
+	static final Border VISIBLE_BORDER = new EmptyBorder(7, 7, 7, 7);
+	static final Border COLLAPSED_BORDER = new CompoundBorder(
 		new MatteBorder(0, 0, 5, 0, ColorScheme.DARK_GRAY_COLOR),
 		VISIBLE_BORDER
 	);
 
-	private boolean isCollapsed = false;
-	private final LootGrid grid;
-
-	LootGridName(final String name, final int count, final long price, final LootGrid grid,
-				 final LootRecordType type, final BiConsumer<LootRecordType, String> clearData) {
-		this.grid = grid;
+	LootGridName(final String name, final int count, final long price) {
 
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		this.setBorder(VISIBLE_BORDER);
 		this.setBackground(ColorScheme.DARKER_GRAY_COLOR.darker());
+		this.setBorder(VISIBLE_BORDER);
 
 		final JLabel titleLabel = new JLabel();
 		titleLabel.setText(name + " x " + count);
@@ -85,32 +73,5 @@ public class LootGridName extends JPanel
 		priceLabel.setText(QuantityFormatter.quantityToStackSize(price) + " gp");
 		priceLabel.setToolTipText(QuantityFormatter.formatNumber(price) + " gp");
 		this.add(priceLabel);
-
-		// Clear data popup-menu
-		final JPopupMenu menu = new JPopupMenu();
-		final JMenuItem delete = new JMenuItem("Clear stored data");
-		delete.addActionListener(ev -> clearData.accept(type, name));
-		menu.add(delete);
-		this.setComponentPopupMenu(menu);
-
-		this.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseClicked(MouseEvent e)
-			{
-				if (SwingUtilities.isRightMouseButton(e))
-				{
-					return;
-				}
-				changeCollapse();
-			}
-		});
-	}
-
-	void changeCollapse()
-	{
-		isCollapsed = !isCollapsed;
-		grid.setVisible(!isCollapsed);
-		setBorder(isCollapsed ? COLLAPSED_BORDER : VISIBLE_BORDER);
 	}
 }

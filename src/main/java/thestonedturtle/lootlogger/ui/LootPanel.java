@@ -211,11 +211,7 @@ class LootPanel extends JPanel
 				final LootGrid grid = new LootGrid(logItemsToDisplay, itemManager);
 
 				final long logValue = log.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
-				this.add(new LootGridName(log.getName(), log.getRecords().size(), logValue, grid, log.getType(), clearData), c);
-				c.gridy++;
-
-				grid.setBorder(new EmptyBorder(0, 0, 5, 0));
-				this.add(grid, c);
+				this.add(new NamedLootGrid(log.getName(), log.getRecords().size(), logValue, grid, log.getType(), clearData), c);
 				c.gridy++;
 
 				totalValue += logValue;

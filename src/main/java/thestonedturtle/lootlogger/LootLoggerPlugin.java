@@ -2,7 +2,7 @@ package thestonedturtle.lootlogger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -111,7 +111,7 @@ public class LootLoggerPlugin extends Plugin
 	private boolean gotPet = false;
 
 	private final Map<String, Integer> killCountMap = new HashMap<>();
-	private final Multimap<String, LTRecord> sessionData = HashMultimap.create();
+	private final LinkedListMultimap<String, LTRecord> sessionData = LinkedListMultimap.create();
 
 	@Provides
 	LootLoggerConfig provideConfig(ConfigManager configManager)

@@ -34,7 +34,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import lombok.Getter;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
@@ -81,8 +80,6 @@ public class NamedLootGrid extends JPanel
 		});
 
 		this.add(namePanel);
-
-		grid.setBorder(new EmptyBorder(0, 0, 5, 0));
 		this.add(grid);
 	}
 

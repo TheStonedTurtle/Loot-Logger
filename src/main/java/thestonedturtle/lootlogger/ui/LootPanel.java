@@ -86,7 +86,7 @@ class LootPanel extends JPanel
 		this.clearData = clearData;
 
 		setLayout(new VisibleDynamicGridLayout(0, 1, 0, 4));
-		setBorder(new EmptyBorder(0, 10, 0, 10));
+		setBorder(new EmptyBorder(0, 10, 5, 10));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 
 		createPanel(log);

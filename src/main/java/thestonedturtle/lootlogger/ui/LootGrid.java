@@ -29,7 +29,6 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.QuantityFormatter;
@@ -45,7 +44,6 @@ class LootGrid extends JPanel
 
 	LootGrid()
 	{
-		setBorder(new EmptyBorder(5, 0, 5, 0));
 	}
 
 	LootGrid(final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)

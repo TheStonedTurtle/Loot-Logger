@@ -26,8 +26,6 @@ package thestonedturtle.lootlogger.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,79 +38,41 @@ import net.runelite.client.util.QuantityFormatter;
 @Getter
 class TextPanel extends JPanel
 {
-	private static final GridBagLayout LAYOUT = new GridBagLayout();
-
-	private static final Border PANEL_BORDER = BorderFactory.createMatteBorder(3, 0, 3, 0, ColorScheme.DARK_GRAY_COLOR);
 	private static final Color PANEL_BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
+	private static final Border PANEL_BORDER = BorderFactory.createMatteBorder(8, 15, 8, 0, PANEL_BACKGROUND_COLOR);
 
-	private static final Border CONTAINER_BORDER = BorderFactory.createMatteBorder(0, 15, 0, 15, PANEL_BACKGROUND_COLOR);
+	private final JLabel textLabel = new JLabel("", SwingConstants.LEFT);
+	private final JLabel valueLabel = new JLabel("", SwingConstants.LEFT);
 
-	// Long value should be for Total Value
-	TextPanel(final String text, final long totalValue)
+	TextPanel()
 	{
-		this.setLayout(LAYOUT);
-		this.setBorder(PANEL_BORDER);
+		this.setLayout(new BorderLayout());
 		this.setBackground(PANEL_BACKGROUND_COLOR);
-
-		final JLabel totalText = new JLabel(text, SwingConstants.LEFT);
-		totalText.setForeground(Color.WHITE);
-
-		// Item Values (Colored off Total Value of item)
-		final JLabel total = new JLabel(QuantityFormatter.quantityToStackSize(totalValue) + " gp", SwingConstants.LEFT);
-		total.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-		total.setForeground(getRSValueColor(totalValue));
-
-		final JPanel panel = createPanel();
-
-		panel.add(totalText, BorderLayout.LINE_START);
-		panel.add(total, BorderLayout.CENTER);
-
-		final GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1;
-		c.gridx = 0;
-		c.gridy = 0;
-		c.ipady = 20;
-
-		panel.setToolTipText(QuantityFormatter.formatNumber(totalValue));
-
-		this.add(panel, c);
-	}
-
-	TextPanel(final String text, final int value)
-	{
-		this.setLayout(LAYOUT);
 		this.setBorder(PANEL_BORDER);
-		this.setBackground(PANEL_BACKGROUND_COLOR);
 
-		final JLabel textLabel = new JLabel(text, SwingConstants.LEFT);
 		textLabel.setForeground(Color.WHITE);
-
-		final JLabel valueLabel = new JLabel(String.valueOf(value), SwingConstants.LEFT);
 		valueLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
-		final JPanel panel = createPanel();
-		panel.add(textLabel, BorderLayout.LINE_START);
-		panel.add(valueLabel, BorderLayout.CENTER);
-
-		final GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1;
-		c.gridx = 0;
-		c.gridy = 0;
-		c.ipady = 20;
-
-		this.add(panel, c);
+		this.add(textLabel, BorderLayout.LINE_START);
+		this.add(valueLabel, BorderLayout.CENTER);
 	}
 
-	private static JPanel createPanel()
+	// Long value should be for Total Value
+	public void updatePanel(final String text, final long totalValue)
 	{
-		final JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		panel.setBorder(CONTAINER_BORDER);
-		panel.setBackground(PANEL_BACKGROUND_COLOR);
+		textLabel.setText(text);
 
-		return panel;
+		// Item Values (Colored off Total Value of item)
+		valueLabel.setText(QuantityFormatter.quantityToStackSize(totalValue) + " gp");
+		valueLabel.setForeground(getRSValueColor(totalValue));
+
+		this.setToolTipText(QuantityFormatter.formatNumber(totalValue));
+	}
+
+	public void updatePanel(final String text, final int value)
+	{
+		textLabel.setText(text);
+		valueLabel.setText(QuantityFormatter.formatNumber(value));
 	}
 
 	private static Color getRSValueColor(long val)

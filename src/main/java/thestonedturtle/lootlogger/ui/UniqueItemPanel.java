@@ -33,9 +33,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 import lombok.Getter;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
@@ -52,9 +50,15 @@ class UniqueItemPanel extends JPanel
 	{
 		this.setLayout(new GridBagLayout());
 		this.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-		this.setBorder(new CompoundBorder(new MatteBorder(3, 0, 3, 0, ColorScheme.DARK_GRAY_COLOR), new EmptyBorder(3, 0, 3, 0)));
+		this.setBorder(new EmptyBorder(3, 0, 3, 0));
 		this.setMinimumSize(new Dimension(PluginPanel.PANEL_WIDTH - 10, 0));
 
+		updatePanel(items, itemManager, itemMissingAlpha);
+	}
+
+	public void updatePanel(final Collection<UniqueItem> items, final ItemManager itemManager, final int itemMissingAlpha)
+	{
+		removeAll();
 		float alphaMissing = itemMissingAlpha / 100f;
 
 		GridBagConstraints c = new GridBagConstraints();

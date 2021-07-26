@@ -29,7 +29,6 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.QuantityFormatter;
@@ -43,9 +42,18 @@ class LootGrid extends JPanel
 	private static final int ITEMS_PER_ROW = 5;
 	private static final Dimension ITEM_SIZE = new Dimension(40, 40);
 
+	LootGrid()
+	{
+	}
+
 	LootGrid(final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)
 	{
-		setBorder(new EmptyBorder(5, 0, 5, 0));
+		updateGrid(itemsToDisplay, itemManager);
+	}
+
+	public void updateGrid(final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)
+	{
+		removeAll();
 
 		// Calculates how many rows need to be display to fit all items
 		final int rowSize = ((itemsToDisplay.length % ITEMS_PER_ROW == 0) ? 0 : 1) + itemsToDisplay.length / ITEMS_PER_ROW;

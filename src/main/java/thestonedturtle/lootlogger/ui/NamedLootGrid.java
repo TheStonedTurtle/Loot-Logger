@@ -34,22 +34,25 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+import lombok.Getter;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.http.api.loottracker.LootRecordType;
+import thestonedturtle.lootlogger.data.LootLog;
+import thestonedturtle.lootlogger.localstorage.LTItemEntry;
 
 public class NamedLootGrid extends JPanel
 {
-	private static final Border VISIBLE_BORDER = new EmptyBorder(7, 7, 7, 7);
-
 	private boolean isCollapsed = false;
 	private final LootGridName namePanel;
 	private final LootGrid grid;
+	@Getter
+	private long price;
 
 	NamedLootGrid(final String name, final int count, final long price, final LootGrid grid,
 				 final LootRecordType type, final BiConsumer<LootRecordType, String> clearData) {
 		this.grid = grid;
+		this.price = price;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.setBackground(ColorScheme.DARKER_GRAY_COLOR.darker());
@@ -77,16 +80,26 @@ public class NamedLootGrid extends JPanel
 		});
 
 		this.add(namePanel);
-
-		grid.setBorder(new EmptyBorder(0, 0, 5, 0));
 		this.add(grid);
+	}
+
+	void updateGrid(final LootLog log, final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)
+	{
+		price = log.getLootValue(false);
+		namePanel.updateLabel(log.getName(), log.getRecords().size(), price);
+
+		grid.updateGrid(itemsToDisplay, itemManager);
+
+		if (isCollapsed)
+		{
+			changeCollapse();
+		}
 	}
 
 	void changeCollapse()
 	{
 		isCollapsed = !isCollapsed;
 		grid.setVisible(!isCollapsed);
-		namePanel.setBorder(isCollapsed ? LootGridName.COLLAPSED_BORDER : LootGridName.VISIBLE_BORDER);
 
 		// Copied from RuneLite's LootTrackerBox::applyDimmer
 		for (Component component : namePanel.getComponents())

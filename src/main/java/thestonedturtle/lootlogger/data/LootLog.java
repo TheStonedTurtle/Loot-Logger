@@ -24,12 +24,17 @@
  */
 package thestonedturtle.lootlogger.data;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,6 +57,9 @@ public class LootLog
 	private final List<LTRecord> records = new ArrayList<>();
 	private final Map<Integer, LTItemEntry> consolidated = new HashMap<>();
 	private final Collection<UniqueItem> uniques;
+
+	private final Set<Integer> uniqueIds = new HashSet<>();
+	private final Multimap<Integer, UniqueItem> uniquePositionMap = ArrayListMultimap.create();
 
 	// Store a LootLog for all minions
 	private final List<LootLog> minionLogs = new ArrayList<>();
@@ -172,5 +180,62 @@ public class LootLog
 		}
 
 		return null;
+	}
+
+	public long getLootValue(boolean includeMinions)
+	{
+		long value = getConsolidated()
+			.values().stream()
+			.mapToLong(e -> e.getPrice() * e.getQuantity())
+			.sum();
+
+		if (includeMinions)
+		{
+			for (final LootLog minionLog : minionLogs)
+			{
+				value += minionLog.getConsolidated()
+					.values().stream()
+					.mapToLong(e -> e.getPrice() * e.getQuantity())
+					.sum();
+			}
+		}
+
+		return value;
+	}
+
+	// Loop over all UniqueItems and check how many the player has received as a drop for each
+	// Also add all Item IDs for uniques to a Set for easy hiding later on.
+	public static void recalculateUniques(final LootLog lootLog, final boolean includeMinions)
+	{
+		lootLog.getUniqueIds().clear();
+		lootLog.getUniquePositionMap().clear();
+
+		final Collection<LootLog> allLogs = new ArrayList<>();
+		allLogs.add(lootLog);
+		if (includeMinions) {
+			allLogs.addAll(lootLog.getMinionLogs());
+		}
+
+		for (final UniqueItem item : lootLog.getUniques())
+		{
+			final List<Integer> ids = Arrays.stream(item.getAlternativeIds()).boxed().collect(Collectors.toList());
+			ids.add(item.getItemID());
+			ids.add(item.getLinkedID());
+
+			int qty = 0;
+			for (final int id : ids)
+			{
+				lootLog.getUniqueIds().add(id);
+
+				for (final LootLog log : allLogs)
+				{
+					final LTItemEntry entry = log.getConsolidated().get(id);
+					qty += (entry == null ? 0 : entry.getQuantity());
+				}
+			}
+
+			item.setQty(qty);
+			lootLog.getUniquePositionMap().put(item.getPosition(), item);
+		}
 	}
 }

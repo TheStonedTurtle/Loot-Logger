@@ -25,6 +25,9 @@
 package thestonedturtle.lootlogger.ui;
 
 import com.google.common.collect.ImmutableList;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -73,6 +76,7 @@ class LootPanel extends JPanel
 	@Getter
 	private final Map<String, NamedLootGrid> minionGridMap = new HashMap<>();
 	private final Map<Integer, UniqueItemPanel> uniqueItemPanelMap = new HashMap<>();
+	private final GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
 	LootPanel(
 		final LootLog log,
@@ -85,9 +89,15 @@ class LootPanel extends JPanel
 		this.itemManager = itemManager;
 		this.clearData = clearData;
 
-		setLayout(new VisibleDynamicGridLayout(0, 1, 0, 4));
+		setLayout(new GridBagLayout());
 		setBorder(new EmptyBorder(0, 10, 5, 10));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
+
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.insets = new Insets(0, 0, 4, 0);
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
 
 		createPanel(log);
 	}
@@ -102,28 +112,35 @@ class LootPanel extends JPanel
 		minionGridMap.clear();
 		uniqueItemPanelMap.clear();
 		removeAll();
-
-		add(currentKillcountPanel);
-		add(killsLoggedPanel);
-		add(totalValuePanel);
-		add(lootGrid);
+		gridBagConstraints.gridy = 0;
 
 		// Create uniques panel
 		if (!config.uniquesPlacement().equals(UniqueItemPlacement.ITEM_BREAKDOWN))
 		{
 			LootLog.recalculateUniques(lootLog, config.includeMinions());
 
-			int idx = 0;
 			for (final int position : lootLog.getUniquePositionMap().keySet())
 			{
 				final Collection<UniqueItem> uniques = lootLog.getUniquePositionMap().get(position);
 
 				final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager, this.config.itemMissingAlpha());
 				uniqueItemPanelMap.put(position, p);
-				this.add(p, idx);
-				idx++;
+				add(p, gridBagConstraints);
+				gridBagConstraints.gridy++;
 			}
 		}
+
+		add(currentKillcountPanel, gridBagConstraints);
+		gridBagConstraints.gridy++;
+
+		add(killsLoggedPanel, gridBagConstraints);
+		gridBagConstraints.gridy++;
+
+		add(totalValuePanel, gridBagConstraints);
+		gridBagConstraints.gridy++;
+
+		add(lootGrid, gridBagConstraints);
+		gridBagConstraints.gridy++;
 
 		int killsLogged = lootLog.getRecords().size();
 		if (killsLogged > 0)
@@ -157,8 +174,9 @@ class LootPanel extends JPanel
 				killsLogged += log.getRecords().size();
 
 				final NamedLootGrid namedGrid = createMinionGrid(log);
-				this.add(namedGrid);
 				minionGridMap.put(log.getName().toLowerCase(), namedGrid);
+				add(namedGrid, gridBagConstraints);
+				gridBagConstraints.gridy++;
 
 				totalValue += namedGrid.getPrice();
 			}
@@ -239,10 +257,12 @@ class LootPanel extends JPanel
 			if (useLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
 			{
 				final LootLog newMinionLog = new LootLog(ImmutableList.of(record), record.getName());
-				final NamedLootGrid grid = createMinionGrid(newMinionLog);
-				this.add(grid);
-				minionGridMap.put(newMinionLog.getName().toLowerCase(), grid);
 				useLog.getMinionLogs().add(newMinionLog);
+
+				final NamedLootGrid grid = createMinionGrid(newMinionLog);
+				minionGridMap.put(newMinionLog.getName().toLowerCase(), grid);
+				add(grid, gridBagConstraints);
+				gridBagConstraints.gridy++;
 
 				// Refresh doesn't work for session data but just in case it is updated to work with minions in the future we should not refresh
 				if (!playbackPlaying)

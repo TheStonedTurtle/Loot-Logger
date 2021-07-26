@@ -57,7 +57,8 @@ class LootPanel extends JPanel
 	private static final String TOTAL_VALUE = "Total Value:";
 	private static final String TOTAL_KILLS = "Total Kills:";
 
-	private final LootLog lootLog;
+	private LootLog lootLog;
+	private LootLog tempLog;
 	private final LootLoggerConfig config;
 	private final ItemManager itemManager;
 
@@ -89,24 +90,24 @@ class LootPanel extends JPanel
 		setBorder(new EmptyBorder(0, 10, 0, 10));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 
-		currentKillcountPanel.setVisible(false);
-		add(currentKillcountPanel);
-
-		killsLoggedPanel.setVisible(false);
-		add(killsLoggedPanel);
-
-		totalValuePanel.setVisible(false);
-		add(totalValuePanel);
-
-		lootGrid.setVisible(false);
-		add(lootGrid);
-
 		createPanel(log);
 	}
 
 	private void createPanel(final LootLog lootLog)
 	{
+		// Reset panel state
+		currentKillcountPanel.setVisible(false);
+		killsLoggedPanel.setVisible(false);
+		totalValuePanel.setVisible(false);
+		lootGrid.setVisible(false);
 		minionGridMap.clear();
+		uniqueItemPanelMap.clear();
+		removeAll();
+
+		add(currentKillcountPanel);
+		add(killsLoggedPanel);
+		add(totalValuePanel);
+		add(lootGrid);
 
 		// Create uniques panel
 		if (!config.uniquesPlacement().equals(UniqueItemPlacement.ITEM_BREAKDOWN))
@@ -218,31 +219,48 @@ class LootPanel extends JPanel
 
 	void addedRecord(final LTRecord record)
 	{
+		if (playbackPlaying)
+		{
+			tempLog.addRecord(record);
+			return;
+		}
+
 		lootLog.addRecord(record);
 		refreshPanel(false);
 	}
 
 	void addMinionRecord(final LTRecord record)
 	{
-		final LootLog minionLog = lootLog.getMinionLog(record.getName());
+		final LootLog useLog = playbackPlaying ? tempLog : lootLog;
+
+		final LootLog minionLog = useLog.getMinionLog(record.getName());
 		if (minionLog == null)
 		{
 			// Add non-existent minion only if viewing session data
-			if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
+			if (useLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
 			{
 				final LootLog newMinionLog = new LootLog(ImmutableList.of(record), record.getName());
 				final NamedLootGrid grid = createMinionGrid(newMinionLog);
 				this.add(grid);
 				minionGridMap.put(newMinionLog.getName().toLowerCase(), grid);
-				lootLog.getMinionLogs().add(newMinionLog);
-				refreshPanel(true);
+				useLog.getMinionLogs().add(newMinionLog);
+
+				// Refresh doesn't work for session data but just in case it is updated to work with minions in the future we should not refresh
+				if (!playbackPlaying)
+				{
+					refreshPanel(true);
+				}
 			}
 			return;
 		}
 
 		minionLog.addRecord(record);
 		updateMinionLog(minionLog);
-		refreshPanel(true);
+
+		if (!playbackPlaying)
+		{
+			refreshPanel(true);
+		}
 	}
 
 	// Recalculate uniques and update the item panels if necessary
@@ -308,29 +326,34 @@ class LootPanel extends JPanel
 
 		if (lootLog.getRecords().size() > 0)
 		{
-			final Collection<LTRecord> recs = new ArrayList<>();
-			for (final LTRecord r : lootLog.getRecords())
-			{
-				recs.add(r);
+			tempLog = lootLog;
 
-				final LootLog log;
-				if (recs.size() != lootLog.getRecords().size())
+			lootLog = new LootLog(new ArrayList<>(), lootLog.getName());
+			for (final LTRecord r : tempLog.getRecords())
+			{
+				lootLog.addRecord(r);
+
+				if (lootLog.getRecords().size() == 1)
 				{
-					log = new LootLog(recs, lootLog.getName());
+					SwingUtilities.invokeLater(() -> createPanel(lootLog));
+				}
+				else if (lootLog.getRecords().size() == tempLog.getRecords().size())
+				{
+					cancelPlayback = true;
 				}
 				else
 				{
-					log = lootLog;
+					SwingUtilities.invokeLater(() -> refreshPanel(false));
 				}
 
-				SwingUtilities.invokeLater(() -> refreshPlayback(log));
 				try
 				{
 					if (cancelPlayback)
 					{
 						playbackPlaying = false;
 						cancelPlayback = false;
-						SwingUtilities.invokeLater(() -> refreshPlayback(lootLog));
+						lootLog = tempLog;
+						SwingUtilities.invokeLater(() -> createPanel(lootLog));
 						break;
 					}
 
@@ -339,22 +362,12 @@ class LootPanel extends JPanel
 				}
 				catch (InterruptedException e)
 				{
-					System.out.println(e.getMessage());
+					log.warn(e.getMessage());
 				}
 			}
 		}
 
 		playbackPlaying = false;
-	}
-
-	private void refreshPlayback(final LootLog log)
-	{
-		this.removeAll();
-
-		this.createPanel(log);
-
-		this.revalidate();
-		this.repaint();
 	}
 
 	/**

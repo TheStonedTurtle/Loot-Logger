@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 import net.runelite.http.api.RuneLiteAPI;
@@ -59,6 +60,7 @@ public class LootRecordWriter
 	private File playerFolder = LOOT_RECORD_DIR;
 	// Data is separated into sub-folders by event type to prevent issues.
 	private final Map<LootRecordType, File> eventFolders = new HashMap<>();
+	@Setter
 	private String name;
 
 	@Inject
@@ -67,17 +69,18 @@ public class LootRecordWriter
 		LOOT_RECORD_DIR.mkdir();
 	}
 
-	public void setPlayerUsername(final String username)
+	public boolean setPlayerUsername(final String username)
 	{
 		if (username.equalsIgnoreCase(name))
 		{
-			return;
+			return false;
 		}
 
 		playerFolder = new File(LOOT_RECORD_DIR, username);
 		playerFolder.mkdir();
 		name = username;
 		createSubFolders();
+		return true;
 	}
 
 	private void createSubFolders()

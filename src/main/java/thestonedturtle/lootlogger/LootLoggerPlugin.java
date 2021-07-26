@@ -172,6 +172,7 @@ public class LootLoggerPlugin extends Plugin
 
 		gotPet = false;
 		petTicks = 0;
+		writer.setName(null);
 	}
 
 	@Subscribe
@@ -209,8 +210,10 @@ public class LootLoggerPlugin extends Plugin
 
 	private void updateWriterUsername()
 	{
-		writer.setPlayerUsername(client.getUsername());
-		localPlayerNameChanged();
+		if (writer.setPlayerUsername(client.getUsername()))
+		{
+			localPlayerNameChanged();
+		}
 	}
 
 	private void localPlayerNameChanged()

@@ -24,26 +24,21 @@
  */
 package thestonedturtle.lootlogger.ui;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.ItemSortTypes;
 import thestonedturtle.lootlogger.LootLoggerConfig;
@@ -57,6 +52,11 @@ import thestonedturtle.lootlogger.localstorage.LTRecord;
 @Slf4j
 class LootPanel extends JPanel
 {
+	private static final String CURRENT_KC = "Current Killcount:";
+	private static final String KILLS_LOGGED = "Kills Logged:";
+	private static final String TOTAL_VALUE = "Total Value:";
+	private static final String TOTAL_KILLS = "Total Kills:";
+
 	private final LootLog lootLog;
 	private final LootLoggerConfig config;
 	private final ItemManager itemManager;
@@ -65,6 +65,14 @@ class LootPanel extends JPanel
 	private boolean cancelPlayback = false;
 
 	private final BiConsumer<LootRecordType, String> clearData;
+	private final LootGrid lootGrid = new LootGrid();
+	private final TextPanel currentKillcountPanel = new TextPanel();
+	private final TextPanel killsLoggedPanel = new TextPanel();
+	private final TextPanel totalValuePanel = new TextPanel();
+
+	@Getter
+	private final Map<String, NamedLootGrid> minionGridMap = new HashMap<>();
+	private final Map<Integer, UniqueItemPanel> uniqueItemPanelMap = new HashMap<>();
 
 	LootPanel(
 		final LootLog log,
@@ -77,111 +85,68 @@ class LootPanel extends JPanel
 		this.itemManager = itemManager;
 		this.clearData = clearData;
 
-		setLayout(new GridBagLayout());
+		setLayout(new DynamicGridLayout(0, 1, 0, 4));
 		setBorder(new EmptyBorder(0, 10, 0, 10));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
+
+		currentKillcountPanel.setVisible(false);
+		add(currentKillcountPanel);
+
+		killsLoggedPanel.setVisible(false);
+		add(killsLoggedPanel);
+
+		totalValuePanel.setVisible(false);
+		add(totalValuePanel);
+
+		lootGrid.setVisible(false);
+		add(lootGrid);
 
 		createPanel(log);
 	}
 
 	private void createPanel(final LootLog lootLog)
 	{
-		final GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1;
-		c.gridx = 0;
-		c.gridy = 0;
+		minionGridMap.clear();
 
-		// Create necessary helpers for the unique toggles
-		final Multimap<Integer, UniqueItem> positionMap = ArrayListMultimap.create();
-		final Set<Integer> uniqueIds = new HashSet<>();
-
-		final Collection<LootLog> allLogs = new ArrayList<>();
-		allLogs.add(lootLog);
-		if (config.includeMinions()) {
-			allLogs.addAll(lootLog.getMinionLogs());
-		}
-
+		// Create uniques panel
 		if (!config.uniquesPlacement().equals(UniqueItemPlacement.ITEM_BREAKDOWN))
 		{
-			// Loop over all UniqueItems and check how many the player has received as a drop for each
-			// Also add all Item IDs for uniques to a Set for easy hiding later on.
-			for (final UniqueItem item : lootLog.getUniques())
+			LootLog.recalculateUniques(lootLog, config.includeMinions());
+
+			int idx = 0;
+			for (final int position : lootLog.getUniquePositionMap().keySet())
 			{
-				final List<Integer> ids = Arrays.stream(item.getAlternativeIds()).boxed().collect(Collectors.toList());
-				ids.add(item.getItemID());
-				ids.add(item.getLinkedID());
-
-				int qty = 0;
-				for (final int id : ids)
-				{
-					uniqueIds.add(id);
-
-					for (final LootLog log : allLogs)
-					{
-						final LTItemEntry entry = log.getConsolidated().get(id);
-						qty += (entry == null ? 0 : entry.getQuantity());
-					}
-				}
-
-				item.setQty(qty);
-				positionMap.put(item.getPosition(), item);
-			}
-
-			for (final int position : positionMap.keySet())
-			{
-				final Collection<UniqueItem> uniques = positionMap.get(position);
+				final Collection<UniqueItem> uniques = lootLog.getUniquePositionMap().get(position);
 
 				final UniqueItemPanel p = new UniqueItemPanel(uniques, this.itemManager, this.config.itemMissingAlpha());
-				this.add(p, c);
-				c.gridy++;
+				uniqueItemPanelMap.put(position, p);
+				this.add(p, idx);
+				idx++;
 			}
 		}
 
-		// Attach Kill Count Panel(s)
-		if (lootLog.getRecords().size() > 0)
+		int killsLogged = lootLog.getRecords().size();
+		if (killsLogged > 0)
 		{
-			final int amount = lootLog.getRecords().size();
-			final LTRecord entry = lootLog.getRecords().get(amount - 1);
+			killsLoggedPanel.updatePanel(KILLS_LOGGED, lootLog.getRecords().size());
+			killsLoggedPanel.setVisible(true);
+
+			final LTRecord entry = lootLog.getRecords().get(lootLog.getRecords().size() - 1);
 			if (entry.getKillCount() != -1)
 			{
-				final TextPanel p = new TextPanel("Current Killcount:", entry.getKillCount());
-				this.add(p, c);
-				c.gridy++;
+				currentKillcountPanel.updatePanel(CURRENT_KC, entry.getKillCount());
+				currentKillcountPanel.setVisible(true);
 			}
-			final TextPanel p2 = new TextPanel("Kills Logged:", amount);
-			this.add(p2, c);
-			c.gridy++;
 		}
 
-		final int killsLoggedGridY = c.gridy;
-		if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
-		{
-			c.gridy++;
-		}
+		// Include Main Loot
+		updateMainLootGrid();
 
-		// Only add the total value element if it has something useful to display
-		long totalValue = lootLog.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
-		final int totalGridY = c.gridy;
-		c.gridy++;
+		// Store Total Value
+		long totalValue = lootLog.getLootValue(false);
 
-		final boolean hideUniques = config.uniquesPlacement().equals(UniqueItemPlacement.UNIQUES_PANEL);
-		final Comparator<LTItemEntry> sorter = createLTItemEntryComparator(config.itemSortType());
-		final Collection<LTItemEntry> itemsToDisplay = lootLog.getConsolidated().values().stream()
-			.filter(e -> !(hideUniques && uniqueIds.contains(e.getId())))
-			.sorted(sorter)
-			.collect(Collectors.toList());
-
-		if (itemsToDisplay.size() > 0)
-		{
-				final LootGrid grid = new LootGrid(itemsToDisplay.toArray(new LTItemEntry[0]), itemManager);
-				this.add(grid, c);
-				c.gridy++;
-		}
-
-		// Add all minions
-		int killsLogged = 0;
-		if (config.includeMinions() && lootLog.getMinionLogs().size() > 0)
+		// Include Minion Loot
+		if (config.includeMinions())
 		{
 			for (final LootLog log : lootLog.getMinionLogs())
 			{
@@ -191,49 +156,70 @@ class LootPanel extends JPanel
 				}
 				killsLogged += log.getRecords().size();
 
-				final LTItemEntry[] logItemsToDisplay = log.getConsolidated().values().stream()
-					.filter(e -> !(hideUniques && uniqueIds.contains(e.getId())))
-					.sorted(sorter)
-					.toArray(LTItemEntry[]::new);
+				final NamedLootGrid namedGrid = createMinionGrid(log);
+				this.add(namedGrid);
+				minionGridMap.put(log.getName().toLowerCase(), namedGrid);
 
-				final LootGrid grid = new LootGrid(logItemsToDisplay, itemManager);
-
-				final long logValue = log.getConsolidated().values().stream().mapToLong(e -> e.getPrice() * e.getQuantity()).sum();
-				this.add(new NamedLootGrid(log.getName(), log.getRecords().size(), logValue, grid, log.getType(), clearData), c);
-				c.gridy++;
-
-				totalValue += logValue;
+				totalValue += namedGrid.getPrice();
 			}
 		}
 
 		if (totalValue > 0)
 		{
-			int tempGridY = c.gridy;
-			c.gridy = totalGridY;
-
-			final TextPanel totalPanel = new TextPanel("Total Value:", totalValue);
-			this.add(totalPanel, c);
-
-			c.gridy = tempGridY;
+			totalValuePanel.updatePanel(TOTAL_VALUE, totalValue);
+			totalValuePanel.setVisible(true);
 		}
 
-		// Combine all kills for session data
+		// Change text and include minion kills for session data
 		if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
 		{
-			int tempGridY = c.gridy;
-			c.gridy = killsLoggedGridY;
-
-			final TextPanel totalKills = new TextPanel("Total Kills:", killsLogged);
-			this.add(totalKills, c);
-
-			c.gridy = tempGridY;
+			killsLoggedPanel.updatePanel(TOTAL_KILLS, killsLogged);
+			killsLoggedPanel.setVisible(killsLogged > 0);
 		}
+	}
+
+	private LTItemEntry[] getItemsToDisplay(final LootLog log)
+	{
+		final boolean hideUniques = config.uniquesPlacement().equals(UniqueItemPlacement.UNIQUES_PANEL);
+
+		return log.getConsolidated()
+			.values().stream()
+			.filter(e -> !(hideUniques && lootLog.getUniqueIds().contains(e.getId())))
+			.sorted(createLTItemEntryComparator(config.itemSortType()))
+			.toArray(LTItemEntry[]::new);
+	}
+
+	private void updateMainLootGrid()
+	{
+		final LTItemEntry[] itemsToDisplay = getItemsToDisplay(lootLog);
+		if (itemsToDisplay.length > 0)
+		{
+			lootGrid.updateGrid(itemsToDisplay, itemManager);
+			lootGrid.setVisible(true);
+		}
+	}
+
+	private NamedLootGrid createMinionGrid(final LootLog log)
+	{
+		final LTItemEntry[] itemsToDisplay = getItemsToDisplay(log);
+		final LootGrid grid = new LootGrid(itemsToDisplay, itemManager);
+
+		final long logValue = log.getLootValue(false);
+		return new NamedLootGrid(log.getName(), log.getRecords().size(), logValue, grid, log.getType(), clearData);
+	}
+
+	private void updateMinionLog(final LootLog log)
+	{
+		final NamedLootGrid grid = minionGridMap.get(log.getName().toLowerCase());
+		final LTItemEntry[] itemsToDisplay = getItemsToDisplay(log);
+
+		grid.updateGrid(log, itemsToDisplay, itemManager);
 	}
 
 	void addedRecord(final LTRecord record)
 	{
 		lootLog.addRecord(record);
-		refreshPanel();
+		refreshPanel(false);
 	}
 
 	void addMinionRecord(final LTRecord record)
@@ -241,27 +227,73 @@ class LootPanel extends JPanel
 		final LootLog minionLog = lootLog.getMinionLog(record.getName());
 		if (minionLog == null)
 		{
-			// Add minion only if viewing session data
+			// Add non-existent minion only if viewing session data
 			if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
 			{
-				lootLog.getMinionLogs().add(new LootLog(ImmutableList.of(record), record.getName()));
-				refreshPanel();
+				final LootLog newMinionLog = new LootLog(ImmutableList.of(record), record.getName());
+				final NamedLootGrid grid = createMinionGrid(newMinionLog);
+				this.add(grid);
+				minionGridMap.put(newMinionLog.getName().toLowerCase(), grid);
+				lootLog.getMinionLogs().add(newMinionLog);
+				refreshPanel(true);
 			}
 			return;
 		}
 
 		minionLog.addRecord(record);
-		refreshPanel();
+		updateMinionLog(minionLog);
+		refreshPanel(true);
 	}
 
-	public void refreshPanel()
+	// Recalculate uniques and update the item panels if necessary
+	private void refreshUniques()
 	{
-		// TODO: Smarter update system so it only repaints necessary Item and Text Panels
-		this.removeAll();
-		this.createPanel(lootLog);
+		LootLog.recalculateUniques(lootLog, config.includeMinions());
+		for (final Map.Entry<Integer, UniqueItemPanel> entry : uniqueItemPanelMap.entrySet())
+		{
+			final Collection<UniqueItem> uniques = lootLog.getUniquePositionMap().get(entry.getKey());
+			entry.getValue().updatePanel(uniques, itemManager, config.itemMissingAlpha());
+		}
+	}
 
-		this.revalidate();
-		this.repaint();
+	public void refreshPanel(final boolean minionUpdate)
+	{
+		refreshUniques();
+
+		if (!minionUpdate)
+		{
+			updateMainLootGrid();
+
+			// Update KillCount
+			if (lootLog.getRecords().size() > 0)
+			{
+				final LTRecord entry = lootLog.getRecords().get(lootLog.getRecords().size() - 1);
+				currentKillcountPanel.updatePanel(CURRENT_KC, entry.getKillCount());
+				currentKillcountPanel.setVisible(entry.getKillCount() != -1);
+			}
+		}
+
+		// Update Total Value
+		final long totalValue = lootLog.getLootValue(config.includeMinions());
+		totalValuePanel.updatePanel(TOTAL_VALUE, totalValue);
+		totalValuePanel.setVisible(totalValue > 0);
+
+		// Update Kills Logged
+		int killsLogged = lootLog.getRecords().size();
+		if (config.includeMinions())
+		{
+			killsLogged += lootLog.getMinionLogs()
+				.stream()
+				.mapToInt(l -> l.getRecords().size())
+				.sum();
+		}
+
+		final String killsLoggedText = lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME) ? TOTAL_KILLS : KILLS_LOGGED;
+		killsLoggedPanel.updatePanel(killsLoggedText, killsLogged);
+		killsLoggedPanel.setVisible(killsLogged > 0);
+
+		revalidate();
+		repaint();
 	}
 
 	void playback()

@@ -318,7 +318,7 @@ public class LootLoggerPanel extends PluginPanel
 			lootPanel.addedRecord(r);
 		}
 		else if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME)
-			|| lootLog.getMinionLog(r.getName()) != null)
+			|| lootPanel.getMinionGridMap().containsKey(r.getName().toLowerCase()))
 		{
 			lootPanel.addMinionRecord(r);
 		}

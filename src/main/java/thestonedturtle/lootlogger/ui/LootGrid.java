@@ -43,9 +43,20 @@ class LootGrid extends JPanel
 	private static final int ITEMS_PER_ROW = 5;
 	private static final Dimension ITEM_SIZE = new Dimension(40, 40);
 
-	LootGrid(final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)
+	LootGrid()
 	{
 		setBorder(new EmptyBorder(5, 0, 5, 0));
+	}
+
+	LootGrid(final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)
+	{
+		this();
+		updateGrid(itemsToDisplay, itemManager);
+	}
+
+	public void updateGrid(final LTItemEntry[] itemsToDisplay, final ItemManager itemManager)
+	{
+		removeAll();
 
 		// Calculates how many rows need to be display to fit all items
 		final int rowSize = ((itemsToDisplay.length % ITEMS_PER_ROW == 0) ? 0 : 1) + itemsToDisplay.length / ITEMS_PER_ROW;

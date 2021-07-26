@@ -31,9 +31,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.util.QuantityFormatter;
@@ -44,20 +42,17 @@ import net.runelite.client.util.QuantityFormatter;
 public class LootGridName extends JPanel
 {
 	private static final int TITLE_PADDING = 5;
-	static final Border VISIBLE_BORDER = new EmptyBorder(7, 7, 7, 7);
-	static final Border COLLAPSED_BORDER = new CompoundBorder(
-		new MatteBorder(0, 0, 5, 0, ColorScheme.DARK_GRAY_COLOR),
-		VISIBLE_BORDER
-	);
+	private static final Border VISIBLE_BORDER = new EmptyBorder(7, 7, 7, 7);
 
-	LootGridName(final String name, final int count, final long price) {
+	private final JLabel titleLabel = new JLabel();
+	private final JLabel priceLabel = new JLabel();
 
+	LootGridName(final String name, final int count, final long price)
+	{
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.setBackground(ColorScheme.DARKER_GRAY_COLOR.darker());
 		this.setBorder(VISIBLE_BORDER);
 
-		final JLabel titleLabel = new JLabel();
-		titleLabel.setText(name + " x " + count);
 		titleLabel.setFont(FontManager.getRunescapeSmallFont());
 		titleLabel.setForeground(Color.WHITE);
 		// Set a size to make BoxLayout truncate the name
@@ -67,11 +62,18 @@ public class LootGridName extends JPanel
 		this.add(Box.createHorizontalGlue());
 		this.add(Box.createRigidArea(new Dimension(TITLE_PADDING, 0)));
 
-		final JLabel priceLabel = new JLabel();
 		priceLabel.setFont(FontManager.getRunescapeSmallFont());
 		priceLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+		this.add(priceLabel);
+
+		updateLabel(name, count, price);
+	}
+
+	void updateLabel(final String name, final int count, final long price)
+	{
+		titleLabel.setText(name + " x " + count);
+
 		priceLabel.setText(QuantityFormatter.quantityToStackSize(price) + " gp");
 		priceLabel.setToolTipText(QuantityFormatter.formatNumber(price) + " gp");
-		this.add(priceLabel);
 	}
 }

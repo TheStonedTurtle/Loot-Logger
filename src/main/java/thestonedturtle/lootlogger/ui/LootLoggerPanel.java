@@ -309,11 +309,14 @@ public class LootLoggerPanel extends PluginPanel
 
 	public void addLog(final LTRecord r)
 	{
+		// Account for aliases
+		final BossTab tab = BossTab.getByName(r.getName());
+
 		if (lootLog == null)
 		{
 			requestLootLog(r.getType(), r.getName());
 		}
-		else if (lootLog.getName().equalsIgnoreCase(r.getName()))
+		else if (lootLog.getName().equalsIgnoreCase(r.getName()) || (tab != null && lootLog.getName().equalsIgnoreCase(tab.getName())))
 		{
 			lootPanel.addedRecord(r);
 		}

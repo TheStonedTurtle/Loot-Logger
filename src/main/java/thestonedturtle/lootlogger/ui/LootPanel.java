@@ -252,22 +252,17 @@ class LootPanel extends JPanel
 		final LootLog minionLog = lootLog.getMinionLog(record.getName());
 		if (minionLog == null)
 		{
-			// Add non-existent minion only if viewing session data
-			if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
+			final LootLog newMinionLog = new LootLog(ImmutableList.of(record), record.getName());
+			lootLog.getMinionLogs().add(newMinionLog);
+
+			final NamedLootGrid grid = createMinionGrid(newMinionLog);
+			minionGridMap.put(newMinionLog.getName().toLowerCase(), grid);
+			add(grid, gridBagConstraints);
+			gridBagConstraints.gridy++;
+
+			if (!playbackPlaying)
 			{
-				final LootLog newMinionLog = new LootLog(ImmutableList.of(record), record.getName());
-				lootLog.getMinionLogs().add(newMinionLog);
-
-				final NamedLootGrid grid = createMinionGrid(newMinionLog);
-				minionGridMap.put(newMinionLog.getName().toLowerCase(), grid);
-				add(grid, gridBagConstraints);
-				gridBagConstraints.gridy++;
-
-				// Refresh doesn't work for session data but just in case it is updated to work with minions in the future we should not refresh
-				if (!playbackPlaying)
-				{
-					refreshPanel(lootLog, true);
-				}
+				refreshPanel(lootLog, true);
 			}
 			return;
 		}

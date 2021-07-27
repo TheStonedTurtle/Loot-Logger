@@ -30,10 +30,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.Getter;
 import net.runelite.api.ItemID;
@@ -116,9 +118,14 @@ public enum BossTab
 	private final String category;
 	private final LootRecordType type;
 	private final Set<String> aliases = new HashSet<>();
-	private final Set<String> minions = new HashSet<>();
+	private final Set<String> minions;
 
 	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final String... aliases)
+	{
+		this(name, itemID, category, type, Collections.emptyList(), aliases);
+	}
+
+	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final Collection<String> minions, final String... aliases)
 	{
 		this.name = name;
 		this.itemID = itemID;
@@ -127,12 +134,7 @@ public enum BossTab
 
 		this.aliases.add(name);
 		this.aliases.addAll(Arrays.asList(aliases));
-	}
-
-	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final Collection<String> minions, final String... aliases)
-	{
-		this(name, itemID, category, type, aliases);
-		this.minions.addAll(minions);
+		this.minions = minions.stream().map(String::toLowerCase).collect(Collectors.toSet());
 	}
 
 	private static final Map<String, BossTab> NAME_MAP;

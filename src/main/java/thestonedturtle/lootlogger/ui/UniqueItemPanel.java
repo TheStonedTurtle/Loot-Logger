@@ -24,6 +24,7 @@
  */
 package thestonedturtle.lootlogger.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -46,19 +47,26 @@ import thestonedturtle.lootlogger.data.UniqueItem;
 @Getter
 class UniqueItemPanel extends JPanel
 {
+	final JPanel panel = new JPanel();
+
 	UniqueItemPanel(final Collection<UniqueItem> items, final ItemManager itemManager, final int itemMissingAlpha)
 	{
-		this.setLayout(new GridBagLayout());
+		this.setLayout(new BorderLayout());
 		this.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		this.setBorder(new EmptyBorder(3, 0, 3, 0));
-		this.setMinimumSize(new Dimension(PluginPanel.PANEL_WIDTH - 10, 0));
+		this.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 10, 40));
+
+		panel.setLayout(new GridBagLayout());
+		panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+
+		this.add(panel, BorderLayout.NORTH);
 
 		updatePanel(items, itemManager, itemMissingAlpha);
 	}
 
 	public void updatePanel(final Collection<UniqueItem> items, final ItemManager itemManager, final int itemMissingAlpha)
 	{
-		removeAll();
+		panel.removeAll();
 		float alphaMissing = itemMissingAlpha / 100f;
 
 		GridBagConstraints c = new GridBagConstraints();
@@ -82,7 +90,7 @@ class UniqueItemPanel extends JPanel
 			icon.setIcon(new ImageIcon(opaque));
 			icon.setVerticalAlignment(SwingConstants.CENTER);
 			icon.setHorizontalAlignment(SwingConstants.CENTER);
-			this.add(icon, c);
+			panel.add(icon, c);
 			c.gridx++;
 
 			// in case the image is blank we will refresh it upon load

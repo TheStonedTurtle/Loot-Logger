@@ -306,7 +306,7 @@ class LootPanel extends JPanel
 
 		// Update Kills Logged
 		int killsLogged = lootLog.getRecords().size();
-		if (config.includeMinions())
+		if (lootLog.getName().equalsIgnoreCase(LootLoggerPlugin.SESSION_NAME))
 		{
 			killsLogged += lootLog.getMinionLogs()
 				.stream()

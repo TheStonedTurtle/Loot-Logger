@@ -270,7 +270,19 @@ public class LootLoggerPlugin extends Plugin
 			}
 		}
 
-		final int kc = killCountMap.getOrDefault(event.getName().toUpperCase(), -1);
+		int kc = killCountMap.getOrDefault(event.getName().toUpperCase(), -1);
+
+		// Check aliases if they exist for kill counts
+		BossTab tab = BossTab.getByName(event.getName());
+		if (kc == -1 && tab != null && tab.getAliases().size() > 0) {
+			for (final String alias : tab.getAliases()) {
+				kc = killCountMap.getOrDefault(alias.toUpperCase(), -1);
+				if (kc > 0) {
+					break;
+				}
+			}
+		}
+
 		final LTRecord record = new LTRecord(event.getName(), event.getCombatLevel(), kc, event.getType(), drops, new Date());
 		addRecord(record);
 	}

@@ -78,7 +78,7 @@ public enum BossTab
 	// Slayer Bosses
 	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS, "Other", LootRecordType.NPC),
 	SKOTIZO("Skotizo", ItemID.SKOTOS, "Slayer", LootRecordType.NPC),
-	GROTESQUE_GUARDIANS("Dusk", ItemID.NOON, "Slayer", LootRecordType.NPC),
+	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.NOON, "Slayer", LootRecordType.NPC, "Dusk"),
 	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSAL_ORPHAN, "Slayer", LootRecordType.NPC),
 	KRAKEN("Kraken", ItemID.PET_KRAKEN, "Slayer", LootRecordType.NPC),
 	CERBERUS("Cerberus", ItemID.HELLPUPPY, "Slayer", LootRecordType.NPC),

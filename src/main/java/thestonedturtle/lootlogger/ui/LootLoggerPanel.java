@@ -314,7 +314,8 @@ public class LootLoggerPanel extends PluginPanel
 
 		if (lootLog == null)
 		{
-			requestLootLog(r.getType(), r.getName());
+			// Use tab name so when an alias is killed it shows the main boss tab
+			requestLootLog(r.getType(), tab == null ? r.getName() : tab.getName());
 		}
 		else if (lootLog.getName().equalsIgnoreCase(r.getName()) || (tab != null && lootLog.getName().equalsIgnoreCase(tab.getName())))
 		{

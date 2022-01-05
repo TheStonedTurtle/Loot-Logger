@@ -90,7 +90,6 @@ public enum BossTab
 	CORPOREAL_BEAST("Corporeal Beast", ItemID.PET_CORPOREAL_CRITTER, "Other", LootRecordType.NPC),
 	SARACHNIS("Sarachnis", ItemID.SRARACHA, "Other", LootRecordType.NPC),
 	THE_GAUNTLET("The Gauntlet", ItemID.YOUNGLLEF, "Other", LootRecordType.EVENT),
-	ZALCANO("Zalcano", ItemID.SMOLCANO, "Other", LootRecordType.NPC),
 	NIGHTMARE("The Nightmare", ItemID.LITTLE_NIGHTMARE, "Other", LootRecordType.NPC),
 	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.LITTLE_PARASITE, "Other", LootRecordType.NPC),
 
@@ -111,6 +110,7 @@ public enum BossTab
 	WINTERTODT("Wintertodt", ItemID.PHOENIX, "Skilling", LootRecordType.EVENT, "Supply crate (Wintertodt)"),
 	TEMPOROSS("Tempoross", ItemID.TINY_TEMPOR, "Skilling", LootRecordType.EVENT,
 		ImmutableSet.of("Casket (Tempoross)"), "Reward pool (Tempoross)"),
+	ZALCANO("Zalcano", ItemID.SMOLCANO, "Skilling", LootRecordType.NPC),
 	;
 
 	private final String name;

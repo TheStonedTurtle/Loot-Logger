@@ -62,6 +62,8 @@ public enum BossTab
 		ImmutableSet.of("Growler", "Bree", "Starlight")),
 	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.PET_KRIL_TSUTSAROTH , "God Wars Dungeon", LootRecordType.NPC,
 		ImmutableSet.of("Balfrug Kreeyath", "Tstanon Karlak", "Zakl'n Gritch")),
+	NEX("Nex", ItemID.NEXLING, "God Wars Dungeon", LootRecordType.NPC,
+		ImmutableSet.of("Fumus", "Umbra", "Cruor", "Glacies")),
 
 	// Wildy Bosses
 	VETION("Vet'ion Reborn", ItemID.VETION_JR , "Wilderness", LootRecordType.NPC, "Vet'ion"),

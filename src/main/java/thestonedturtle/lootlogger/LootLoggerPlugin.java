@@ -210,7 +210,7 @@ public class LootLoggerPlugin extends Plugin
 
 	private void updateWriterUsername()
 	{
-		if (writer.setPlayerUsername(client.getUsername()))
+		if (writer.setPlayerUsername(client.getUsername().toLowerCase()))
 		{
 			localPlayerNameChanged();
 		}

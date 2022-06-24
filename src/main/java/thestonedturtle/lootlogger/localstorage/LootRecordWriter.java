@@ -26,6 +26,8 @@ package thestonedturtle.lootlogger.localstorage;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -55,6 +57,7 @@ public class LootRecordWriter
 {
 	private static final String FILE_EXTENSION = ".log";
 	private static final File LOOT_RECORD_DIR = new File(RUNELITE_DIR, "loots");
+	private static final Gson GSON = new GsonBuilder().setDateFormat("MMM dd, yyyy, HH:mm:ss").create();
 
 	// Data is stored in a folder with the players username (login name)
 	private File playerFolder = LOOT_RECORD_DIR;
@@ -132,7 +135,7 @@ public class LootRecordWriter
 				// Skips the empty line at end of file
 				if (line.length() > 0)
 				{
-					final LTRecord r = RuneLiteAPI.GSON.fromJson(line, LTRecord.class);
+					final LTRecord r = GSON.fromJson(line, LTRecord.class);
 					data.add(r);
 				}
 			}

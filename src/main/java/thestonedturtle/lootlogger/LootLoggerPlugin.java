@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -96,6 +98,9 @@ public class LootLoggerPlugin extends Plugin
 
 	@Inject
 	private LootRecordWriter writer;
+
+	@Inject
+	private PluginManager pluginManager;
 
 	private LootLoggerPanel panel;
 	private NavigationButton navButton;
@@ -159,6 +164,12 @@ public class LootLoggerPlugin extends Plugin
 		if (client.getGameState().equals(GameState.LOGGED_IN) || client.getGameState().equals(GameState.LOADING))
 		{
 			updateWriterUsername();
+		}
+
+		final Optional<Plugin> mainPlugin = pluginManager.getPlugins().stream().filter(p -> p.getName().equals("Loot Tracker")).findFirst();
+		if (mainPlugin.isPresent() && !pluginManager.isPluginEnabled(mainPlugin.get()))
+		{
+			pluginManager.setPluginEnabled(mainPlugin.get(), true);
 		}
 	}
 

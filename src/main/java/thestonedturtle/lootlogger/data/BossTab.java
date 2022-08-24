@@ -48,6 +48,7 @@ public enum BossTab
 	BARROWS("Barrows", ItemID.BARROWS_TELEPORT, "Other", LootRecordType.EVENT),
 	CHAMBERS_OF_XERIC("Chambers of Xeric", ItemID.OLMLET, "Other", LootRecordType.EVENT),
 	THEATRE_OF_BLOOD("Theatre of Blood", ItemID.LIL_ZIK, "Other", LootRecordType.EVENT),
+	TOMBS_OF_AMASCUT("Tombs of Amascut", ItemID.TUMEKENS_GUARDIAN, "Other", LootRecordType.EVENT),
 
 	// Loot received on NPC death
 	ZULRAH("Zulrah", ItemID.PET_SNAKELING, "Other", LootRecordType.NPC),

@@ -5,7 +5,7 @@
 Logs Loot Tracker data locally and adds new side-panel UI for viewing it.
 
 ## Data Storage
-Data is stored at `~/.runelite/loots/USERNAME` where `USERNAME` is your account's login name (or email address).
+Data is stored at `~/.runelite/loots/HASH` where `HASH` is your account's unique hash, this was changed from your login name (or email address) as RuneLite is not aware of your login name when ran through the Jagex launcher.
 
 Records are split into individual files by using the records name (`*name*.log`).
 

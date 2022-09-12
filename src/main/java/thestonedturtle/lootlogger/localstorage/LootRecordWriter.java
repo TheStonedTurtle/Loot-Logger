@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
@@ -61,6 +62,7 @@ public class LootRecordWriter
 	// Data is separated into sub-folders by event type to prevent issues.
 	private final Map<LootRecordType, File> eventFolders = new HashMap<>();
 	@Setter
+	@Getter
 	private String name;
 
 	@Inject
@@ -220,5 +222,26 @@ public class LootRecordWriter
 			log.warn("Error rewriting loot data to file {}: {}", fileName, ioe.getMessage());
 			return false;
 		}
+	}
+
+	public synchronized boolean renameUsernameFolderToAccountHash(final String username, final long hash)
+	{
+		final File usernameDir = new File(LOOT_RECORD_DIR, username);
+		if (!usernameDir.exists())
+		{
+			log.debug("Already rewritten");
+			return true;
+		}
+
+		final File hashDir = new File(LOOT_RECORD_DIR, String.valueOf(hash));
+		if (hashDir.exists())
+		{
+			log.warn("Can't rename username folder to account hash as the folder for this account hash already exists."
+				+ " This was most likely caused by running RL through the Jagex launcher before the migration code was added");
+			log.warn("Username: {} | AccountHash: {}", username, hash);
+			return false;
+		}
+
+		return usernameDir.renameTo(hashDir);
 	}
 }

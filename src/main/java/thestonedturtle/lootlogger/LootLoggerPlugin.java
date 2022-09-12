@@ -213,7 +213,7 @@ public class LootLoggerPlugin extends Plugin
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event)
 	{
-		if (event.getGameState() == GameState.LOGGING_IN)
+		if (event.getGameState() == GameState.LOGGED_IN)
 		{
 			updateWriterUsername();
 		}
@@ -221,7 +221,23 @@ public class LootLoggerPlugin extends Plugin
 
 	private void updateWriterUsername()
 	{
-		if (writer.setPlayerUsername(client.getUsername().toLowerCase()))
+		// Check if we're already using this user as we are now updating the username on `LOGGED_IN` instead of `LOGGING_IN`
+		// `LOGGED_IN` will be triggered after every `LOADING` state which happens much more frequently
+		final String hash = String.valueOf(client.getAccountHash());
+		if (hash.equalsIgnoreCase(writer.getName()))
+		{
+			return;
+		}
+
+		// If we aren't first attempt to migrate from the deprecated login name to the account hash
+		String name = client.getUsername();
+		if (name != null && name.length() > 0 && client.getAccountHash() > -1)
+		{
+			// We are using the accountHash as RL doesn't return a login name when ran through the Jagex launcher
+			writer.renameUsernameFolderToAccountHash(name.toLowerCase(), client.getAccountHash());
+		}
+
+		if (writer.setPlayerUsername(String.valueOf(client.getAccountHash())))
 		{
 			localPlayerNameChanged();
 		}

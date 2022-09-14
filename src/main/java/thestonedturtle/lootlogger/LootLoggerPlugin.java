@@ -231,7 +231,7 @@ public class LootLoggerPlugin extends Plugin
 
 		// If we aren't first attempt to migrate from the deprecated login name to the account hash
 		String name = client.getUsername();
-		if (name != null && name.length() > 0 && client.getAccountHash() > -1)
+		if (name != null && name.length() > 0 && client.getAccountHash() != -1)
 		{
 			// We are using the accountHash as RL doesn't return a login name when ran through the Jagex launcher
 			writer.renameUsernameFolderToAccountHash(name.toLowerCase(), client.getAccountHash());

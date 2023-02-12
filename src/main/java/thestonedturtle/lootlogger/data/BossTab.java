@@ -68,9 +68,9 @@ public enum BossTab
 		ImmutableSet.of("Fumus", "Umbra", "Cruor", "Glacies")),
 
 	// Wildy Bosses
-	VETION("Vet'ion Reborn", ItemID.VETION_JR , "Wilderness", LootRecordType.NPC, "Vet'ion"),
-	VENENATIS("Venenatis", ItemID.VENENATIS_SPIDERLING , "Wilderness", LootRecordType.NPC),
-	CALLISTO("Callisto", ItemID.CALLISTO_CUB , "Wilderness", LootRecordType.NPC),
+	VETION("Vet'ion Reborn", ItemID.VETION_JR , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Calvar'ion"), "Vet'ion"),
+	VENENATIS("Venenatis", ItemID.VENENATIS_SPIDERLING , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Spindel")),
+	CALLISTO("Callisto", ItemID.CALLISTO_CUB , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Artio")),
 	CHAOS_ELEMENTAL("Chaos Elemental", ItemID.PET_CHAOS_ELEMENTAL , "Wilderness", LootRecordType.NPC),
 	// Wildy Demi-Bosses
 	SCORPIA("Scorpia", ItemID.SCORPIAS_OFFSPRING, "Wilderness", LootRecordType.NPC),

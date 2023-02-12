@@ -25,6 +25,7 @@
 package thestonedturtle.lootlogger.data;
 
 import com.google.common.collect.ImmutableMultimap;
+import java.util.Arrays;
 import java.util.Collection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,10 @@ public enum UniqueItem
 	DRAGON_PICKAXE(ItemID.DRAGON_PICKAXE, BossTab.CALLISTO, BossTab.VETION, BossTab.VENENATIS, BossTab.KING_BLACK_DRAGON, BossTab.CHAOS_ELEMENTAL, BossTab.KALPHITE_QUEEN),
 	PET_CHAOS_ELEMENTAL(ItemID.PET_CHAOS_ELEMENTAL, BossTab.CHAOS_ELEMENTAL, BossTab.CHAOS_FANATIC),
 	CURVED_BONE(ItemID.CURVED_BONE, BossTab.CALLISTO, BossTab.VETION, BossTab.VENENATIS, BossTab.GIANT_MOLE),
+	// Wildy non-boss tabs
+	DRAGON_2H_SWORD_2(ItemID.DRAGON_2H_SWORD,  -1, "Artio", "Calvar'ion", "Spindel"),
+	DRAGON_PICKAXE_2(ItemID.DRAGON_PICKAXE, -1, "Artio", "Calvar'ion", "Spindel"),
+	CURVED_BONE_2(ItemID.CURVED_BONE, -1, "Artio", "Calvar'ion", "Spindel"),
 	// Other
 	DRAGON_CHAINBODY(ItemID.DRAGON_CHAINBODY_3140, BossTab.THERMONUCLEAR_SMOKE_DEVIL, BossTab.KALPHITE_QUEEN),
 	DRAGON_AXE(ItemID.DRAGON_AXE, BossTab.DAGANNOTH_REX, BossTab.DAGANNOTH_PRIME, BossTab.DAGANNOTH_SUPREME),
@@ -163,22 +168,22 @@ public enum UniqueItem
 
 	// Wildy Bosses
 	// Vetion
-	SKELETON_CHAMPION_SCROLL(ItemID.SKELETON_CHAMPION_SCROLL, BossTab.VETION, -1),
+	SKELETON_CHAMPION_SCROLL(ItemID.SKELETON_CHAMPION_SCROLL, BossTab.VETION, -1, "Calvar'ion"),
 
-	RING_OF_THE_GODS(ItemID.RING_OF_THE_GODS, BossTab.VETION, 0),
-	SKULL_OF_VETION(ItemID.SKULL_OF_VETION, BossTab.VETION, 0),
-	VOIDWAKER_BLADE(ItemID.VOIDWAKER_BLADE, BossTab.VETION, 0),
-	VETION_JR(ItemID.VETION_JR, BossTab.VETION, 0),
+	RING_OF_THE_GODS(ItemID.RING_OF_THE_GODS, BossTab.VETION, 0, "Calvar'ion"),
+	SKULL_OF_VETION(ItemID.SKULL_OF_VETION, BossTab.VETION, 0, "Calvar'ion"),
+	VOIDWAKER_BLADE(ItemID.VOIDWAKER_BLADE, BossTab.VETION, 0, "Calvar'ion"),
+	VETION_JR(ItemID.VETION_JR, BossTab.VETION, 0, "Calvar'ion"),
 	// Venenatis
-	TREASONOUS_RING(ItemID.TREASONOUS_RING, BossTab.VENENATIS, 0),
-	FANGS_OF_VENENATIS(ItemID.FANGS_OF_VENENATIS, BossTab.VENENATIS, 0),
-	VOIDWAKER_GEM(ItemID.VOIDWAKER_GEM, BossTab.VENENATIS, 0),
-	VENENATIS_SPIDERLING(ItemID.VENENATIS_SPIDERLING, BossTab.VENENATIS, 0),
+	TREASONOUS_RING(ItemID.TREASONOUS_RING, BossTab.VENENATIS, 0, "Spindel"),
+	FANGS_OF_VENENATIS(ItemID.FANGS_OF_VENENATIS, BossTab.VENENATIS, 0, "Spindel"),
+	VOIDWAKER_GEM(ItemID.VOIDWAKER_GEM, BossTab.VENENATIS, 0, "Spindel"),
+	VENENATIS_SPIDERLING(ItemID.VENENATIS_SPIDERLING, BossTab.VENENATIS, 0, "Spindel"),
 	// Callisto
-	TYRANNICAL_RING(ItemID.TYRANNICAL_RING, BossTab.CALLISTO, 0),
-	CLAWS_OF_CALLISTO(ItemID.CLAWS_OF_CALLISTO, BossTab.CALLISTO, 0),
-	VOIDWAKER_HILT(ItemID.VOIDWAKER_HILT, BossTab.CALLISTO, 0),
-	CALLISTO_CUB(ItemID.CALLISTO_CUB, BossTab.CALLISTO, 0),
+	TYRANNICAL_RING(ItemID.TYRANNICAL_RING, BossTab.CALLISTO, 0, "Artio"),
+	CLAWS_OF_CALLISTO(ItemID.CLAWS_OF_CALLISTO, BossTab.CALLISTO, 0, "Artio"),
+	VOIDWAKER_HILT(ItemID.VOIDWAKER_HILT, BossTab.CALLISTO, 0, "Artio"),
+	CALLISTO_CUB(ItemID.CALLISTO_CUB, BossTab.CALLISTO, 0, "Artio"),
 	// Chaos Elemental Uniques are all in Shared
 	// Chaos Fanatic
 	ODIUM_SHARD_1(ItemID.ODIUM_SHARD_1, BossTab.CHAOS_FANATIC, -1),
@@ -952,7 +957,7 @@ public enum UniqueItem
 	;
 
 	private final int itemID;
-	private final BossTab[] bosses;
+	private final String[] bosses;
 	private final int position;
 	private final int[] alternativeIds;
 	private String name;
@@ -969,9 +974,9 @@ public enum UniqueItem
 		final ImmutableMultimap.Builder<String, UniqueItem> map = ImmutableMultimap.builder();
 		for (UniqueItem item : values())
 		{
-			for (BossTab b : item.getBosses())
+			for (String s : item.getBosses())
 			{
-				map.put(b.getName(), item);
+				map.put(s.toUpperCase(), item);
 			}
 		}
 
@@ -982,16 +987,26 @@ public enum UniqueItem
 	UniqueItem(int id, BossTab boss, int position)
 	{
 		this.itemID = id;
-		this.bosses = new BossTab[]{boss};
+		this.bosses = new String[]{boss.getName()};
 		this.position = position;
 		this.alternativeIds = new int[0];
+	}
+
+	// Unique item that is shared with other npcs that aren't BossTabs (like the wildy bosses and their single variants)
+	UniqueItem(int id, BossTab boss, int position, String... otherNpcs)
+	{
+		this.itemID = id;
+		this.position = position;
+		this.alternativeIds = new int[0];
+		this.bosses = Arrays.copyOf(otherNpcs, otherNpcs.length + 1);
+		this.bosses[this.bosses.length - 1] = boss.getName();
 	}
 
 	// Non-Shared Unique Items
 	UniqueItem(int id, BossTab boss, int position, int... alternativeIds)
 	{
 		this.itemID = id;
-		this.bosses = new BossTab[]{boss};
+		this.bosses = new String[]{boss.getName()};
 		this.position = position;
 		this.alternativeIds = alternativeIds;
 	}
@@ -1000,9 +1015,24 @@ public enum UniqueItem
 	UniqueItem(int id, BossTab... bosses)
 	{
 		this.itemID = id;
-		this.bosses = bosses;
 		this.position = -1;
 		this.alternativeIds = new int[0];
+
+		this.bosses = new String[bosses.length];
+		for (int i = 0; i < bosses.length; i++)
+		{
+			this.bosses[i] = bosses[i].getName();
+		}
+	}
+
+	// Support for npcs that don't have a BossTab entry
+	UniqueItem(int id, int position, String... bosses)
+	{
+		this.itemID = id;
+		this.position = position;
+		this.alternativeIds = new int[0];
+
+		this.bosses = bosses;
 	}
 
 	public static void prepareUniqueItems(final ItemManager itemManager)
@@ -1023,6 +1053,6 @@ public enum UniqueItem
 
 	public static Collection<UniqueItem> getUniquesForBoss(final String bossName)
 	{
-		return BOSS_MAP.get(bossName);
+		return BOSS_MAP.get(bossName.toUpperCase());
 	}
 }

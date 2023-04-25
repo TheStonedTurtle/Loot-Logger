@@ -6,6 +6,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.loottracker.LootReceived;
+import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
@@ -118,6 +120,8 @@ public class LootLoggerPlugin extends Plugin
 	private final Map<String, Integer> killCountMap = new HashMap<>();
 	private final LinkedListMultimap<String, LTRecord> sessionData = LinkedListMultimap.create();
 
+	private boolean configHasChangedRecently = false;
+
 	@Provides
 	LootLoggerConfig provideConfig(ConfigManager configManager)
 	{
@@ -189,24 +193,32 @@ public class LootLoggerPlugin extends Plugin
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event)
 	{
-		if (event.getGroup().equals("lootlogger"))
+		if (!event.getGroup().equals("lootlogger"))
 		{
-			if (event.getKey().equals("enableUI"))
-			{
-				if (config.enableUI())
-				{
-					clientToolbar.addNavigation(navButton);
-				}
-				else
-				{
-					clientToolbar.removeNavigation(navButton);
-				}
-			}
+			return;
+		}
 
+		if (event.getKey().equals("enableUI"))
+		{
 			if (config.enableUI())
 			{
+				clientToolbar.addNavigation(navButton);
+			}
+			else
+			{
+				clientToolbar.removeNavigation(navButton);
+			}
+		}
+
+		if (config.enableUI())
+		{
+			// Refresh the UI instantly
+			if (!configHasChangedRecently) {
 				SwingUtilities.invokeLater(panel::refreshUI);
 			}
+
+			// Make it so any future changes are debounced
+			configHasChangedRecently = true;
 		}
 	}
 
@@ -596,5 +608,15 @@ public class LootLoggerPlugin extends Plugin
 
 		// It seems that KBD shares the map region with NMZ but NMZ is never in plane 0.
 		return ArrayUtils.contains(client.getMapRegions(), NMZ_MAP_REGION) && client.getLocalPlayer().getWorldLocation().getPlane() > 0;
+	}
+
+	@Schedule(period = 30, unit = ChronoUnit.SECONDS)
+	public void processSlowConfigChanges() {
+		if (!configHasChangedRecently) {
+			return;
+		}
+
+		configHasChangedRecently = false;
+		SwingUtilities.invokeLater(panel::refreshUI);
 	}
 }

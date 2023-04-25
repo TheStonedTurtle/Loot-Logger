@@ -120,7 +120,7 @@ public class LootLoggerPlugin extends Plugin
 	private final Map<String, Integer> killCountMap = new HashMap<>();
 	private final LinkedListMultimap<String, LTRecord> sessionData = LinkedListMultimap.create();
 
-	private boolean configHasChangedRecently = false;
+	private int configChangeCount = 0;
 
 	@Provides
 	LootLoggerConfig provideConfig(ConfigManager configManager)
@@ -188,6 +188,7 @@ public class LootLoggerPlugin extends Plugin
 		gotPet = false;
 		petTicks = 0;
 		writer.setName(null);
+		configChangeCount = 0;
 	}
 
 	@Subscribe
@@ -213,12 +214,12 @@ public class LootLoggerPlugin extends Plugin
 		if (config.enableUI())
 		{
 			// Refresh the UI instantly
-			if (!configHasChangedRecently) {
+			if (configChangeCount == 0) {
 				SwingUtilities.invokeLater(panel::refreshUI);
 			}
 
 			// Make it so any future changes are debounced
-			configHasChangedRecently = true;
+			configChangeCount++;
 		}
 	}
 
@@ -612,11 +613,12 @@ public class LootLoggerPlugin extends Plugin
 
 	@Schedule(period = 30, unit = ChronoUnit.SECONDS)
 	public void processSlowConfigChanges() {
-		if (!configHasChangedRecently) {
+		// We only want to debounce consecutive config changes
+		if (configChangeCount <= 1) {
 			return;
 		}
 
-		configHasChangedRecently = false;
+		configChangeCount = 0;
 		SwingUtilities.invokeLater(panel::refreshUI);
 	}
 }

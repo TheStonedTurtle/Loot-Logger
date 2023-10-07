@@ -55,6 +55,12 @@ public enum BossTab
 	ZULRAH("Zulrah", ItemID.PET_SNAKELING, "Other", LootRecordType.NPC),
 	VORKATH("Vorkath", ItemID.VORKI, "Other", LootRecordType.NPC),
 
+	// Forgotten Four
+	VARDORVIS("Vardorvis", ItemID.BUTCH, "Forgotten Four", LootRecordType.NPC),
+	THE_LEVIATHAN("The Leviathan", ItemID.LILVIATHAN, "Forgotten Four", LootRecordType.NPC),
+	DUKE_SUCELLUS("Duke Sucellus", ItemID.BARON, "Forgotten Four", LootRecordType.NPC),
+	THE_WHISPERER("The Whisperer", ItemID.WISP, "Forgotten Four", LootRecordType.NPC),
+
 	// God wars dungeon
 	KREEARRA("Kree'arra", ItemID.PET_KREEARRA , "God Wars Dungeon", LootRecordType.NPC,
 		ImmutableSet.of("Wingman Skree", "Flockleader Geerin", "Flight Kilisa")),

@@ -26,6 +26,7 @@ package thestonedturtle.lootlogger.localstorage;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
@@ -64,6 +66,13 @@ public class LootRecordWriter
 	@Setter
 	@Getter
 	private String name;
+
+	// The default date format does not allow migrating between Java 17 and Java 20+ (in either direction)
+	// Java 20+ uses unicode character U+202f while java 17- use a normal space before the AM/PM part of the date string
+	// This date adapter will attempt to match between both variants but will always write with a space
+	private final Gson CUSTOM_GSON = RuneLiteAPI.GSON.newBuilder()
+		.registerTypeAdapter(Date.class, new LootRecordDateAdapter())
+		.create();
 
 	@Inject
 	public LootRecordWriter()
@@ -134,7 +143,7 @@ public class LootRecordWriter
 				// Skips the empty line at end of file
 				if (line.length() > 0)
 				{
-					final LTRecord r = RuneLiteAPI.GSON.fromJson(line, LTRecord.class);
+					final LTRecord r = CUSTOM_GSON.fromJson(line, LTRecord.class);
 					data.add(r);
 				}
 			}
@@ -159,7 +168,7 @@ public class LootRecordWriter
 		final File lootFile = new File(eventFolders.get(rec.getType()), fileName);
 
 		// Convert entry to JSON
-		final String dataAsString = RuneLiteAPI.GSON.toJson(rec);
+		final String dataAsString = CUSTOM_GSON.toJson(rec);
 
 		// Open File in append mode and write new data
 		try
@@ -209,7 +218,7 @@ public class LootRecordWriter
 			for (final LTRecord rec : loots)
 			{
 				// Convert entry to JSON
-				final String dataAsString = RuneLiteAPI.GSON.toJson(rec);
+				final String dataAsString = CUSTOM_GSON.toJson(rec);
 				file.append(dataAsString);
 				file.newLine();
 			}

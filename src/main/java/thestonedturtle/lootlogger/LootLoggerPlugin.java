@@ -29,9 +29,9 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.RuneScapeProfileType;
@@ -401,12 +401,12 @@ public class LootLoggerPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
-		if (event.getGroupId() != WidgetID.DIALOG_SPRITE_GROUP_ID)
+		if (event.getGroupId() != InterfaceID.DIALOG_SPRITE)
 		{
 			return;
 		}
 
-		Widget text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+		Widget text = client.getWidget(ComponentID.DIALOG_SPRITE_TEXT);
 		if (text != null && text.getText().toLowerCase().contains(SIRE_FONT_TEXT))
 		{
 			unsiredCheckCount = 0;
@@ -449,11 +449,11 @@ public class LootLoggerPlugin extends Plugin
 	// Handles checking for unsired loot reclamation
 	private boolean hasUnsiredWidgetUpdated()
 	{
-		final Widget text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+		final Widget text = client.getWidget(ComponentID.DIALOG_SPRITE_TEXT);
 		// Reclaimed an item?
 		if (text != null && text.getText().toLowerCase().contains(SIRE_REWARD_TEXT))
 		{
-			final Widget sprite = client.getWidget(WidgetInfo.DIALOG_SPRITE);
+			final Widget sprite = client.getWidget(InterfaceID.DIALOG_SPRITE);
 			if (sprite == null || sprite.getItemId() == -1)
 			{
 				return false;

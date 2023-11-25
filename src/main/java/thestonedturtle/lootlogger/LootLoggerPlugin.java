@@ -34,6 +34,7 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneScapeProfileType;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
@@ -223,8 +224,14 @@ public class LootLoggerPlugin extends Plugin
 	{
 		// Check if we're already using this user as we are now updating the username on `LOGGED_IN` instead of `LOGGING_IN`
 		// `LOGGED_IN` will be triggered after every `LOADING` state which happens much more frequently
-		final String hash = String.valueOf(client.getAccountHash());
-		if (hash.equalsIgnoreCase(writer.getName()))
+		String folder = String.valueOf(client.getAccountHash());
+		RuneScapeProfileType profileType = RuneScapeProfileType.getCurrent(client);
+		if (profileType != RuneScapeProfileType.STANDARD)
+		{
+			folder += "-" + Text.titleCase(profileType);
+		}
+
+		if (folder.equalsIgnoreCase(writer.getName()))
 		{
 			return;
 		}
@@ -237,7 +244,7 @@ public class LootLoggerPlugin extends Plugin
 			writer.renameUsernameFolderToAccountHash(name.toLowerCase(), client.getAccountHash());
 		}
 
-		if (writer.setPlayerUsername(String.valueOf(client.getAccountHash())))
+		if (writer.setPlayerUsername(folder))
 		{
 			localPlayerNameChanged();
 		}

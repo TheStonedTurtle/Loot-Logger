@@ -81,6 +81,9 @@ public enum Pet
 	LILVIATHAN(ItemID.LILVIATHAN, BossTab.THE_LEVIATHAN.getName()),
 	BARON(ItemID.BARON, BossTab.DUKE_SUCELLUS.getName()),
 	WISP(ItemID.WISP, BossTab.THE_WHISPERER.getName()),
+
+	// Fortis Colosseum
+	SMOL_HEREDIT(ItemID.SMOL_HEREDIT, BossTab.FORTIS_COLOSSEUM.getName()),
 	;
 
 	private static final ImmutableMap<String, Pet> BOSS_MAP;

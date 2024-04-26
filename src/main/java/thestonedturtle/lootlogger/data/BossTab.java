@@ -51,6 +51,9 @@ public enum BossTab
 		ImmutableSet.of("Cache of runes")),
 
 	BARROWS("Barrows", ItemID.BARROWS_TELEPORT, "Chests / Raids", LootRecordType.EVENT),
+	MOONS_OF_PERIL("Moons of Peril", ItemID.DUAL_MACUAHUITL, "Chests / Raids", LootRecordType.EVENT, "Lunar Chest"),
+	FORTIS_COLOSSEUM("Fortis Colosseum", ItemID.SMOL_HEREDIT, "Chests / Raids", LootRecordType.EVENT),
+
 	// Loot received on NPC death
 	ZULRAH("Zulrah", ItemID.PET_SNAKELING, "Other", LootRecordType.NPC),
 	VORKATH("Vorkath", ItemID.VORKI, "Other", LootRecordType.NPC),

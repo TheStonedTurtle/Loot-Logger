@@ -75,6 +75,12 @@ public enum Pet
 	TINY_TEMPOR(ItemID.TINY_TEMPOR, BossTab.TEMPOROSS.getName()),
 	TUMEKENS_GUARDIAN(ItemID.TUMEKENS_GUARDIAN, BossTab.TOMBS_OF_AMASCUT.getName()),
 	MUPHIN(ItemID.MUPHIN, BossTab.PHANTOM_MUSPAH.getName()),
+
+	// Forgotten Four
+	BUTCH(ItemID.BUTCH, BossTab.VARDORVIS.getName()),
+	LILVIATHAN(ItemID.LILVIATHAN, BossTab.THE_LEVIATHAN.getName()),
+	BARON(ItemID.BARON, BossTab.DUKE_SUCELLUS.getName()),
+	WISP(ItemID.WISP, BossTab.THE_WHISPERER.getName()),
 	;
 
 	private static final ImmutableMap<String, Pet> BOSS_MAP;

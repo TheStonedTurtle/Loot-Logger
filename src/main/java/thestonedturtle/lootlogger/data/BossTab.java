@@ -44,13 +44,13 @@ import net.runelite.http.api.loottracker.LootRecordType;
 @Getter
 public enum BossTab
 {
-	// Chest Rewards
-	BARROWS("Barrows", ItemID.BARROWS_TELEPORT, "Other", LootRecordType.EVENT),
-	CHAMBERS_OF_XERIC("Chambers of Xeric", ItemID.OLMLET, "Other", LootRecordType.EVENT),
-	THEATRE_OF_BLOOD("Theatre of Blood", ItemID.LIL_ZIK, "Other", LootRecordType.EVENT),
-	TOMBS_OF_AMASCUT("Tombs of Amascut", ItemID.TUMEKENS_GUARDIAN, "Other", LootRecordType.EVENT,
+	// Raids
+	CHAMBERS_OF_XERIC("Chambers of Xeric", ItemID.OLMLET, "Chests / Raids", LootRecordType.EVENT),
+	THEATRE_OF_BLOOD("Theatre of Blood", ItemID.LIL_ZIK, "Chests / Raids", LootRecordType.EVENT),
+	TOMBS_OF_AMASCUT("Tombs of Amascut", ItemID.TUMEKENS_GUARDIAN, "Chests / Raids", LootRecordType.EVENT,
 		ImmutableSet.of("Cache of runes")),
 
+	BARROWS("Barrows", ItemID.BARROWS_TELEPORT, "Chests / Raids", LootRecordType.EVENT),
 	// Loot received on NPC death
 	ZULRAH("Zulrah", ItemID.PET_SNAKELING, "Other", LootRecordType.NPC),
 	VORKATH("Vorkath", ItemID.VORKI, "Other", LootRecordType.NPC),
@@ -86,7 +86,6 @@ public enum BossTab
 	KING_BLACK_DRAGON("King Black Dragon", ItemID.PRINCE_BLACK_DRAGON , "Wilderness", LootRecordType.NPC),
 
 	// Slayer Bosses
-	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS, "Other", LootRecordType.NPC),
 	SKOTIZO("Skotizo", ItemID.SKOTOS, "Slayer", LootRecordType.NPC),
 	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.NOON, "Slayer", LootRecordType.NPC, "Dusk"),
 	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSAL_ORPHAN, "Slayer", LootRecordType.NPC),
@@ -96,6 +95,7 @@ public enum BossTab
 	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.IKKLE_HYDRA, "Slayer", LootRecordType.NPC),
 
 	// Other Bosses
+	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS, "Other", LootRecordType.NPC),
 	GIANT_MOLE("Giant Mole", ItemID.BABY_MOLE, "Other", LootRecordType.NPC),
 	CORPOREAL_BEAST("Corporeal Beast", ItemID.PET_CORPOREAL_CRITTER, "Other", LootRecordType.NPC),
 	SARACHNIS("Sarachnis", ItemID.SRARACHA, "Other", LootRecordType.NPC),

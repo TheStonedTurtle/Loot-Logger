@@ -96,6 +96,7 @@ public enum BossTab
 	CERBERUS("Cerberus", ItemID.HELLPUPPY, "Slayer", LootRecordType.NPC),
 	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.PET_SMOKE_DEVIL, "Slayer", LootRecordType.NPC),
 	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.IKKLE_HYDRA, "Slayer", LootRecordType.NPC),
+	ARAXXOR("Araxxor", ItemID.NID, "Slayer", LootRecordType.NPC),
 
 	// Other Bosses
 	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS, "Other", LootRecordType.NPC),
@@ -106,6 +107,7 @@ public enum BossTab
 	NIGHTMARE("The Nightmare", ItemID.LITTLE_NIGHTMARE, "Other", LootRecordType.NPC),
 	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.LITTLE_PARASITE, "Other", LootRecordType.NPC),
 	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUPHIN, "Other", LootRecordType.NPC),
+	HUEYCOATL("Hueycoatl", ItemID.HUBERTE, "Other", LootRecordType.NPC),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.PET_DAGANNOTH_REX, "Dagannoth Kings", LootRecordType.NPC),

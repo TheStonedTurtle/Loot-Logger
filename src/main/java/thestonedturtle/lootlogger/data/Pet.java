@@ -51,6 +51,7 @@ public enum Pet
 	PET_KRAKEN(ItemID.PET_KRAKEN, BossTab.KRAKEN.getName()),
 	PET_SMOKE_DEVIL(ItemID.PET_SMOKE_DEVIL, BossTab.THERMONUCLEAR_SMOKE_DEVIL.getName()),
 	SKOTOS(ItemID.SKOTOS, BossTab.SKOTIZO.getName()),
+	NID(ItemID.NID, BossTab.ARAXXOR.getName()),
 	// Other Bosses
 	BABY_MOLE(ItemID.BABY_MOLE, BossTab.GIANT_MOLE.getName()),
 	KALPHITE_PRINCESS(ItemID.KALPHITE_PRINCESS, BossTab.KALPHITE_QUEEN.getName()),
@@ -69,6 +70,7 @@ public enum Pet
 	SMOLCANO(ItemID.SMOLCANO, BossTab.ZALCANO.getName()),
 	LITTLE_NIGHTMARE(ItemID.LITTLE_NIGHTMARE, BossTab.NIGHTMARE.getName(), BossTab.PHOSANIS_NIGHTMARE.getName()),
 	HERBI(ItemID.HERBI, "Herbiboar"),
+	HUBERTE(ItemID.HUBERTE, BossTab.HUEYCOATL.getName()),
 	// Pretty sure
 	PHOENIX(ItemID.PHOENIX, BossTab.WINTERTODT.getName()),
 	PET_PENANCE_QUEEN(ItemID.PET_PENANCE_QUEEN, "Barbarian Assault"),

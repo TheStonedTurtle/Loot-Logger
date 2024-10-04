@@ -6,12 +6,15 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -71,8 +74,10 @@ public class LootLoggerPlugin extends Plugin
 
 	// Kill count handling
 	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed ([0-9]+) ([a-z]+) Treasure Trails.");
-	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is:? ([0-9]*).");
-	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
+	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is:? ([0-9,]*).");
+	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9,]+)");
+
+	private static final NumberFormat NUMBER_FORMATTER = NumberFormat.getNumberInstance(Locale.US);
 
 	private static final ImmutableSet<String> PET_MESSAGES = ImmutableSet.of("You have a funny feeling like you're being followed.",
 		"You feel something weird sneaking into your backpack.",
@@ -500,6 +505,17 @@ public class LootLoggerPlugin extends Plugin
 		});
 	}
 
+	public int convertToInt(String s)
+	{
+		try {
+			return NUMBER_FORMATTER.parse(s).intValue();
+		}
+		catch (ParseException e)
+		{
+			return -1;
+		}
+	}
+
 	@Subscribe
 	public void onChatMessage(ChatMessage event)
 	{
@@ -544,7 +560,7 @@ public class LootLoggerPlugin extends Plugin
 					return;
 			}
 
-			final int killCount = Integer.valueOf(m.group(1));
+			final int killCount = convertToInt(m.group(1));
 			killCountMap.put(eventType.toUpperCase(), killCount);
 			return;
 		}
@@ -555,7 +571,7 @@ public class LootLoggerPlugin extends Plugin
 			Matcher n = NUMBER_PATTERN.matcher(chatMessage);
 			if (n.find())
 			{
-				killCountMap.put("BARROWS", Integer.valueOf(n.group()));
+				killCountMap.put("BARROWS", convertToInt(n.group()));
 				return;
 			}
 		}
@@ -566,7 +582,7 @@ public class LootLoggerPlugin extends Plugin
 			Matcher n = NUMBER_PATTERN.matcher(chatMessage);
 			if (n.find())
 			{
-				killCountMap.put("CHAMBERS OF XERIC", Integer.valueOf(n.group()));
+				killCountMap.put("CHAMBERS OF XERIC", convertToInt(n.group()));
 				return;
 			}
 		}
@@ -577,17 +593,17 @@ public class LootLoggerPlugin extends Plugin
 			Matcher n = NUMBER_PATTERN.matcher(chatMessage);
 			if (n.find())
 			{
-				killCountMap.put("THEATRE OF BLOOD", Integer.valueOf(n.group()));
+				killCountMap.put("THEATRE OF BLOOD", convertToInt(n.group()));
 				return;
 			}
 		}
 
-		// Handle all other boss
+		// Handle the other bosses
 		final Matcher boss = BOSS_NAME_NUMBER_PATTERN.matcher(chatMessage);
 		if (boss.find())
 		{
 			final String bossName = boss.group(1);
-			final int killCount = Integer.valueOf(boss.group(2));
+			final int killCount = convertToInt(boss.group(2));
 			killCountMap.put(bossName.toUpperCase(), killCount);
 		}
 	}

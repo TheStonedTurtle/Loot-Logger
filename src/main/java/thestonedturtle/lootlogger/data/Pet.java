@@ -36,6 +36,7 @@ public enum Pet
 	PET_KREEARRA(ItemID.PET_KREEARRA, BossTab.KREEARRA.getName()),
 	PET_KRIL_TSUTSAROTH(ItemID.PET_KRIL_TSUTSAROTH, BossTab.KRIL_TSUTSAROTH.getName()),
 	PET_ZILYANA(ItemID.PET_ZILYANA, BossTab.COMMANDER_ZILYANA.getName()),
+	NEXLING(ItemID.NEXLING, BossTab.NEX.getName()),
 	// Wildy Pets
 	CALLISTO_CUB(ItemID.CALLISTO_CUB, BossTab.CALLISTO.getName(), "Artio"),
 	PET_CHAOS_ELEMENTAL(ItemID.PET_CHAOS_ELEMENTAL, BossTab.CHAOS_ELEMENTAL.getName(), BossTab.CHAOS_FANATIC.getName()),
@@ -86,6 +87,10 @@ public enum Pet
 
 	// Fortis Colosseum
 	SMOL_HEREDIT(ItemID.SMOL_HEREDIT, BossTab.FORTIS_COLOSSEUM.getName()),
+
+	// Pets that aren't tied to a BossTab
+	MOXI(ItemID.MOXI, "Amoxliatl"),
+	SCURRY(ItemID.SCURRY, "Scurrius"),
 	;
 
 	private static final ImmutableMap<String, Pet> BOSS_MAP;

@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'thestonedturtle.lootlogger'
-version = '4.2.4'
+version = '4.2.5'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {

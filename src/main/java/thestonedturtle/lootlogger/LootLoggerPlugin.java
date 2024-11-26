@@ -53,6 +53,7 @@ import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.ArrayUtils;
 import thestonedturtle.lootlogger.data.BossTab;
+import thestonedturtle.lootlogger.data.KillCountNameMapper;
 import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.data.Pet;
 import thestonedturtle.lootlogger.data.UniqueItem;
@@ -603,8 +604,9 @@ public class LootLoggerPlugin extends Plugin
 		if (boss.find())
 		{
 			final String bossName = boss.group(1);
+			final String actualBossName = KillCountNameMapper.getBossNameFromKillCountName(bossName);
 			final int killCount = convertToInt(boss.group(2));
-			killCountMap.put(bossName.toUpperCase(), killCount);
+			killCountMap.put(actualBossName.toUpperCase(), killCount);
 		}
 	}
 

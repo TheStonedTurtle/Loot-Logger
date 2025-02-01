@@ -107,7 +107,7 @@ public enum BossTab
 	NIGHTMARE("The Nightmare", ItemID.LITTLE_NIGHTMARE, "Other", LootRecordType.NPC),
 	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.LITTLE_PARASITE, "Other", LootRecordType.NPC),
 	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUPHIN, "Other", LootRecordType.NPC),
-	HUEYCOATL("Hueycoatl", ItemID.HUBERTE, "Other", LootRecordType.NPC),
+	HUEYCOATL("The Hueycoatl", ItemID.HUBERTE, "Other", LootRecordType.NPC),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.PET_DAGANNOTH_REX, "Dagannoth Kings", LootRecordType.NPC),

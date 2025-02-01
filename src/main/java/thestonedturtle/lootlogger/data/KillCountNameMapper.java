@@ -32,7 +32,9 @@ import lombok.AllArgsConstructor;
 public enum KillCountNameMapper
 {
 	THE_WHISPERER("The Whisperer", "Whisperer"),
-	THE_LEVIATHAN("The Leviathan", "Leviathan")
+	THE_LEVIATHAN("The Leviathan", "Leviathan"),
+	MOONS_OF_PERIL("Moons of Peril", "Lunar Chest"),
+
 	;
 
 	private final String bossName;

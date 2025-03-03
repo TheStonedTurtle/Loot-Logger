@@ -219,7 +219,7 @@ class SelectionPanel extends JPanel
 			BossTab b = BossTab.getByName(n);
 			return b == null || !b.getType().equals(type);
 		}).collect(Collectors.toSet());
-		if (names.size() == 0)
+		if (names.isEmpty())
 		{
 			return null;
 		}
@@ -291,6 +291,7 @@ class SelectionPanel extends JPanel
 	private JPanel createNamePanel(final LootRecordType type, final String name)
 	{
 		final JPanel p = new JPanel();
+		p.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
 		p.add(new JLabel(name));
 		p.setBackground(BUTTON_COLOR);
 		p.addMouseListener(new MouseAdapter()

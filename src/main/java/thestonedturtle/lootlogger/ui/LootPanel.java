@@ -329,8 +329,17 @@ class LootPanel extends JPanel
 
 		playbackPlaying = true;
 
-		if (lootLog.getRecords().size() > 0)
+		// Grab these outside the loop to avoid any potential performance issues with pulling from config
+		// Downside is changing these config options during a replay will not have any affect.
+		final int playbackLimit = config.playbackUpdateLimit();
+		final int uniquePauseDuration = config.uniquePauseDuration();
+
+		final int configuredSleepDuration = 1000 / playbackLimit;
+		final int actualUniquePauseDuration = Math.max(configuredSleepDuration, uniquePauseDuration);
+
+		if (!lootLog.getRecords().isEmpty())
 		{
+			final int totalKills = lootLog.getRecords().size();
 			final LootLog tempLog = new LootLog(new ArrayList<>(), lootLog.getName());
 			for (final LTRecord r : lootLog.getRecords())
 			{
@@ -340,7 +349,7 @@ class LootPanel extends JPanel
 				{
 					SwingUtilities.invokeLater(() -> createPanel(tempLog));
 				}
-				else if (tempLog.getRecords().size() == lootLog.getRecords().size())
+				else if (tempLog.getRecords().size() == totalKills)
 				{
 					cancelPlayback = true;
 				}
@@ -359,8 +368,20 @@ class LootPanel extends JPanel
 						break;
 					}
 
-					// TODO: Allow this rate to be configurable?
-					Thread.sleep(250);
+					int sleepDuration = configuredSleepDuration;
+					if (uniquePauseDuration > 0)
+					{
+						for (LTItemEntry e : r.getDrops())
+						{
+							if (lootLog.getUniqueIds().contains(e.getId()))
+							{
+								// Pause for each unique
+								sleepDuration = actualUniquePauseDuration;
+								break;
+							}
+						}
+					}
+					Thread.sleep(sleepDuration);
 				}
 				catch (InterruptedException e)
 				{

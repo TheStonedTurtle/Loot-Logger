@@ -3,11 +3,20 @@ package thestonedturtle.lootlogger;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 
 @ConfigGroup("lootlogger")
 public interface LootLoggerConfig extends Config
 {
+	@ConfigSection(
+		name = "Playback Settings",
+		description = "The options that control the playback feature of the loot panel",
+		position = 100,
+		closedByDefault = true
+	)
+	String playbackSection = "playbackSection";
+
 	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable Side-Panel",
@@ -55,7 +64,8 @@ public interface LootLoggerConfig extends Config
 		position = 4,
 		keyName = "ignoreNmz",
 		name = "Ignore nightmare zone",
-		description = "Whether to ignore loot received while inside Nightmare Zone"
+		description = "Whether to ignore loot received while inside Nightmare Zone",
+		hidden = true
 	)
 	default boolean ignoreNmz()
 	{
@@ -80,5 +90,31 @@ public interface LootLoggerConfig extends Config
 	default boolean includeMinions()
 	{
 		return true;
+	}
+
+	@Range(min = 1, max = 100)
+	@ConfigItem(
+		position = 0,
+		keyName = "playbackUpdateLimit",
+		name = "Update Limit",
+		description = "Controls the number of times, per second, the playback can update the UI<br/><br/>Setting this value too low can result in lag, do not test this in dangerous areas",
+		section = playbackSection
+	)
+	default int playbackUpdateLimit()
+	{
+		return 10;
+	}
+
+	@Range(min = 0, max = 10000)
+	@ConfigItem(
+		position = 1,
+		keyName = "uniquePauseDuration",
+		name = "Unique Pause Duration",
+		description = "Controls how long, in milliseconds, the replay will pause on a unique item being added to the log<br/><br/>1000 milliseconds = 1 second<br/>0 will disable the pause entirely<br/>Respects the Update Limit value when set very low",
+		section = playbackSection
+	)
+	default int uniquePauseDuration()
+	{
+		return 2000;
 	}
 }

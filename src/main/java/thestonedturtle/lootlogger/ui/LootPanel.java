@@ -41,6 +41,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.ItemSortTypes;
 import thestonedturtle.lootlogger.LootLoggerConfig;
@@ -144,10 +145,10 @@ class LootPanel extends JPanel
 		int killsLogged = lootLog.getRecords().size();
 		if (killsLogged > 0)
 		{
-			killsLoggedPanel.updatePanel(KILLS_LOGGED, lootLog.getRecords().size());
+			killsLoggedPanel.updatePanel(KILLS_LOGGED, killsLogged);
 			killsLoggedPanel.setVisible(true);
 
-			final LTRecord entry = lootLog.getRecords().get(lootLog.getRecords().size() - 1);
+			final LTRecord entry = lootLog.getRecords().get(killsLogged - 1);
 			if (entry.getKillCount() != -1)
 			{
 				currentKillcountPanel.updatePanel(CURRENT_KC, entry.getKillCount());
@@ -166,7 +167,7 @@ class LootPanel extends JPanel
 		{
 			for (final LootLog log : lootLog.getMinionLogs())
 			{
-				if (log.getRecords().size() == 0)
+				if (log.getRecords().isEmpty())
 				{
 					continue;
 				}
@@ -185,6 +186,7 @@ class LootPanel extends JPanel
 		{
 			totalValuePanel.updatePanel(TOTAL_VALUE, totalValue);
 			totalValuePanel.setVisible(true);
+			killsLoggedPanel.setToolTipText(QuantityFormatter.formatNumber(totalValue / killsLogged) + " gp per kill");
 		}
 
 		// Change text and include minion kills for session data

@@ -105,7 +105,7 @@ public class LootLoggerPanel extends PluginPanel
 		// Removing them here seems to mitigate the lag
 		if (selectionPanel != null)
 		{
-			selectionPanel.getNamePanel().removeAll();
+			selectionPanel.removeAllCollapsableSections();
 		}
 
 		plugin.requestLootLog(type, name);

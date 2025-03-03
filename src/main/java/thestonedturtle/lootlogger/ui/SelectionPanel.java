@@ -37,12 +37,14 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -81,6 +83,7 @@ class SelectionPanel extends JPanel
 	private final IconTextField searchBar = new IconTextField();
 	@Getter
 	private final JPanel namePanel = new JPanel();
+	private final List<JPanel> panels = new ArrayList<>();
 
 	private boolean configToggle;
 
@@ -178,6 +181,7 @@ class SelectionPanel extends JPanel
 
 	private void addNamesToPanel(final SetMultimap<LootRecordType, String> names)
 	{
+		removeAllCollapsableSections();
 		namePanel.removeAll();
 
 		final GridBagConstraints c = new GridBagConstraints();
@@ -284,6 +288,7 @@ class SelectionPanel extends JPanel
 			c.gridy++;
 		}
 		container.add(panel);
+		panels.add(panel);
 		
 		return container;
 	}
@@ -430,5 +435,14 @@ class SelectionPanel extends JPanel
 		}
 
 		return true;
+	}
+
+	public void removeAllCollapsableSections()
+	{
+		// Removing each panel individually drastically increases performance when there's a large number of name panels
+		for (final JPanel p: panels)
+		{
+			p.removeAll();
+		}
 	}
 }

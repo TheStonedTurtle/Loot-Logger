@@ -108,6 +108,8 @@ public enum BossTab
 	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.NIGHTMAREPET_PARASITE, "Other", LootRecordType.NPC),
 	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUSPAHPET, "Other", LootRecordType.NPC),
 	HUEYCOATL("The Hueycoatl", ItemID.HUEYPET, "Other", LootRecordType.NPC),
+	YAMA("Yama", ItemID.YAMAPET, "Other", LootRecordType.NPC,
+		ImmutableSet.of("Forgotten lockbox")),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.REXPET, "Dagannoth Kings", LootRecordType.NPC),

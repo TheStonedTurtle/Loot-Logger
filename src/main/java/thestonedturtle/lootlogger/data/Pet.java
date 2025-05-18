@@ -72,6 +72,7 @@ public enum Pet
 	LITTLE_NIGHTMARE(ItemID.NIGHTMAREPET, BossTab.NIGHTMARE.getName(), BossTab.PHOSANIS_NIGHTMARE.getName()),
 	HERBI(ItemID.HERBIBOARPET, "Herbiboar"),
 	HUBERTE(ItemID.HUEYPET, BossTab.HUEYCOATL.getName()),
+	YAMI(ItemID.YAMAPET, BossTab.YAMA.getName()),
 	// Pretty sure
 	PHOENIX(ItemID.PHOENIXPET, BossTab.WINTERTODT.getName()),
 	PET_PENANCE_QUEEN(ItemID.PENANCEPET, "Barbarian Assault"),

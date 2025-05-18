@@ -38,95 +38,95 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.Getter;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.http.api.loottracker.LootRecordType;
 
 @Getter
 public enum BossTab
 {
 	// Raids
-	CHAMBERS_OF_XERIC("Chambers of Xeric", ItemID.OLMLET, "Chests / Raids", LootRecordType.EVENT),
-	THEATRE_OF_BLOOD("Theatre of Blood", ItemID.LIL_ZIK, "Chests / Raids", LootRecordType.EVENT),
-	TOMBS_OF_AMASCUT("Tombs of Amascut", ItemID.TUMEKENS_GUARDIAN, "Chests / Raids", LootRecordType.EVENT,
+	CHAMBERS_OF_XERIC("Chambers of Xeric", ItemID.OLMPET, "Chests / Raids", LootRecordType.EVENT),
+	THEATRE_OF_BLOOD("Theatre of Blood", ItemID.VERZIKPET, "Chests / Raids", LootRecordType.EVENT),
+	TOMBS_OF_AMASCUT("Tombs of Amascut", ItemID.WARDENPET_TUMEKEN, "Chests / Raids", LootRecordType.EVENT,
 		ImmutableSet.of("Cache of runes")),
 
-	BARROWS("Barrows", ItemID.BARROWS_TELEPORT, "Chests / Raids", LootRecordType.EVENT),
+	BARROWS("Barrows", ItemID.TELETAB_BARROWS, "Chests / Raids", LootRecordType.EVENT),
 	MOONS_OF_PERIL("Moons of Peril", ItemID.DUAL_MACUAHUITL, "Chests / Raids", LootRecordType.EVENT, "Lunar Chest"),
-	FORTIS_COLOSSEUM("Fortis Colosseum", ItemID.SMOL_HEREDIT, "Chests / Raids", LootRecordType.EVENT),
+	FORTIS_COLOSSEUM("Fortis Colosseum", ItemID.SOLHEREDITPET, "Chests / Raids", LootRecordType.EVENT),
 
 	// Loot received on NPC death
-	ZULRAH("Zulrah", ItemID.PET_SNAKELING, "Other", LootRecordType.NPC),
-	VORKATH("Vorkath", ItemID.VORKI, "Other", LootRecordType.NPC),
+	ZULRAH("Zulrah", ItemID.SNAKEPET, "Other", LootRecordType.NPC),
+	VORKATH("Vorkath", ItemID.VORKATHPET, "Other", LootRecordType.NPC),
 
 	// Forgotten Four
-	VARDORVIS("Vardorvis", ItemID.BUTCH, "Forgotten Four", LootRecordType.NPC),
-	THE_LEVIATHAN("The Leviathan", ItemID.LILVIATHAN, "Forgotten Four", LootRecordType.NPC),
-	DUKE_SUCELLUS("Duke Sucellus", ItemID.BARON, "Forgotten Four", LootRecordType.NPC),
-	THE_WHISPERER("The Whisperer", ItemID.WISP, "Forgotten Four", LootRecordType.NPC),
+	VARDORVIS("Vardorvis", ItemID.VARDORVISPET, "Forgotten Four", LootRecordType.NPC),
+	THE_LEVIATHAN("The Leviathan", ItemID.LEVIATHANPET, "Forgotten Four", LootRecordType.NPC),
+	DUKE_SUCELLUS("Duke Sucellus", ItemID.DUKESUCELLUSPET, "Forgotten Four", LootRecordType.NPC),
+	THE_WHISPERER("The Whisperer", ItemID.WHISPERERPET, "Forgotten Four", LootRecordType.NPC),
 
 	// God wars dungeon
-	KREEARRA("Kree'arra", ItemID.PET_KREEARRA , "God Wars Dungeon", LootRecordType.NPC,
+	KREEARRA("Kree'arra", ItemID.ARMADYLPET , "God Wars Dungeon", LootRecordType.NPC,
 		ImmutableSet.of("Wingman Skree", "Flockleader Geerin", "Flight Kilisa")),
-	GENERAL_GRAARDOR("General Graardor", ItemID.PET_GENERAL_GRAARDOR , "God Wars Dungeon", LootRecordType.NPC,
+	GENERAL_GRAARDOR("General Graardor", ItemID.BANDOSPET , "God Wars Dungeon", LootRecordType.NPC,
 		ImmutableSet.of("Sergeant Strongstack", "Sergeant Steelwill", "Sergeant Grimspike")),
-	COMMANDER_ZILYANA("Commander Zilyana", ItemID.PET_ZILYANA , "God Wars Dungeon", LootRecordType.NPC,
+	COMMANDER_ZILYANA("Commander Zilyana", ItemID.SARADOMINPET , "God Wars Dungeon", LootRecordType.NPC,
 		ImmutableSet.of("Growler", "Bree", "Starlight")),
-	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.PET_KRIL_TSUTSAROTH , "God Wars Dungeon", LootRecordType.NPC,
+	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.ZAMORAKPET , "God Wars Dungeon", LootRecordType.NPC,
 		ImmutableSet.of("Balfrug Kreeyath", "Tstanon Karlak", "Zakl'n Gritch")),
-	NEX("Nex", ItemID.NEXLING, "God Wars Dungeon", LootRecordType.NPC,
+	NEX("Nex", ItemID.NEXPET, "God Wars Dungeon", LootRecordType.NPC,
 		ImmutableSet.of("Fumus", "Umbra", "Cruor", "Glacies")),
 
 	// Wildy Bosses
-	VETION("Vet'ion Reborn", ItemID.VETION_JR , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Calvar'ion"), "Vet'ion"),
-	VENENATIS("Venenatis", ItemID.VENENATIS_SPIDERLING , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Spindel")),
-	CALLISTO("Callisto", ItemID.CALLISTO_CUB , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Artio")),
-	CHAOS_ELEMENTAL("Chaos Elemental", ItemID.PET_CHAOS_ELEMENTAL , "Wilderness", LootRecordType.NPC),
+	VETION("Vet'ion Reborn", ItemID.VETION_PET , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Calvar'ion"), "Vet'ion"),
+	VENENATIS("Venenatis", ItemID.VENENATIS_PET , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Spindel")),
+	CALLISTO("Callisto", ItemID.CALLISTO_PET , "Wilderness", LootRecordType.NPC, ImmutableSet.of("Artio")),
+	CHAOS_ELEMENTAL("Chaos Elemental", ItemID.CHAOSELEPET , "Wilderness", LootRecordType.NPC),
 	// Wildy Demi-Bosses
-	SCORPIA("Scorpia", ItemID.SCORPIAS_OFFSPRING, "Wilderness", LootRecordType.NPC),
-	CHAOS_FANATIC("Chaos Fanatic", ItemID.ANCIENT_STAFF , "Wilderness", LootRecordType.NPC),
+	SCORPIA("Scorpia", ItemID.SCORPIA_PET, "Wilderness", LootRecordType.NPC),
+	CHAOS_FANATIC("Chaos Fanatic", ItemID.STAFF_OF_ZAROS , "Wilderness", LootRecordType.NPC),
 	CRAZY_ARCHAEOLOGIST("Crazy Archaeologist", ItemID.FEDORA , "Wilderness", LootRecordType.NPC),
 	// Wildy Other
-	KING_BLACK_DRAGON("King Black Dragon", ItemID.PRINCE_BLACK_DRAGON , "Wilderness", LootRecordType.NPC),
+	KING_BLACK_DRAGON("King Black Dragon", ItemID.KBDPET , "Wilderness", LootRecordType.NPC),
 
 	// Slayer Bosses
-	SKOTIZO("Skotizo", ItemID.SKOTOS, "Slayer", LootRecordType.NPC),
-	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.NOON, "Slayer", LootRecordType.NPC, "Dusk"),
-	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSAL_ORPHAN, "Slayer", LootRecordType.NPC),
-	KRAKEN("Kraken", ItemID.PET_KRAKEN, "Slayer", LootRecordType.NPC),
-	CERBERUS("Cerberus", ItemID.HELLPUPPY, "Slayer", LootRecordType.NPC),
-	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.PET_SMOKE_DEVIL, "Slayer", LootRecordType.NPC),
-	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.IKKLE_HYDRA, "Slayer", LootRecordType.NPC),
-	ARAXXOR("Araxxor", ItemID.NID, "Slayer", LootRecordType.NPC),
+	SKOTIZO("Skotizo", ItemID.SKOTIZOPET, "Slayer", LootRecordType.NPC),
+	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.DAWNPET, "Slayer", LootRecordType.NPC, "Dusk"),
+	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSALSIRE_PET, "Slayer", LootRecordType.NPC),
+	KRAKEN("Kraken", ItemID.KRAKENPET, "Slayer", LootRecordType.NPC),
+	CERBERUS("Cerberus", ItemID.HELL_PET, "Slayer", LootRecordType.NPC),
+	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.SMOKEPET, "Slayer", LootRecordType.NPC),
+	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.HYDRAPET, "Slayer", LootRecordType.NPC),
+	ARAXXOR("Araxxor", ItemID.ARAXXORPET, "Slayer", LootRecordType.NPC),
 
 	// Other Bosses
-	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS, "Other", LootRecordType.NPC),
-	GIANT_MOLE("Giant Mole", ItemID.BABY_MOLE, "Other", LootRecordType.NPC),
-	CORPOREAL_BEAST("Corporeal Beast", ItemID.PET_CORPOREAL_CRITTER, "Other", LootRecordType.NPC),
-	SARACHNIS("Sarachnis", ItemID.SRARACHA, "Other", LootRecordType.NPC),
-	THE_GAUNTLET("The Gauntlet", ItemID.YOUNGLLEF, "Other", LootRecordType.EVENT),
-	NIGHTMARE("The Nightmare", ItemID.LITTLE_NIGHTMARE, "Other", LootRecordType.NPC),
-	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.LITTLE_PARASITE, "Other", LootRecordType.NPC),
-	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUPHIN, "Other", LootRecordType.NPC),
-	HUEYCOATL("The Hueycoatl", ItemID.HUBERTE, "Other", LootRecordType.NPC),
+	KALPHITE_QUEEN("Kalphite Queen", ItemID.KQPET_WALKING, "Other", LootRecordType.NPC),
+	GIANT_MOLE("Giant Mole", ItemID.MOLEPET, "Other", LootRecordType.NPC),
+	CORPOREAL_BEAST("Corporeal Beast", ItemID.CORPPET, "Other", LootRecordType.NPC),
+	SARACHNIS("Sarachnis", ItemID.SARACHNISPET, "Other", LootRecordType.NPC),
+	THE_GAUNTLET("The Gauntlet", ItemID.GAUNTLETPET, "Other", LootRecordType.EVENT),
+	NIGHTMARE("The Nightmare", ItemID.NIGHTMAREPET, "Other", LootRecordType.NPC),
+	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.NIGHTMAREPET_PARASITE, "Other", LootRecordType.NPC),
+	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUSPAHPET, "Other", LootRecordType.NPC),
+	HUEYCOATL("The Hueycoatl", ItemID.HUEYPET, "Other", LootRecordType.NPC),
 
 	// Dagannoth Kings
-	DAGANNOTH_REX("Dagannoth Rex", ItemID.PET_DAGANNOTH_REX, "Dagannoth Kings", LootRecordType.NPC),
-	DAGANNOTH_PRIME("Dagannoth Prime", ItemID.PET_DAGANNOTH_PRIME, "Dagannoth Kings", LootRecordType.NPC),
-	DAGANNOTH_SUPREME("Dagannoth Supreme", ItemID.PET_DAGANNOTH_SUPREME, "Dagannoth Kings", LootRecordType.NPC),
+	DAGANNOTH_REX("Dagannoth Rex", ItemID.REXPET, "Dagannoth Kings", LootRecordType.NPC),
+	DAGANNOTH_PRIME("Dagannoth Prime", ItemID.PRIMEPET, "Dagannoth Kings", LootRecordType.NPC),
+	DAGANNOTH_SUPREME("Dagannoth Supreme", ItemID.SUPREMEPET, "Dagannoth Kings", LootRecordType.NPC),
 
 	// Clue scrolls
-	CLUE_SCROLL_BEGINNER("Clue Scroll (Beginner)", ItemID.CLUE_SCROLL_BEGINNER, "Clue Scrolls", LootRecordType.EVENT),
-	CLUE_SCROLL_EASY("Clue Scroll (Easy)", ItemID.CLUE_SCROLL_EASY, "Clue Scrolls", LootRecordType.EVENT),
-	CLUE_SCROLL_MEDIUM("Clue Scroll (Medium)", ItemID.CLUE_SCROLL_MEDIUM, "Clue Scrolls", LootRecordType.EVENT),
-	CLUE_SCROLL_HARD("Clue Scroll (Hard)", ItemID.CLUE_SCROLL_HARD, "Clue Scrolls", LootRecordType.EVENT),
-	CLUE_SCROLL_ELITE("Clue Scroll (Elite)", ItemID.CLUE_SCROLL_ELITE, "Clue Scrolls", LootRecordType.EVENT),
-	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.CLUE_SCROLL_MASTER, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_BEGINNER("Clue Scroll (Beginner)", ItemID.TRAIL_CLUE_BEGINNER, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_EASY("Clue Scroll (Easy)", ItemID.TRAIL_CLUE_EASY_SIMPLE001, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_MEDIUM("Clue Scroll (Medium)", ItemID.TRAIL_CLUE_MEDIUM_SEXTANT001, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_HARD("Clue Scroll (Hard)", ItemID.TRAIL_CLUE_HARD_MAP001, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_ELITE("Clue Scroll (Elite)", ItemID.TRAIL_ELITE_EMOTE_EXP1, "Clue Scrolls", LootRecordType.EVENT),
+	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.TRAIL_CLUE_MASTER, "Clue Scrolls", LootRecordType.EVENT),
 
 	// Skilling
-	WINTERTODT("Wintertodt", ItemID.PHOENIX, "Skilling", LootRecordType.EVENT, "Supply crate (Wintertodt)"),
-	TEMPOROSS("Tempoross", ItemID.TINY_TEMPOR, "Skilling", LootRecordType.EVENT,
+	WINTERTODT("Wintertodt", ItemID.PHOENIXPET, "Skilling", LootRecordType.EVENT, "Supply crate (Wintertodt)"),
+	TEMPOROSS("Tempoross", ItemID.TEMPOROSSPET, "Skilling", LootRecordType.EVENT,
 		ImmutableSet.of("Casket (Tempoross)"), "Reward pool (Tempoross)"),
-	ZALCANO("Zalcano", ItemID.SMOLCANO, "Skilling", LootRecordType.NPC),
+	ZALCANO("Zalcano", ItemID.ZALCANOPET, "Skilling", LootRecordType.NPC),
 	;
 
 	private final String name;

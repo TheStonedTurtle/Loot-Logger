@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
@@ -137,16 +137,16 @@ public class LootLog
 				{
 					// Beginner and Master clues only have 1 ID
 					case "easy":
-						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_EASY : ItemID.CASKET_EASY;
+						id = type.equals(ClueType.SCROLL) ? ItemID.TRAIL_CLUE_EASY_SIMPLE001 : ItemID.TRAIL_CLUE_EASY_MAP001_CASKET;
 						break;
 					case "medium":
-						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_MEDIUM : ItemID.CASKET_MEDIUM;
+						id = type.equals(ClueType.SCROLL) ? ItemID.TRAIL_CLUE_MEDIUM_SEXTANT001 : ItemID.TRAIL_CLUE_MEDIUM_SEXTANT001_CASKET;
 						break;
 					case "hard":
-						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_HARD : ItemID.CASKET_HARD;
+						id = type.equals(ClueType.SCROLL) ? ItemID.TRAIL_CLUE_HARD_MAP001 : ItemID.TRAIL_CLUE_HARD_SEXTANT001_CASKET;
 						break;
 					case "elite":
-						id = type.equals(ClueType.SCROLL) ? ItemID.CLUE_SCROLL_ELITE : ItemID.CASKET_ELITE;
+						id = type.equals(ClueType.SCROLL) ? ItemID.TRAIL_ELITE_EMOTE_EXP1 : ItemID.TRAIL_ELITE_EMOTE_CASKET;
 						break;
 				}
 

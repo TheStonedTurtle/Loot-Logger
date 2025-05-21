@@ -375,7 +375,7 @@ public class LootLoggerPlugin extends Plugin
 			{
 				for (final String minion : tab.getMinions())
 				{
-					final Collection<LTRecord> minionRecords = getDataByName(type, minion);
+					final Collection<LTRecord> minionRecords = getDataByName(tab.getMinionType(), minion);
 					final LootLog minionLog = new LootLog(minionRecords, minion);
 
 					log.getMinionLogs().add(minionLog);

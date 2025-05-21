@@ -109,7 +109,7 @@ public enum BossTab
 	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUSPAHPET, "Other", LootRecordType.NPC),
 	HUEYCOATL("The Hueycoatl", ItemID.HUEYPET, "Other", LootRecordType.NPC),
 	YAMA("Yama", ItemID.YAMAPET, "Other", LootRecordType.NPC,
-		ImmutableSet.of("Forgotten lockbox")),
+		ImmutableSet.of("forgotten lockbox"), LootRecordType.EVENT),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.REXPET, "Dagannoth Kings", LootRecordType.NPC),
@@ -137,6 +137,7 @@ public enum BossTab
 	private final LootRecordType type;
 	private final Set<String> aliases = new HashSet<>();
 	private final Set<String> minions;
+	private final LootRecordType minionType;
 
 	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final String... aliases)
 	{
@@ -144,6 +145,11 @@ public enum BossTab
 	}
 
 	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final Collection<String> minions, final String... aliases)
+	{
+		this(name, itemID, category, type, minions, type, aliases);
+	}
+
+	BossTab(final String name, final int itemID, final String category, final LootRecordType type, final Collection<String> minions, final LootRecordType minionType, final String... aliases)
 	{
 		this.name = name;
 		this.itemID = itemID;
@@ -153,6 +159,7 @@ public enum BossTab
 		this.aliases.add(name);
 		this.aliases.addAll(Arrays.asList(aliases));
 		this.minions = minions.stream().map(String::toLowerCase).collect(Collectors.toSet());
+		this.minionType = minionType;
 	}
 
 	private static final Map<String, BossTab> NAME_MAP;

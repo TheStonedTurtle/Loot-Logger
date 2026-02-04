@@ -35,9 +35,16 @@ public class LTItemEntry
 	public final int id;
 	public int quantity;
 	public long price;
+	// Rather than serializing HA price and change the output format at all, mark transient and fetch it on deserialisation.
+	public final transient int haPrice;
 
-	public long getTotal()
+	public long getTotalGe()
 	{
 		return this.quantity * this.price;
+	}
+
+	public long getTotalHA()
+	{
+		return this.quantity * (long) this.haPrice;
 	}
 }

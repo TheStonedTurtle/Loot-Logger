@@ -117,4 +117,12 @@ public interface LootLoggerConfig extends Config
 	{
 		return 2000;
 	}
+
+	@ConfigItem(
+		position = 1,
+		keyName = "itemValue",
+		name = "Item Value",
+		description = "Which value to use when calculating item prices"
+	)
+	default ItemValueTypes valueType() {return ItemValueTypes.GRAND_EXCHANGE;}
 }

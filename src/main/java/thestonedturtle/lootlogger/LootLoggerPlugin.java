@@ -275,7 +275,7 @@ public class LootLoggerPlugin extends Plugin
 		final ItemComposition c = itemManager.getItemComposition(id);
 		final int realId = c.getNote() == -1 ? c.getId() : c.getLinkedNoteId();
 		final int price = itemManager.getItemPrice(realId);
-		return new LTItemEntry(c.getName(), id, qty, price);
+		return new LTItemEntry(c.getName(), id, qty, price, c.getHaPrice());
 	}
 
 	private void addRecord(final LTRecord record)
@@ -367,10 +367,10 @@ public class LootLoggerPlugin extends Plugin
 		{
 			if (name.equalsIgnoreCase(SESSION_NAME))
 			{
-				final LootLog log = new LootLog(Collections.emptyList(), name);
+				final LootLog log = new LootLog(config, Collections.emptyList(), name);
 				for (final String key : sessionData.keySet())
 				{
-					log.getMinionLogs().add(new LootLog(sessionData.get(key), key));
+					log.getMinionLogs().add(new LootLog(config, sessionData.get(key), key));
 				}
 
 				SwingUtilities.invokeLater(() -> panel.useLog(log));
@@ -378,7 +378,7 @@ public class LootLoggerPlugin extends Plugin
 			}
 			
 			final Collection<LTRecord> records = getDataByName(type, name);
-			final LootLog log = new LootLog(records, name);
+			final LootLog log = new LootLog(config, records, name);
 			if (log.getType().equals(LootRecordType.UNKNOWN))
 			{
 				log.setType(type);
@@ -390,7 +390,7 @@ public class LootLoggerPlugin extends Plugin
 				for (final String minion : tab.getMinions())
 				{
 					final Collection<LTRecord> minionRecords = getDataByName(tab.getMinionType(), minion);
-					final LootLog minionLog = new LootLog(minionRecords, minion);
+					final LootLog minionLog = new LootLog(config, minionRecords, minion);
 
 					log.getMinionLogs().add(minionLog);
 				}
@@ -494,7 +494,7 @@ public class LootLoggerPlugin extends Plugin
 		{
 			Collection<LTRecord> data = getDataByName(LootRecordType.NPC, BossTab.ABYSSAL_SIRE.getName());
 			ItemComposition c = itemManager.getItemComposition(itemID);
-			LTItemEntry itemEntry = new LTItemEntry(c.getName(), itemID, 1, 0);
+			LTItemEntry itemEntry = new LTItemEntry(c.getName(), itemID, 1, 0, c.getHaPrice());
 
 			log.debug("Received Unsired item: {}", c.getName());
 

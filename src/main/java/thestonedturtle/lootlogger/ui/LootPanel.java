@@ -43,10 +43,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
-import thestonedturtle.lootlogger.ItemSortTypes;
-import thestonedturtle.lootlogger.LootLoggerConfig;
-import thestonedturtle.lootlogger.LootLoggerPlugin;
-import thestonedturtle.lootlogger.UniqueItemPlacement;
+import thestonedturtle.lootlogger.*;
 import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
@@ -204,7 +201,7 @@ class LootPanel extends JPanel
 		return log.getConsolidated()
 			.values().stream()
 			.filter(e -> !(hideUniques && lootLog.getUniqueIds().contains(e.getId())))
-			.sorted(createLTItemEntryComparator(config.itemSortType()))
+			.sorted(createLTItemEntryComparator(config.itemSortType(), config.valueType()))
 			.toArray(LTItemEntry[]::new);
 	}
 
@@ -254,7 +251,7 @@ class LootPanel extends JPanel
 		final LootLog minionLog = lootLog.getMinionLog(record.getName());
 		if (minionLog == null)
 		{
-			final LootLog newMinionLog = new LootLog(ImmutableList.of(record), record.getName());
+			final LootLog newMinionLog = new LootLog(config, ImmutableList.of(record), record.getName());
 			lootLog.getMinionLogs().add(newMinionLog);
 
 			final NamedLootGrid grid = createMinionGrid(newMinionLog);
@@ -342,7 +339,7 @@ class LootPanel extends JPanel
 		if (!lootLog.getRecords().isEmpty())
 		{
 			final int totalKills = lootLog.getRecords().size();
-			final LootLog tempLog = new LootLog(new ArrayList<>(), lootLog.getName());
+			final LootLog tempLog = new LootLog(config, new ArrayList<>(), lootLog.getName());
 			for (final LTRecord r : lootLog.getRecords())
 			{
 				tempLog.addRecord(r);
@@ -400,7 +397,7 @@ class LootPanel extends JPanel
 	 * @param sortType The {@link ItemSortTypes} describing how these entries should be sorted
 	 * @return returns the sorted list
 	 */
-	private static Comparator<LTItemEntry> createLTItemEntryComparator(final ItemSortTypes sortType)
+	private static Comparator<LTItemEntry> createLTItemEntryComparator(final ItemSortTypes sortType, final ItemValueTypes valueType)
 	{
 		return (o1, o2) ->
 		{
@@ -409,17 +406,23 @@ class LootPanel extends JPanel
 				case ITEM_ID:
 					return o1.getId() - o2.getId();
 				case PRICE:
-					if (o1.getPrice() != o2.getPrice())
+					if (valueType == ItemValueTypes.GRAND_EXCHANGE)
 					{
 						return o1.getPrice() > o2.getPrice() ? -1 : 1;
 					}
-					break;
-				case VALUE:
-					if (o1.getTotal() != o2.getTotal())
+					else
 					{
-						return o1.getTotal() > o2.getTotal() ? -1 : 1;
+						return o1.getHaPrice() > o2.getHaPrice() ? -1 : 1;
 					}
-					break;
+				case VALUE:
+					if (valueType == ItemValueTypes.GRAND_EXCHANGE)
+					{
+						return o1.getTotalGe() > o2.getTotalGe() ? -1 : 1;
+					}
+					else
+					{
+						return o1.getTotalHA() > o2.getTotalHA() ? -1 : 1;
+					}
 				case ALPHABETICAL:
 					// Handled below
 					break;

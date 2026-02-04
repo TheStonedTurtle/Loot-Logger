@@ -43,12 +43,16 @@ import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.http.api.loottracker.LootRecordType;
+import thestonedturtle.lootlogger.ItemValueTypes;
+import thestonedturtle.lootlogger.LootLoggerConfig;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
 import thestonedturtle.lootlogger.localstorage.LTRecord;
 
 @Getter
 public class LootLog
 {
+	private final LootLoggerConfig config;
+
 	private static final Pattern CLUE_ITEM_TYPE_PATTERN = Pattern.compile("\\((\\w*)\\)");
 	private final String name;
 	@Setter
@@ -64,9 +68,11 @@ public class LootLog
 	// Store a LootLog for all minions
 	private final List<LootLog> minionLogs = new ArrayList<>();
 
-	public LootLog(final Collection<LTRecord> records, final String name)
+	public LootLog(LootLoggerConfig config, final Collection<LTRecord> records, final String name)
 	{
-		this.records.addAll(records);
+        this.config = config;
+
+        this.records.addAll(records);
 		this.name = name;
 
 		if (records.size() == 0)
@@ -150,7 +156,7 @@ public class LootLog
 						break;
 				}
 
-				item = new LTItemEntry(item.getName(), id, item.getQuantity(), item.getPrice());
+				item = new LTItemEntry(item.getName(), id, item.getQuantity(), item.getPrice(), item.getHaPrice());
 			}
 		}
 
@@ -164,7 +170,7 @@ public class LootLog
 		else
 		{
 			// Create a new instance for consolidated records
-			consolidated.put(item.getId(), new LTItemEntry(item.getName(), item.getId(), item.getQuantity(), item.getPrice()));
+			consolidated.put(item.getId(), new LTItemEntry(item.getName(), item.getId(), item.getQuantity(), item.getPrice(), item.getHaPrice()));
 		}
 	}
 
@@ -186,7 +192,9 @@ public class LootLog
 	{
 		long value = getConsolidated()
 			.values().stream()
-			.mapToLong(e -> e.getPrice() * e.getQuantity())
+			.mapToLong(e ->
+				config.valueType() == ItemValueTypes.GRAND_EXCHANGE ? e.getTotalGe() : e.getTotalHA()
+			)
 			.sum();
 
 		if (includeMinions)
@@ -195,7 +203,9 @@ public class LootLog
 			{
 				value += minionLog.getConsolidated()
 					.values().stream()
-					.mapToLong(e -> e.getPrice() * e.getQuantity())
+					.mapToLong(e ->
+						config.valueType() == ItemValueTypes.GRAND_EXCHANGE ? e.getTotalGe() : e.getTotalHA()
+					)
 					.sum();
 			}
 		}

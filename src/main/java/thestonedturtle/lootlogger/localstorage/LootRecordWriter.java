@@ -26,7 +26,8 @@ package thestonedturtle.lootlogger.localstorage;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-import com.google.gson.Gson;
+import com.google.gson.*;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,17 +35,24 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
+
+import net.runelite.api.ItemComposition;
+import net.runelite.client.callback.ClientThread;
+import net.runelite.client.game.ItemManager;
 import net.runelite.http.api.RuneLiteAPI;
 import net.runelite.http.api.loottracker.LootRecordType;
 
@@ -59,6 +67,9 @@ public class LootRecordWriter
 	private static final String FILE_EXTENSION = ".log";
 	private static final File LOOT_RECORD_DIR = new File(RUNELITE_DIR, "loots");
 
+	private final ClientThread clientThread;
+	private final ItemManager itemManager;
+
 	// Data is stored in a folder with the players username (login name)
 	private File playerFolder = LOOT_RECORD_DIR;
 	// Data is separated into sub-folders by event type to prevent issues.
@@ -67,17 +78,44 @@ public class LootRecordWriter
 	@Getter
 	private String name;
 
+	// Custom Deserializer for LTItemEntry which fetches HA price.
+	private class LTItemEntryDeserializer implements JsonDeserializer<LTItemEntry>
+	{
+		@Override
+		public LTItemEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+		{
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			final String name = jsonObject.get("name").getAsString();
+			final int id = jsonObject.get("id").getAsInt();
+			int quantity = jsonObject.get("quantity").getAsInt();
+			long price = jsonObject.get("price").getAsLong();
+			AtomicInteger haPrice = new AtomicInteger();
+			clientThread.invoke(() ->
+			{
+				ItemComposition c = itemManager.getItemComposition(id);
+				haPrice.set(c.getHaPrice());
+				log.debug("Set ha price for {}: {}", name, c.getHaPrice());
+			});
+			log.debug("Got ha price for {}: {}", name, haPrice.get());
+			return new LTItemEntry(name, id, quantity, price, haPrice.get());
+		}
+	}
+
 	// The default date format does not allow migrating between Java 17 and Java 20+ (in either direction)
 	// Java 20+ uses unicode character U+202f while java 17- use a normal space before the AM/PM part of the date string
 	// This date adapter will attempt to match between both variants but will always write with a space
 	private final Gson CUSTOM_GSON = RuneLiteAPI.GSON.newBuilder()
 		.registerTypeAdapter(Date.class, new LootRecordDateAdapter())
+		.registerTypeAdapter(LTItemEntry.class, new LTItemEntryDeserializer())
 		.create();
 
 	@Inject
-	public LootRecordWriter()
+	public LootRecordWriter(ClientThread clientThread, ItemManager itemManager)
 	{
-		LOOT_RECORD_DIR.mkdir();
+        this.clientThread = clientThread;
+        this.itemManager = itemManager;
+        LOOT_RECORD_DIR.mkdir();
 	}
 
 	public boolean setPlayerUsername(final String username)

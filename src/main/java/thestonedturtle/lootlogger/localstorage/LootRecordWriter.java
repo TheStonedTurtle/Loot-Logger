@@ -51,6 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 
 import net.runelite.api.ItemComposition;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.http.api.RuneLiteAPI;
@@ -93,11 +94,20 @@ public class LootRecordWriter
 			AtomicInteger haPrice = new AtomicInteger();
 			clientThread.invoke(() ->
 			{
-				ItemComposition c = itemManager.getItemComposition(id);
-				haPrice.set(c.getHaPrice());
-				log.debug("Set ha price for {}: {}", name, c.getHaPrice());
+				if (id == ItemID.COINS)
+				{
+					haPrice.set(1);
+				}
+				else if (id == ItemID.PLATINUM)
+				{
+					haPrice.set(1000);
+				}
+				else
+				{
+					ItemComposition c = itemManager.getItemComposition(id);
+					haPrice.set(c.getHaPrice());
+				}
 			});
-			log.debug("Got ha price for {}: {}", name, haPrice.get());
 			return new LTItemEntry(name, id, quantity, price, haPrice.get());
 		}
 	}

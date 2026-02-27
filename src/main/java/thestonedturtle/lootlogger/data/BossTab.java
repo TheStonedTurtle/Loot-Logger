@@ -91,7 +91,8 @@ public enum BossTab
 	// Slayer Bosses
 	SKOTIZO("Skotizo", ItemID.SKOTIZOPET, "Slayer", LootRecordType.NPC),
 	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.DAWNPET, "Slayer", LootRecordType.NPC, "Dusk"),
-	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSALSIRE_PET, "Slayer", LootRecordType.NPC),
+	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSALSIRE_PET, "Slayer", LootRecordType.NPC,
+			ImmutableSet.of("unsired"), LootRecordType.EVENT),
 	KRAKEN("Kraken", ItemID.KRAKENPET, "Slayer", LootRecordType.NPC),
 	CERBERUS("Cerberus", ItemID.HELL_PET, "Slayer", LootRecordType.NPC),
 	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.SMOKEPET, "Slayer", LootRecordType.NPC),

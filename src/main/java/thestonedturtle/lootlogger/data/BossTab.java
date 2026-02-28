@@ -97,6 +97,14 @@ public enum BossTab
 	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.SMOKEPET, "Slayer", LootRecordType.NPC),
 	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.HYDRAPET, "Slayer", LootRecordType.NPC),
 	ARAXXOR("Araxxor", ItemID.ARAXXORPET, "Slayer", LootRecordType.NPC),
+	SUPERIOR_SLAYER_MONSTERS("Superior slayer monsters", ItemID.IMBUED_HEART, "Slayer", LootRecordType.NPC,
+			ImmutableSet.of("Crushing hand", "Chasm crawler", "Screaming banshee", "Screaming twisted banshee", "Giant rockslug",
+					"Cockathrice", "Flaming pyrelord", " Infernal pyrelord", "Monstrous basilisk", "Malevolent mage",
+					"Insatiable bloodveld", "Insatiable mutated bloodveld", "Dire gryphon", "Vitreous jelly", "Vitreous warped jelly",
+					"Vitreous chilled jelly", "Spiked turoth", "Mutated terrorbird", "Mutated tortoise", "Cave abomination",
+					"Abhorrent spectre", "Repugnant spectre", "Basilisk sentinel", "Shadow wyrm", "Magma strykewyrm", "Choke devil",
+					"King kurask", "Marble gargoyle", "Ancient custodian", "Elder aquanite", "Nechryarch", "Guardian drake",
+					"Greater abyssal demon", "Night beast", "Dreadborn araxyte", "Nuclear smoke devil", "Colossal hydra")),
 
 	// Other Bosses
 	KALPHITE_QUEEN("Kalphite Queen", ItemID.KQPET_WALKING, "Other", LootRecordType.NPC),

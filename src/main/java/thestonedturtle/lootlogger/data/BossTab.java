@@ -111,6 +111,7 @@ public enum BossTab
 	YAMA("Yama", ItemID.YAMAPET, "Other", LootRecordType.NPC,
 		ImmutableSet.of("forgotten lockbox"), LootRecordType.EVENT),
 	DOOM("Doom of Mokhaiotl", ItemID.DOMPET, "Other", LootRecordType.EVENT),
+	BRUTUS("Brutus", ItemID.COWBOSSPET, "Other", LootRecordType.NPC),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.REXPET, "Dagannoth Kings", LootRecordType.NPC),

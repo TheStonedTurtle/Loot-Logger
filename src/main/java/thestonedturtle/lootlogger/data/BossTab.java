@@ -126,7 +126,7 @@ public enum BossTab
 	CLUE_SCROLL_MASTER("Clue Scroll (Master)", ItemID.TRAIL_CLUE_MASTER, "Clue Scrolls", LootRecordType.EVENT),
 
 	// Skilling
-	WINTERTODT("Wintertodt", ItemID.PHOENIXPET, "Skilling", LootRecordType.EVENT, "Supply crate (Wintertodt)"),
+	WINTERTODT("Wintertodt", ItemID.PHOENIXPET, "Skilling", LootRecordType.EVENT, "Supply crate (Wintertodt)", "Reward cart (Wintertodt)"),
 	TEMPOROSS("Tempoross", ItemID.TEMPOROSSPET, "Skilling", LootRecordType.EVENT,
 		ImmutableSet.of("Casket (Tempoross)"), "Reward pool (Tempoross)"),
 	ZALCANO("Zalcano", ItemID.ZALCANOPET, "Skilling", LootRecordType.NPC),

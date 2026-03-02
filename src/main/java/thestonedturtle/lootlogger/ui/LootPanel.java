@@ -410,14 +410,14 @@ class LootPanel extends JPanel
 				case ITEM_ID:
 					return o1.getId() - o2.getId();
 				case PRICE:
-					if (valueType == ItemValueTypes.GRAND_EXCHANGE)
+					long p1 = o1.getPriceByType(valueType);
+					long p2 = o2.getPriceByType(valueType);
+
+					if (p1 != p2)
 					{
-						return o1.getPrice() > o2.getPrice() ? -1 : 1;
+						return p1 > p2 ? -1 : 1;
 					}
-					else
-					{
-						return o1.getHaPrice() > o2.getHaPrice() ? -1 : 1;
-					}
+					break;
 				case VALUE:
 					long v1 = o1.getTotalByType(valueType);
 					long v2 = o2.getTotalByType(valueType);

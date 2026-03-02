@@ -92,9 +92,12 @@ class LootGrid extends JPanel
 		final String name = item.getName();
 		final int quantity = item.getQuantity();
 		final long price = item.getPrice();
+		final long haPrice = item.getHaPrice();
 
 		return "<html>" + name + " x " + QuantityFormatter.formatNumber(quantity)
 			+ "<br/>Price: " + QuantityFormatter.quantityToStackSize(price)
-			+ "<br/>Total: " + QuantityFormatter.quantityToStackSize(quantity * price) +	"</html>";
+			+ "<br/>Total: " + QuantityFormatter.quantityToStackSize(quantity * price)
+			+ "<br/>Price (HA): " + QuantityFormatter.quantityToStackSize(haPrice)
+			+ "<br/>Total (HA): " + QuantityFormatter.quantityToStackSize(quantity * haPrice) + "</html>";
 	}
 }

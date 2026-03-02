@@ -44,6 +44,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import thestonedturtle.lootlogger.ItemSortTypes;
+import thestonedturtle.lootlogger.ItemValueTypes;
 import thestonedturtle.lootlogger.LootLoggerConfig;
 import thestonedturtle.lootlogger.LootLoggerPlugin;
 import thestonedturtle.lootlogger.UniqueItemPlacement;
@@ -204,7 +205,7 @@ class LootPanel extends JPanel
 		return log.getConsolidated()
 			.values().stream()
 			.filter(e -> !(hideUniques && lootLog.getUniqueIds().contains(e.getId())))
-			.sorted(createLTItemEntryComparator(config.itemSortType()))
+			.sorted(createLTItemEntryComparator(config.itemSortType(), config.valueType()))
 			.toArray(LTItemEntry[]::new);
 	}
 
@@ -254,7 +255,7 @@ class LootPanel extends JPanel
 		final LootLog minionLog = lootLog.getMinionLog(record.getName());
 		if (minionLog == null)
 		{
-			final LootLog newMinionLog = new LootLog(ImmutableList.of(record), record.getName());
+			final LootLog newMinionLog = new LootLog(config, ImmutableList.of(record), record.getName());
 			lootLog.getMinionLogs().add(newMinionLog);
 
 			final NamedLootGrid grid = createMinionGrid(newMinionLog);
@@ -342,7 +343,7 @@ class LootPanel extends JPanel
 		if (!lootLog.getRecords().isEmpty())
 		{
 			final int totalKills = lootLog.getRecords().size();
-			final LootLog tempLog = new LootLog(new ArrayList<>(), lootLog.getName());
+			final LootLog tempLog = new LootLog(config, new ArrayList<>(), lootLog.getName());
 			for (final LTRecord r : lootLog.getRecords())
 			{
 				tempLog.addRecord(r);
@@ -400,7 +401,7 @@ class LootPanel extends JPanel
 	 * @param sortType The {@link ItemSortTypes} describing how these entries should be sorted
 	 * @return returns the sorted list
 	 */
-	private static Comparator<LTItemEntry> createLTItemEntryComparator(final ItemSortTypes sortType)
+	private static Comparator<LTItemEntry> createLTItemEntryComparator(final ItemSortTypes sortType, final ItemValueTypes valueType)
 	{
 		return (o1, o2) ->
 		{
@@ -409,15 +410,21 @@ class LootPanel extends JPanel
 				case ITEM_ID:
 					return o1.getId() - o2.getId();
 				case PRICE:
-					if (o1.getPrice() != o2.getPrice())
+					long p1 = o1.getPriceByType(valueType);
+					long p2 = o2.getPriceByType(valueType);
+
+					if (p1 != p2)
 					{
-						return o1.getPrice() > o2.getPrice() ? -1 : 1;
+						return p1 > p2 ? -1 : 1;
 					}
 					break;
 				case VALUE:
-					if (o1.getTotal() != o2.getTotal())
+					long v1 = o1.getTotalByType(valueType);
+					long v2 = o2.getTotalByType(valueType);
+
+					if (v1 != v2)
 					{
-						return o1.getTotal() > o2.getTotal() ? -1 : 1;
+						return v1 > v2 ? -1 : 1;
 					}
 					break;
 				case ALPHABETICAL:

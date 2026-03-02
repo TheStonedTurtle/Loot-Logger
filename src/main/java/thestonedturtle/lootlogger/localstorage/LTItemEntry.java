@@ -26,18 +26,25 @@ package thestonedturtle.lootlogger.localstorage;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import thestonedturtle.lootlogger.ItemValueTypes;
 
 @Data
 @AllArgsConstructor
-public class LTItemEntry
-{
+public class LTItemEntry {
 	public final String name;
 	public final int id;
 	public int quantity;
 	public long price;
+	// Rather than serializing HA price and change the output format at all, mark transient and fetch it on deserialisation.
+	public final transient int haPrice;
 
-	public long getTotal()
+	public long getPriceByType(ItemValueTypes valueType)
 	{
-		return this.quantity * this.price;
+		return valueType == ItemValueTypes.GRAND_EXCHANGE ? this.price : (long) this.haPrice;
+	}
+
+	public long getTotalByType(ItemValueTypes valueType)
+	{
+		return this.quantity * this.getPriceByType(valueType);
 	}
 }

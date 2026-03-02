@@ -192,9 +192,7 @@ public class LootLog
 	{
 		long value = getConsolidated()
 			.values().stream()
-			.mapToLong(e ->
-				config.valueType() == ItemValueTypes.GRAND_EXCHANGE ? e.getTotalGe() : e.getTotalHA()
-			)
+			.mapToLong(e -> e.getTotalByType(config.valueType()))
 			.sum();
 
 		if (includeMinions)
@@ -203,9 +201,7 @@ public class LootLog
 			{
 				value += minionLog.getConsolidated()
 					.values().stream()
-					.mapToLong(e ->
-						config.valueType() == ItemValueTypes.GRAND_EXCHANGE ? e.getTotalGe() : e.getTotalHA()
-					)
+					.mapToLong(e -> e.getTotalByType(config.valueType()))
 					.sum();
 			}
 		}

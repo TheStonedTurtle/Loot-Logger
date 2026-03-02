@@ -415,14 +415,14 @@ class LootPanel extends JPanel
 						return o1.getHaPrice() > o2.getHaPrice() ? -1 : 1;
 					}
 				case VALUE:
-					if (valueType == ItemValueTypes.GRAND_EXCHANGE)
+					long v1 = o1.getTotalByType(valueType);
+					long v2 = o2.getTotalByType(valueType);
+
+					if (v1 != v2)
 					{
-						return o1.getTotalGe() > o2.getTotalGe() ? -1 : 1;
+						return v1 > v2 ? -1 : 1;
 					}
-					else
-					{
-						return o1.getTotalHA() > o2.getTotalHA() ? -1 : 1;
-					}
+					break;
 				case ALPHABETICAL:
 					// Handled below
 					break;

@@ -164,6 +164,7 @@ public class LootLoggerPlugin extends Plugin
 				}
 
 				UniqueItem.prepareUniqueItems(itemManager);
+				LootRecordWriter.prepareHaPriceMap(itemManager);
 				return true;
 			});
 		}

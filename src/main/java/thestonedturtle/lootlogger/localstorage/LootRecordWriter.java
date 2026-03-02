@@ -40,7 +40,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -55,7 +54,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 
-import net.runelite.api.ItemComposition;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
@@ -73,8 +71,7 @@ public class LootRecordWriter
 	private static final String FILE_EXTENSION = ".log";
 	private static final File LOOT_RECORD_DIR = new File(RUNELITE_DIR, "loots");
 
-	private final ClientThread clientThread;
-	private final ItemManager itemManager;
+	private static final Map<Integer, Integer> haPrices = new HashMap<>();
 
 	// Data is stored in a folder with the players username (login name)
 	private File playerFolder = LOOT_RECORD_DIR;
@@ -85,7 +82,7 @@ public class LootRecordWriter
 	private String name;
 
 	// Custom Deserializer for LTItemEntry which fetches HA price.
-	private class LTItemEntryDeserializer implements JsonDeserializer<LTItemEntry>
+	private static class LTItemEntryDeserializer implements JsonDeserializer<LTItemEntry>
 	{
 		@Override
 		public LTItemEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
@@ -96,24 +93,8 @@ public class LootRecordWriter
 			final int id = jsonObject.get("id").getAsInt();
 			int quantity = jsonObject.get("quantity").getAsInt();
 			long price = jsonObject.get("price").getAsLong();
-			AtomicInteger haPrice = new AtomicInteger();
-			clientThread.invoke(() ->
-			{
-				if (id == ItemID.COINS)
-				{
-					haPrice.set(1);
-				}
-				else if (id == ItemID.PLATINUM)
-				{
-					haPrice.set(1000);
-				}
-				else
-				{
-					ItemComposition c = itemManager.getItemComposition(id);
-					haPrice.set(c.getHaPrice());
-				}
-			});
-			return new LTItemEntry(name, id, quantity, price, haPrice.get());
+			int haPrice = haPrices.getOrDefault(id, 0);
+			return new LTItemEntry(name, id, quantity, price, haPrice);
 		}
 	}
 
@@ -126,10 +107,8 @@ public class LootRecordWriter
 		.create();
 
 	@Inject
-	public LootRecordWriter(ClientThread clientThread, ItemManager itemManager)
+	public LootRecordWriter()
 	{
-        this.clientThread = clientThread;
-        this.itemManager = itemManager;
         LOOT_RECORD_DIR.mkdir();
 	}
 
@@ -305,5 +284,20 @@ public class LootRecordWriter
 		}
 
 		return usernameDir.renameTo(hashDir);
+	}
+
+	public static void prepareHaPriceMap(ItemManager itemManager)
+	{
+		// As far as I know the highest assignable item id is 65535, so this should be suitably future-proof.
+		for (int id = 0; id < 65536; id++)
+		{
+			int haPrice = itemManager.getItemComposition(id).getHaPrice();
+			// Don't bother storing items with a HA price of 0, we can use getOrDefault to fill those in.
+			// Also filters out invalid/unassigned ids, as those return a HA price of 0 as well.
+			if (haPrice != 0) {haPrices.put(id, haPrice);}
+		}
+		haPrices.put(ItemID.COINS, 1);
+		haPrices.put(ItemID.PLATINUM, 1000);
+		log.debug("Finished preparing HA price map");
 	}
 }

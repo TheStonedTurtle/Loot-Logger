@@ -286,10 +286,9 @@ public class LootRecordWriter
 		return usernameDir.renameTo(hashDir);
 	}
 
-	public static void prepareHaPriceMap(ItemManager itemManager)
+	public static void prepareHaPriceMap(ItemManager itemManager, int maxId)
 	{
-		// As far as I know the highest assignable item id is 65535, so this should be suitably future-proof.
-		for (int id = 0; id < 65536; id++)
+		for (int id = 0; id < maxId; id++)
 		{
 			int haPrice = itemManager.getItemComposition(id).getHaPrice();
 			// Don't bother storing items with a HA price of 0, we can use getOrDefault to fill those in.

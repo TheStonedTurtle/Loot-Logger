@@ -149,7 +149,7 @@ class LootPanel extends JPanel
 		long totalValue = lootLog.getLootValue(false);
 
 		// Include Minion Loot
-		if (config.includeMinions())
+		if (config.includeMinions() || lootLog.getName().equalsIgnoreCase("Superior slayer monsters"))
 		{
 			for (final LootLog log : lootLog.getMinionLogs())
 			{

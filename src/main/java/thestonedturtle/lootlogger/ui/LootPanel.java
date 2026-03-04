@@ -163,7 +163,7 @@ class LootPanel extends JPanel
 		long totalValue = lootLog.getLootValue(false);
 
 		// Include Minion Loot
-		if (config.includeMinions())
+		if (config.includeMinions() || lootLog.getName().equalsIgnoreCase("Superior slayer monsters"))
 		{
 			for (final LootLog log : lootLog.getMinionLogs())
 			{
@@ -180,6 +180,12 @@ class LootPanel extends JPanel
 
 				totalValue += namedGrid.getPrice();
 			}
+		}
+
+		// Update tracked kc panel for superiors
+		if (lootLog.getName().equalsIgnoreCase("Superior slayer monsters") && killsLogged > 0) {
+			killsLoggedPanel.updatePanel(KILLS_LOGGED, killsLogged);
+			killsLoggedPanel.setVisible(true);
 		}
 
 		if (totalValue > 0)

@@ -98,6 +98,7 @@ public enum BossTab
 	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear smoke devil", ItemID.SMOKEPET, "Slayer", LootRecordType.NPC),
 	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.HYDRAPET, "Slayer", LootRecordType.NPC),
 	ARAXXOR("Araxxor", ItemID.ARAXXORPET, "Slayer", LootRecordType.NPC),
+	SHELLBANE_GRYPHON("Shellbane Gryphon", ItemID.GRYPHONBOSSPET, "Slayer", LootRecordType.NPC),
 
 	// Other Bosses
 	KALPHITE_QUEEN("Kalphite Queen", ItemID.KQPET_WALKING, "Other", LootRecordType.NPC),

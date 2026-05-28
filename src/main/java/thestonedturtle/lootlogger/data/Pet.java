@@ -77,6 +77,7 @@ public enum Pet
 	DOMPET(ItemID.DOMPET, BossTab.DOOM.getName()),
 	BRUTUS(ItemID.COWBOSSPET, BossTab.BRUTUS.getName()),
 	// Pretty sure
+	ABYSSAL_PROTECTOR(ItemID.ABYSSALPET, BossTab.GUARDIANS_OF_THE_RIFT.getName()),
 	PHOENIX(ItemID.PHOENIXPET, BossTab.WINTERTODT.getName()),
 	PET_PENANCE_QUEEN(ItemID.PENANCEPET, "Barbarian Assault"),
 	TINY_TEMPOR(ItemID.TEMPOROSSPET, BossTab.TEMPOROSS.getName()),

@@ -111,7 +111,7 @@ public enum BossTab
 	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUSPAHPET, "Other", LootRecordType.NPC),
 	HUEYCOATL("The Hueycoatl", ItemID.HUEYPET, "Other", LootRecordType.NPC),
 	YAMA("Yama", ItemID.YAMAPET, "Other", LootRecordType.NPC,
-		ImmutableSet.of("forgotten lockbox"), LootRecordType.EVENT),
+		ImmutableSet.of("forgotten lockbox", "dossier"), LootRecordType.EVENT),
 	DOOM("Doom of Mokhaiotl", ItemID.DOMPET, "Other", LootRecordType.EVENT),
 	BRUTUS("Brutus", ItemID.COWBOSSPET, "Other", LootRecordType.NPC),
 

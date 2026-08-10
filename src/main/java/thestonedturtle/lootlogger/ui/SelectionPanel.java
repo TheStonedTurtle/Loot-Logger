@@ -85,10 +85,12 @@ class SelectionPanel extends JPanel
 	private final JPanel namePanel = new JPanel();
 	private final List<JPanel> panels = new ArrayList<>();
 
-	private boolean configToggle;
+	private boolean bossButtonsEnabled;
+	private boolean filterBosses;
 
 	SelectionPanel(
-		final boolean configToggle,
+		final boolean bossButtonsEnabled,
+		final boolean filterBosses,
 		final SetMultimap<LootRecordType, String> names,
 		final LootLoggerPanel parent,
 		final ItemManager itemManager)
@@ -96,7 +98,8 @@ class SelectionPanel extends JPanel
 		this.names = names == null ? HashMultimap.create() : names;
 		this.parent = parent;
 		this.itemManager = itemManager;
-		this.configToggle = configToggle;
+		this.bossButtonsEnabled = bossButtonsEnabled;
+		this.filterBosses = filterBosses;
 
 		this.setLayout(new GridBagLayout());
 		this.setBackground(BACKGROUND_COLOR);
@@ -145,7 +148,7 @@ class SelectionPanel extends JPanel
 		c.gridy++;
 
 		// Add the bosses tabs, by category, to tabGroup
-		if (configToggle)
+		if (bossButtonsEnabled)
 		{
 			this.add(createBossTabPanel(), c);
 			c.gridy++;
@@ -215,7 +218,7 @@ class SelectionPanel extends JPanel
 		// Filter out boss tabs if the config toggle is enabled
 		names = names.stream().filter((n) ->
 		{
-			if (!configToggle)
+			if (!bossButtonsEnabled || !filterBosses)
 			{
 				return true;
 			}

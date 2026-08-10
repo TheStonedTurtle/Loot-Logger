@@ -52,7 +52,18 @@ public interface LootLoggerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
+			position = 4,
+			keyName = "filterBosses",
+			name = "Filter bosses",
+			description = "Toggles whether the search bar filters out bosses when boss icons are enabled"
+	)
+	default boolean filterBosses()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 5,
 		keyName = "ignoreNmz",
 		name = "Ignore nightmare zone",
 		description = "Whether to ignore loot received while inside Nightmare Zone",
@@ -64,7 +75,7 @@ public interface LootLoggerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 5,
+		position = 6,
 		keyName = "itemMissingAlpha",
 		name = "Missing item opacity",
 		description = "Controls the image opacity for unacquired unique items inside the uniques panel.<br/>0 is transparent and 100 is fully opaque. default value is 35"
@@ -73,7 +84,7 @@ public interface LootLoggerConfig extends Config
 	default int itemMissingAlpha() { return 35; }
 
 	@ConfigItem(
-		position = 6,
+		position = 7,
 		keyName = "includeMinions",
 		name = "Include Minions",
 		description = "Toggles whether loot from minions will be included when looking at specific loot tabs, such as the GWD bosses"
@@ -84,7 +95,7 @@ public interface LootLoggerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 1,
+		position = 2,
 		keyName = "itemValue",
 		name = "Item Value",
 		description = "Which value to use when calculating item prices"

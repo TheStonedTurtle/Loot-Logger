@@ -117,7 +117,7 @@ public class LootLoggerPanel extends PluginPanel
 		errorPanel.setBorder(new EmptyBorder(10, 25, 10, 25));
 		errorPanel.setContent("Loot Logger", "Select the Activity, Player, or NPC you wish to view loot for");
 
-		selectionPanel = new SelectionPanel(plugin.config.bossButtons(), plugin.getLootNames(), this, itemManager);
+		selectionPanel = new SelectionPanel(plugin.config.bossButtons(), plugin.config.filterBosses(), plugin.getLootNames(), this, itemManager);
 
 		this.add(errorPanel, BorderLayout.NORTH);
 		this.add(wrapContainer(selectionPanel), BorderLayout.CENTER);

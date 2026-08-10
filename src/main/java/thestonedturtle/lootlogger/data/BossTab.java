@@ -108,10 +108,11 @@ public enum BossTab
 	THE_GAUNTLET("The Gauntlet", ItemID.GAUNTLETPET, "Other", LootRecordType.EVENT),
 	NIGHTMARE("The Nightmare", ItemID.NIGHTMAREPET, "Other", LootRecordType.NPC),
 	PHOSANIS_NIGHTMARE("Phosani's Nightmare", ItemID.NIGHTMAREPET_PARASITE, "Other", LootRecordType.NPC),
-	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUSPAHPET, "Other", LootRecordType.NPC),
+	PHANTOM_MUSPAH("Phantom Muspah", ItemID.MUSPAHPET, "Other", LootRecordType.NPC,
+		ImmutableSet.of("Frozen cache"), LootRecordType.EVENT),
 	HUEYCOATL("The Hueycoatl", ItemID.HUEYPET, "Other", LootRecordType.NPC),
 	YAMA("Yama", ItemID.YAMAPET, "Other", LootRecordType.NPC,
-		ImmutableSet.of("forgotten lockbox"), LootRecordType.EVENT),
+		ImmutableSet.of("forgotten lockbox", "dossier"), LootRecordType.EVENT),
 	DOOM("Doom of Mokhaiotl", ItemID.DOMPET, "Other", LootRecordType.EVENT),
 	BRUTUS("Brutus", ItemID.COWBOSSPET, "Other", LootRecordType.NPC),
 

@@ -46,6 +46,7 @@ import thestonedturtle.lootlogger.ItemValueTypes;
 import thestonedturtle.lootlogger.LootLoggerConfig;
 import thestonedturtle.lootlogger.LootLoggerPlugin;
 import thestonedturtle.lootlogger.UniqueItemPlacement;
+import thestonedturtle.lootlogger.data.BossTab;
 import thestonedturtle.lootlogger.data.LootLog;
 import thestonedturtle.lootlogger.data.UniqueItem;
 import thestonedturtle.lootlogger.localstorage.LTItemEntry;
@@ -148,8 +149,9 @@ class LootPanel extends JPanel
 		// Store Total Value
 		long totalValue = lootLog.getLootValue(false);
 
-		// Include Minion Loot
-		if (config.includeMinions() || lootLog.getName().equalsIgnoreCase("Superior slayer monsters"))
+		// Include Minion Loot only if config is enabled
+		// Superior slayer monsters are all considered minions so this should always happen for that tab
+		if (config.includeMinions() || lootLog.getName().equalsIgnoreCase(BossTab.SUPERIOR_SLAYER_MONSTERS.getName()))
 		{
 			for (final LootLog log : lootLog.getMinionLogs())
 			{

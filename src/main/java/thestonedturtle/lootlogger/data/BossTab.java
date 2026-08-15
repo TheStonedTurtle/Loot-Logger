@@ -123,6 +123,8 @@ public enum BossTab
 		ImmutableSet.of("forgotten lockbox", "dossier"), LootRecordType.EVENT),
 	DOOM("Doom of Mokhaiotl", ItemID.DOMPET, "Other", LootRecordType.EVENT),
 	BRUTUS("Brutus", ItemID.COWBOSSPET, "Other", LootRecordType.NPC),
+	MAGGOT_KING("Maggot King", ItemID.MAGGOTKINGPET, "Other", LootRecordType.NPC),
+	MAD_ANGEL("Mad Angel", ItemID.MADANGELPET, "Other", LootRecordType.NPC),
 
 	// Dagannoth Kings
 	DAGANNOTH_REX("Dagannoth Rex", ItemID.REXPET, "Dagannoth Kings", LootRecordType.NPC),

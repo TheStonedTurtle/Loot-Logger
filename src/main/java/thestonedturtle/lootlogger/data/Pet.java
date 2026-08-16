@@ -76,6 +76,8 @@ public enum Pet
 	YAMI(ItemID.YAMAPET, BossTab.YAMA.getName()),
 	DOM(ItemID.DOMPET, BossTab.DOOM.getName()),
 	BEEF(ItemID.COWBOSSPET, BossTab.BRUTUS.getName()),
+	MAGGOT_MARQUESS(ItemID.MAGGOTKINGPET, BossTab.MAGGOT_KING.getName()),
+	AGGY(ItemID.MADANGELPET, BossTab.MAD_ANGEL.getName()),
 	// Pretty sure
 	ABYSSAL_PROTECTOR(ItemID.ABYSSALPET, BossTab.GUARDIANS_OF_THE_RIFT.getName()),
 	PHOENIX(ItemID.PHOENIXPET, BossTab.WINTERTODT.getName()),

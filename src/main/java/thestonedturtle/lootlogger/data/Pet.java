@@ -74,8 +74,8 @@ public enum Pet
 	HERBI(ItemID.HERBIBOARPET, "Herbiboar"),
 	HUBERTE(ItemID.HUEYPET, BossTab.HUEYCOATL.getName()),
 	YAMI(ItemID.YAMAPET, BossTab.YAMA.getName()),
-	DOMPET(ItemID.DOMPET, BossTab.DOOM.getName()),
-	BRUTUS(ItemID.COWBOSSPET, BossTab.BRUTUS.getName()),
+	DOM(ItemID.DOMPET, BossTab.DOOM.getName()),
+	BEEF(ItemID.COWBOSSPET, BossTab.BRUTUS.getName()),
 	MAGGOT_MARQUESS(ItemID.MAGGOTKINGPET, BossTab.MAGGOT_KING.getName()),
 	AGGY(ItemID.MADANGELPET, BossTab.MAD_ANGEL.getName()),
 	// Pretty sure

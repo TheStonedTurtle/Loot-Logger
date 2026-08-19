@@ -228,7 +228,7 @@ public class LootLog
 
 		final Collection<LootLog> allLogs = new ArrayList<>();
 		allLogs.add(lootLog);
-		if (includeMinions) {
+		if (includeMinions || lootLog.getName().equals(BossTab.SUPERIOR_SLAYER_MONSTERS.getName())) {
 			allLogs.addAll(lootLog.getMinionLogs());
 		}
 

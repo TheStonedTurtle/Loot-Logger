@@ -1118,7 +1118,7 @@ public enum UniqueItem
 	private final int position;
 	private final int[] alternativeIds;
 	private String name;
-	private int price;
+	private long price;
 	private int linkedID;
 
 	@Setter

@@ -265,8 +265,8 @@ public class LootLoggerPlugin extends Plugin
 	{
 		final ItemComposition c = itemManager.getItemComposition(id);
 		final int realId = c.getNote() == -1 ? c.getId() : c.getLinkedNoteId();
-		final int price = itemManager.getItemPrice(realId);
-		final long totalPrice = (long) price * qty;
+		final long price = itemManager.getItemPrice(realId);
+		final long totalPrice = price * qty;
 		return new LTItemEntry(c.getName(), id, qty, price, c.getHaPrice(), totalPrice);
 	}
 

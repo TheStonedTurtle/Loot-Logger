@@ -76,7 +76,7 @@ public class LootRecordDateAdapter extends TypeAdapter<Date>
 		catch (ParseException e)
 		{
 			log.error("Error parsing LootRecord date value: {}", date);
-			e.printStackTrace();
+			log.error("Parse exception", e);
 			return null;
 		}
 	}

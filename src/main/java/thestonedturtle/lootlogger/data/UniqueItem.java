@@ -283,11 +283,11 @@ public enum UniqueItem
 	ARCANE_SIGIL(ItemID.ARCANE_SIGIL, BossTab.CORPOREAL_BEAST, 1),
 	ELYSIAN_SIGIL(ItemID.ELYSIAN_SIGIL, BossTab.CORPOREAL_BEAST, 1),
 	// The Gauntlet
-	CRYSTAL_SHARD(ItemID.PRIF_CRYSTAL_SHARD, BossTab.THE_GAUNTLET, 0),
-	CRYSTAL_WEAPON_SEED(ItemID.CRYSTAL_SEED_OLD, BossTab.THE_GAUNTLET, 0),
-	CRYSTAL_ARMOUR_SEED(ItemID.PRIF_ARMOUR_SEED, BossTab.THE_GAUNTLET, 0),
-	ENHANCED_CRYSTAL_WEAPON_SEED(ItemID.PRIF_WEAPON_SEED_ENHANCED, BossTab.THE_GAUNTLET, 0, ItemID.BLADE_OF_SAELDOR_INACTIVE),
-	YOUNGLLEF(ItemID.GAUNTLETPET, BossTab.THE_GAUNTLET, 0),
+	CRYSTAL_SHARD(ItemID.PRIF_CRYSTAL_SHARD, BossTab.THE_GAUNTLET, BossTab.CORRUPTED_GAUNTLET),
+	CRYSTAL_WEAPON_SEED(ItemID.CRYSTAL_SEED_OLD, BossTab.THE_GAUNTLET, BossTab.CORRUPTED_GAUNTLET),
+	CRYSTAL_ARMOUR_SEED(ItemID.PRIF_ARMOUR_SEED, BossTab.THE_GAUNTLET, BossTab.CORRUPTED_GAUNTLET),
+	ENHANCED_CRYSTAL_WEAPON_SEED(ItemID.PRIF_WEAPON_SEED_ENHANCED, new BossTab[]{BossTab.THE_GAUNTLET, BossTab.CORRUPTED_GAUNTLET}, new int[] {ItemID.BLADE_OF_SAELDOR_INACTIVE}),
+	YOUNGLLEF(ItemID.GAUNTLETPET, BossTab.THE_GAUNTLET, BossTab.CORRUPTED_GAUNTLET),
 	// Dagannoth Rex
 	RING_OF_LIFE(ItemID.RING_OF_LIFE, BossTab.DAGANNOTH_REX, -1),
 	WARRIOR_RING(ItemID.WARRIOR_RING, BossTab.DAGANNOTH_REX, -1),
@@ -1174,6 +1174,20 @@ public enum UniqueItem
 		this.itemID = id;
 		this.position = -1;
 		this.alternativeIds = new int[0];
+
+		this.bosses = new String[bosses.length];
+		for (int i = 0; i < bosses.length; i++)
+		{
+			this.bosses[i] = bosses[i].getName();
+		}
+	}
+
+	// Shared uniques with alternative IDs
+	UniqueItem(int id, BossTab[] bosses, int[] alternativeIds)
+	{
+		this.itemID = id;
+		this.position = -1;
+		this.alternativeIds = alternativeIds;
 
 		this.bosses = new String[bosses.length];
 		for (int i = 0; i < bosses.length; i++)

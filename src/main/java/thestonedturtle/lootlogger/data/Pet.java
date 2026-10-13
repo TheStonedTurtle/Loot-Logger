@@ -27,6 +27,7 @@ package thestonedturtle.lootlogger.data;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import net.runelite.api.gameval.ItemID;
+import org.graalvm.compiler.lir.alloc.trace.bu.BottomUpAllocator;
 
 @Getter
 public enum Pet
@@ -67,7 +68,7 @@ public enum Pet
 	VORKI(ItemID.VORKATHPET, BossTab.VORKATH.getName()),
 	BLOODHOUND(ItemID.BLOODHOUND_PET, BossTab.CLUE_SCROLL_MASTER.getName()),
 	IKKLE_HYDRA(ItemID.HYDRAPET, BossTab.ALCHEMICAL_HYDRA.getName()),
-	YOUNGLLEF(ItemID.GAUNTLETPET, BossTab.THE_GAUNTLET.getName()),
+	YOUNGLLEF(ItemID.GAUNTLETPET, BossTab.THE_GAUNTLET.getName(), BossTab.CORRUPTED_GAUNTLET.getName()),
 	SRARACHA(ItemID.SARACHNISPET, BossTab.SARACHNIS.getName()),
 	SMOLCANO(ItemID.ZALCANOPET, BossTab.ZALCANO.getName()),
 	LITTLE_NIGHTMARE(ItemID.NIGHTMAREPET, BossTab.NIGHTMARE.getName(), BossTab.PHOSANIS_NIGHTMARE.getName()),
